@@ -40,6 +40,7 @@
 		"fileExists",
 		"setXMLInt",
 		"getUserProfileAppPath",
-		"g_gui"
+		"g_gui",
+		"g_simpleInspector"
 	]
 }

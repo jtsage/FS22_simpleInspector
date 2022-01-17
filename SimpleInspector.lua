@@ -7,7 +7,7 @@
 --[[
 CHANGELOG
 	v1.0.0.0
-		- First version.  not compatible with EnhancedVehicle.
+		- First version.  not compatible with EnhancedVehicle new damage/paint/fuel display (set to mode 1!)
 ]]--
 SimpleInspector= {}
 
@@ -121,19 +121,21 @@ function SimpleInspector:readSettingsFile()
 	print("~~simpleInspector :: read config file")
 
 	local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", "version", 0)
-	confVersion  = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), "unknown")
+	local confVersion  = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), "unknown")
 
 	if ( confVersion ~= self.version ) then
 		print("~~simpleInspector :: old config file, updating")
 		self:createSettingsFile()
 	end
-	
 end
 
 
 function SimpleInspector:onStartMission(mission)
 	-- Load the mod, make the box that info lives in.
 	print("~~simpleInspector :: version " .. self.version .. " loaded.")
+	if not self.isClient then
+		return
+	end
 
 	if fileExists(self.confFile) then
 		self:readSettingsFile()
@@ -143,10 +145,6 @@ function SimpleInspector:onStartMission(mission)
 
 	if ( self.settings.debugMode ) then
 		print("~~simpleInspector :: onStartMission")
-	end
-
-	if not self.isClient then
-		return
 	end
 
 	self:createTextBox()
@@ -245,7 +243,7 @@ function SimpleInspector:updateVehicles()
 					local isRunning = thisVeh.getIsMotorStarted ~= nil and thisVeh:getIsMotorStarted()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
-					
+
 					if ( self.settings.showAll or isConned or isRunning or isOnAI) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
@@ -345,7 +343,7 @@ function SimpleInspector:update(dt)
 
 				if thisPerc < 50     then setTextColor(unpack(self:getColor("colorFillLow")))
 				elseif thisPerc < 85 then setTextColor(unpack(self:getColor("colorFillHalf")))
-				else                      setTextColor(unpack(self:getColor("colorFillFulll")))
+				else                      setTextColor(unpack(self:getColor("colorFillFull")))
 				end
 
 				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, thisString)

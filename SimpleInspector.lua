@@ -11,17 +11,12 @@ CHANGELOG
 ]]--
 SimpleInspector= {}
 
-
 local SimpleInspector_mt = Class(SimpleInspector)
 
 function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	local self = {}
 
 	setmetatable(self, SimpleInspector_mt)
-
-	self.showAll  = false
-	self.maxDepth = 5
-	self.debug    = false
 
 	self.isServer          = mission:getIsServer()
 	self.isClient          = mission:getIsClient()
@@ -32,10 +27,28 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.gameInfoDisplay   = mission.hud.gameInfoDisplay
 	self.speedMeterDisplay = mission.hud.speedMeter
 
-	self.timerFrequency = 15
+	self.settingsDirectory = getUserProfileAppPath() .. "modSettings/"
+	self.confDirectory     = self.settingsDirectory .."FS22_SimpleInspector/"
+	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
+
+	self.settings = {
+		debugMode      = false,
+		showAll        = false,
+		maxDepth       = 5,
+		timerFrequency = 15,
+		textMarginX    = 15,
+		textMarginY    = 10,
+		textSize       = 12,
+		colorNormal    = "1, 1, 1, 1",
+		colorFillFull  = "1, 0, 0, 1",
+		colorFillHalf  = "1, 1, 0, 1",
+		colorFillLow   = "0, 1, 0, 1",
+		colorUser      = "0, 1, 0, 1",
+		colorAI        = "0, 0.77, 1, 1",
+		colorAIMark    = "0, .5, 1, 1"
+	}
+
 	self.debugTimerRuns = 0
-	self.boxMargins     = { 15,  5 }
-	self.textSize       = 12
 	self.inspectText    = {}
 	self.boxBGColor     = { 544, 20, 200, 44 }
 	self.uiFilename     = Utils.getFilename("resources/HUD.dds", modDirectory)
@@ -43,24 +56,92 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	local modDesc       = loadXMLFile("modDesc", modDirectory .. "modDesc.xml");
 	self.version        = getXMLString(modDesc, "modDesc.version");
 
-	self.textColor = {
-		white    = {       1,       1,       1, 1 },
-		red      = { 255/255,   0/255,   0/255, 1 },
-		green    = {   0/255, 255/255,   0/255, 1 },
-		yellow   = { 255/255, 255/255,   0/255, 1 },
-		ls22blue = {   0/255, 198/255, 253/255, 1 },
-	}
-
 	self.display_data = { }
 
 	return self
+end
+
+function SimpleInspector:getColor(name)
+	local settings = self.settings
+	local colorString = Utils.getNoNil(settings[name], "1,1,1,1")
+
+	local t={}
+	for str in string.gmatch(colorString, "([^,]+)") do
+		table.insert(t, tonumber(str))
+	end
+	return t
+end
+
+function SimpleInspector:createSettingsFile()
+	createFolder(self.settingsDirectory)
+	createFolder(self.confDirectory)
+
+	local defaults = self.settings
+	local xml = createXMLFile("FS22_SimpleInspector", self.confFile, "FS22_SimpleInspector")
+
+	for idx, value in pairs(defaults) do
+		local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", idx, 0)
+		if type(value) == "boolean" then
+			setXMLBool(xml, groupNameTag .. "#boolean", value)
+		elseif type(value) == "number" then
+			setXMLInt(xml, groupNameTag .. "#int", value)
+		else
+			setXMLString(xml, groupNameTag .. "#string", value)
+		end
+	end
+
+	local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", "version", 0)
+	setXMLString(xml, groupNameTag .. "#string", self.version)
+
+	saveXMLFile(xml)
+	print("~~simpleInspector :: saved config file")
+end
+
+function SimpleInspector:readSettingsFile()
+	local settings = self.settings
+	local defaults = {}
+
+	for idx, value in pairs(settings) do
+		defaults[idx] = value
+	end
+
+	local xml = loadXMLFile("FS22_SimpleInspector", self.confFile, "FS22_SimpleInspector")
+
+	for idx, value in pairs(defaults) do
+		local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", idx, 0)
+		if type(value) == "boolean" then
+			settings[idx] = Utils.getNoNil(getXMLBool(xml, groupNameTag .. "#boolean"), value)
+		elseif type(value) == "number" then
+			settings[idx] = Utils.getNoNil(getXMLInt(xml, groupNameTag .. "#int"), value)
+		else
+			settings[idx] = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), value)
+		end
+	end
+
+	print("~~simpleInspector :: read config file")
+
+	local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", "version", 0)
+	confVersion  = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), "unknown")
+
+	if ( confVersion ~= self.version ) then
+		print("~~simpleInspector :: old config file, updating")
+		self:createSettingsFile()
+	end
+	
 end
 
 
 function SimpleInspector:onStartMission(mission)
 	-- Load the mod, make the box that info lives in.
 	print("~~simpleInspector :: version " .. self.version .. " loaded.")
-	if ( self.debug ) then
+
+	if fileExists(self.confFile) then
+		self:readSettingsFile()
+	else
+		self:createSettingsFile()
+	end
+
+	if ( self.settings.debugMode ) then
 		print("~~simpleInspector :: onStartMission")
 	end
 
@@ -79,7 +160,6 @@ function SimpleInspector:getVehSpeed(vehicle)
 	end
 	return string.format("%1.0f", "".. Utils.getNoNil(speed, 0))
 end
-
 
 function SimpleInspector:getSingleFill(vehicle, theseFills)
 	-- This is the single run at the fill type, for the current vehicle only.
@@ -141,7 +221,7 @@ function SimpleInspector:getAllFills(vehicle, fillLevels, depth)
 	-- That's 5 levels of attachments, so 5 trailers, #6 gets ignored.
 	self:getSingleFill(vehicle, fillLevels)
 
-	if vehicle.getAttachedImplements ~= nil and depth < self.maxDepth then
+	if vehicle.getAttachedImplements ~= nil and depth < self.settings.maxDepth then
 		local attachedImplements = vehicle:getAttachedImplements();
 		for _, implement in pairs(attachedImplements) do
 			if implement.object ~= nil then
@@ -166,7 +246,7 @@ function SimpleInspector:updateVehicles()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
 					
-					if ( self.showAll or isConned or isRunning or isOnAI) then
+					if ( self.settings.showAll or isConned or isRunning or isOnAI) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
 						local speed     = self:getVehSpeed(thisVeh)
@@ -204,10 +284,15 @@ function SimpleInspector:update(dt)
 		return
 	end
 
-	if g_updateLoopIndex % self.timerFrequency == 0 then
+	if self:shouldNotBeShown() then
+		self.inspectBox:setVisible(false)
+		return
+	end
+
+	if g_updateLoopIndex % self.settings.timerFrequency == 0 then
 		-- Lets not be rediculous, only update the vehicles "infrequently"
 		self:updateVehicles()
-		if ( self.debug ) then
+		if ( self.settings.debugMode ) then
 			self.debugTimerRuns = self.debugTimerRuns + 1
 			print("~~simpleInspector :: update (" .. self.debugTimerRuns .. ")")
 		end
@@ -231,14 +316,20 @@ function SimpleInspector:update(dt)
 		local y = self.inspectText.posY - self.inspectText.marginHeight - deltaY
 		local _w, _h = 0, self.inspectText.marginHeight * 2
 
+		local hideBox = true
+
+
 		for _, txt in pairs(info_text) do
+			-- Data structure for each vehicle is:
 			-- (new_data_table, {
-			-- 	status,
-			-- 	isAI,
+			-- 	status, (0 no special status, 1 = AI, 2 = user controlled)
+			-- 	isAI, (true / false - if status is 1 & 2)
 			-- 	thisBrand.title .. " " .. thisName,
-			-- 	tostring(speed),
-			-- 	fills
+			-- 	tostring(speed), (in the users units)
+			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
 			-- })
+			hideBox = false
+
 			setTextBold(true)
 			local fullTextSoFar = ""
 
@@ -252,14 +343,14 @@ function SimpleInspector:update(dt)
 				elseif idx > 79 and idx < 84 then thisPerc = 100 - thisPerc
 				end
 
-				if thisPerc < 50     then setTextColor(unpack(self.textColor.green))
-				elseif thisPerc < 85 then setTextColor(unpack(self.textColor.yellow))
-				else                      setTextColor(unpack(self.textColor.red))
+				if thisPerc < 50     then setTextColor(unpack(self:getColor("colorFillLow")))
+				elseif thisPerc < 85 then setTextColor(unpack(self:getColor("colorFillHalf")))
+				else                      setTextColor(unpack(self:getColor("colorFillFulll")))
 				end
 
 				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, thisString)
 				fullTextSoFar = thisString .. fullTextSoFar
-				setTextColor(unpack(self.textColor.white))
+				setTextColor(unpack(self:getColor("colorNormal")))
 				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, "|")
 				fullTextSoFar = "|" .. fullTextSoFar
 			end
@@ -272,21 +363,21 @@ function SimpleInspector:update(dt)
 				speedString = speedString .. "kph"
 			end
 
-			setTextColor(unpack(self.textColor.white))
+			setTextColor(unpack(self:getColor("colorNormal")))
 			renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, speedString)
 			fullTextSoFar = speedString .. fullTextSoFar
 
-			if txt[1] == 0     then setTextColor(unpack(self.textColor.white))
-			elseif txt[1] == 1 then setTextColor(unpack(self.textColor.yellow))
-			else                    setTextColor(unpack(self.textColor.ls22blue))
+			if txt[1] == 0     then setTextColor(unpack(self:getColor("colorNormal")))
+			elseif txt[1] == 1 then setTextColor(unpack(self:getColor("colorAI")))
+			else                    setTextColor(unpack(self:getColor("colorUser")))
 			end
 
 			renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, txt[3])
 			fullTextSoFar = txt[3] .. fullTextSoFar
 
 			if txt[2] then
-				setTextColor(unpack(self.textColor.ls22blue))
-				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, "ai ")
+				setTextColor(unpack(self:getColor("colorAIMark")))
+				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, "_AI_ ")
 				fullTextSoFar = "_AI_ " .. fullTextSoFar
 			end
 
@@ -295,6 +386,12 @@ function SimpleInspector:update(dt)
 			local tmp = getTextWidth(self.inspectText.size, fullTextSoFar)
 
 			if tmp > _w then _w = tmp end
+		end
+
+		if hideBox then
+			self.inspectBox:setVisible(false)
+		else
+			self.inspectBox:setVisible(true)
 		end
 
 		-- update overlay background
@@ -309,20 +406,15 @@ function SimpleInspector:update(dt)
 end
 
 function SimpleInspector:delete()
-	if self.dmgBox ~= nil then
-		self.dmgBox:delete()
+	if self.inspectBox ~= nil then
+		self.inspectBox:delete()
 	end
 end
 
 function SimpleInspector:createTextBox()
-	if ( self.debug ) then
+	if ( self.settings.debugMode ) then
 		print("~~simpleInspector :: createTextBox")
 	end
-
-	local baseX = g_currentMission.inGameMenu.hud.speedMeter.gaugeCenterX
-	local baseY = g_currentMission.inGameMenu.hud.speedMeter.gaugeCenterY
-	local width = self.speedMeterDisplay.gaugeBackgroundElement:getWidth()
-	local height = self.speedMeterDisplay.gaugeBackgroundElement:getHeight()
 
 	local baseX, baseY = self.gameInfoDisplay:getPosition()
 	self.marginWidth, self.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({ 8, 8 })
@@ -332,23 +424,29 @@ function SimpleInspector:createTextBox()
 	self.inspectBox = boxElement
 	self.inspectBox:setUVs(GuiUtils.getUVs(self.boxBGColor))
 	self.inspectBox:setColor(unpack(SpeedMeterDisplay.COLOR.GEARS_BG))
-	self.inspectBox:setVisible(true)
-	self.speedMeterDisplay:addChild(boxElement)
+	self.inspectBox:setVisible(false)
+	self.gameInfoDisplay:addChild(boxElement)
 
-	local baseX, baseY = self.gameInfoDisplay:getPosition()
 	self.inspectText.posX = 1
 	self.inspectText.posY = baseY - self.marginHeight
-	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector(self.boxMargins)
-	self.inspectText.size = self.speedMeterDisplay:scalePixelToScreenHeight(self.textSize)
-
+	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({self.settings.textMarginX, self.settings.textMarginY})
+	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings.textSize)
 end
 
+function SimpleInspector:shouldNotBeShown()
+	if g_currentMission.paused or
+		g_gui:getIsGuiVisible() or
+		g_currentMission.inGameMenu.paused or
+		g_currentMission.inGameMenu.isOpen or
+		g_currentMission.physicsPaused or
+		not g_currentMission.hud.isVisible then
 
+			if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.manualPaused then return false end
 
-
-
-
-
+			return true
+		end
+		return false
+end
 
 
 local modDirectory = g_currentModDirectory or ""

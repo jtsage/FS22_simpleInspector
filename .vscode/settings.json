@@ -29,6 +29,17 @@
 		"g_fillTypeManager",
 		"g_brandManager",
 		"getTextWidth",
-		"SpeedMeterDisplay"
+		"SpeedMeterDisplay",
+		"createFolder",
+		"createXMLFile",
+		"setXMLBool",
+		"setXMLString",
+		"getXMLBool",
+		"getXMLInt",
+		"saveXMLFile",
+		"fileExists",
+		"setXMLInt",
+		"getUserProfileAppPath",
+		"g_gui"
 	]
 }

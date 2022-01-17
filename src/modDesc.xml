@@ -5,12 +5,16 @@
         <de>SimpleInspector</de>
     </title>
     <description>
-        <de><![CDATA[SimpleInspector]]></de>
-        <en><![CDATA[SimpleInspector]]></en>
+        <en><![CDATA[SimpleInspector shows a HUD overlay with all of the currently running vehicles
+(optionally all vehicles), their speed, fill levels, and if they are occupied by a user
+or a helper]]></en>
+        <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell laufenden Fahrzeugen
+(optional alle Fahrzeuge), deren Geschwindigkeit, Füllstände und ob sie von einem Nutzer besetzt sind
+oder ein Helfer]]></de>
     </description>
     <author>JTSage</author>
     <version>1.0.0.0</version>
-    <iconFilename>store.dds</iconFilename>
+    <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>
         <sourceFile filename="SimpleInspector.lua"/>

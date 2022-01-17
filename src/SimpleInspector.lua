@@ -46,11 +46,11 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		colorFillFull  = "1, 0, 0, 1",
 		colorFillHalf  = "1, 1, 0, 1",
 		colorFillLow   = "0, 1, 0, 1",
-		colorFillType  = "0.5, 0.5, 0.5, 1",
+		colorFillType  = "0.7, 0.7, 0.7, 1",
 		colorUser      = "0, 1, 0, 1",
 		colorAI        = "0, 0.77, 1, 1",
 		colorAIMark    = "0, .5, 1, 1",
-		colorSep       = "0.7, 0.7, 0.7, 1",
+		colorSep       = "1, 1, 1, 1",
 		colorSpeed     = "0, 0.5, 1, 1",
 		textHelper     = "_AI_ ",
 		textSep        = " | "

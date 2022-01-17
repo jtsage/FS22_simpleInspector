@@ -18,6 +18,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 
 	setmetatable(self, SimpleInspector_mt)
 
+	self.myName            = "SimpleInspector"
 	self.isServer          = mission:getIsServer()
 	self.isClient          = mission:getIsClient()
 	self.mission           = mission
@@ -32,6 +33,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
+		displayMode    = 1,
 		debugMode      = false,
 		showAll        = false,
 		maxDepth       = 5,
@@ -43,9 +45,14 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		colorFillFull  = "1, 0, 0, 1",
 		colorFillHalf  = "1, 1, 0, 1",
 		colorFillLow   = "0, 1, 0, 1",
+		colorFillType  = "0.5, 0.5, 0.5, 1",
 		colorUser      = "0, 1, 0, 1",
 		colorAI        = "0, 0.77, 1, 1",
-		colorAIMark    = "0, .5, 1, 1"
+		colorAIMark    = "0, .5, 1, 1",
+		colorSep       = "0.7, 0.7, 0.7, 1",
+		colorSpeed     = "0, 0.5, 1, 1",
+		textHelper     = "_AI_ ",
+		textSep        = " | "
 	}
 
 	self.debugTimerRuns = 0
@@ -61,78 +68,9 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	return self
 end
 
-function SimpleInspector:getColor(name)
-	local settings = self.settings
-	local colorString = Utils.getNoNil(settings[name], "1,1,1,1")
-
-	local t={}
-	for str in string.gmatch(colorString, "([^,]+)") do
-		table.insert(t, tonumber(str))
-	end
-	return t
-end
-
-function SimpleInspector:createSettingsFile()
-	createFolder(self.settingsDirectory)
-	createFolder(self.confDirectory)
-
-	local defaults = self.settings
-	local xml = createXMLFile("FS22_SimpleInspector", self.confFile, "FS22_SimpleInspector")
-
-	for idx, value in pairs(defaults) do
-		local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", idx, 0)
-		if type(value) == "boolean" then
-			setXMLBool(xml, groupNameTag .. "#boolean", value)
-		elseif type(value) == "number" then
-			setXMLInt(xml, groupNameTag .. "#int", value)
-		else
-			setXMLString(xml, groupNameTag .. "#string", value)
-		end
-	end
-
-	local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", "version", 0)
-	setXMLString(xml, groupNameTag .. "#string", self.version)
-
-	saveXMLFile(xml)
-	print("~~simpleInspector :: saved config file")
-end
-
-function SimpleInspector:readSettingsFile()
-	local settings = self.settings
-	local defaults = {}
-
-	for idx, value in pairs(settings) do
-		defaults[idx] = value
-	end
-
-	local xml = loadXMLFile("FS22_SimpleInspector", self.confFile, "FS22_SimpleInspector")
-
-	for idx, value in pairs(defaults) do
-		local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", idx, 0)
-		if type(value) == "boolean" then
-			settings[idx] = Utils.getNoNil(getXMLBool(xml, groupNameTag .. "#boolean"), value)
-		elseif type(value) == "number" then
-			settings[idx] = Utils.getNoNil(getXMLInt(xml, groupNameTag .. "#int"), value)
-		else
-			settings[idx] = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), value)
-		end
-	end
-
-	print("~~simpleInspector :: read config file")
-
-	local groupNameTag = string.format("%s.%s(%d)", "FS22_SimpleInspector", "version", 0)
-	local confVersion  = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), "unknown")
-
-	if ( confVersion ~= self.version ) then
-		print("~~simpleInspector :: old config file, updating")
-		self:createSettingsFile()
-	end
-end
-
-
 function SimpleInspector:onStartMission(mission)
 	-- Load the mod, make the box that info lives in.
-	print("~~simpleInspector :: version " .. self.version .. " loaded.")
+	print("~~" .. self.myName .." :: version " .. self.version .. " loaded.")
 	if not self.isClient then
 		return
 	end
@@ -144,7 +82,7 @@ function SimpleInspector:onStartMission(mission)
 	end
 
 	if ( self.settings.debugMode ) then
-		print("~~simpleInspector :: onStartMission")
+		print("~~" .. self.myName .." :: onStartMission")
 	end
 
 	self:createTextBox()
@@ -292,13 +230,14 @@ function SimpleInspector:update(dt)
 		self:updateVehicles()
 		if ( self.settings.debugMode ) then
 			self.debugTimerRuns = self.debugTimerRuns + 1
-			print("~~simpleInspector :: update (" .. self.debugTimerRuns .. ")")
+			print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
 		end
 	end
 
 	if self.inspectBox ~= nil then
+		local hideBox   = true
 		local info_text = self.display_data
-		local deltaY = 0
+		local deltaY    = 0
 
 		if g_currentMission.hud.sideNotifications ~= nil then
 			if #g_currentMission.hud.sideNotifications.notificationQueue > 0 then
@@ -307,15 +246,12 @@ function SimpleInspector:update(dt)
 		end
 
 		setTextAlignment(RenderText.ALIGN_RIGHT)
-		setTextBold(false)
+		setTextBold(true)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_TOP)
 
 		local x = self.inspectText.posX - self.inspectText.marginHeight
 		local y = self.inspectText.posY - self.inspectText.marginHeight - deltaY
 		local _w, _h = 0, self.inspectText.marginHeight * 2
-
-		local hideBox = true
-
 
 		for _, txt in pairs(info_text) do
 			-- Data structure for each vehicle is:
@@ -326,14 +262,15 @@ function SimpleInspector:update(dt)
 			-- 	tostring(speed), (in the users units)
 			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
 			-- })
+
+			-- At least one entry, show the box.
 			hideBox = false
 
-			setTextBold(true)
+			local thisTextLine = {}
 			local fullTextSoFar = ""
 
 			for idx, thisFill in pairs(txt[5]) do
 				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
-				local thisString = thisFillType.title:lower() .. ":" .. thisFill[1]
 				local thisPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
 
 				if idx == 16 then thisPerc = 100 - thisPerc
@@ -341,19 +278,18 @@ function SimpleInspector:update(dt)
 				elseif idx > 79 and idx < 84 then thisPerc = 100 - thisPerc
 				end
 
-				if thisPerc < 50     then setTextColor(unpack(self:getColor("colorFillLow")))
-				elseif thisPerc < 85 then setTextColor(unpack(self:getColor("colorFillHalf")))
-				else                      setTextColor(unpack(self:getColor("colorFillFull")))
+				if thisPerc < 50     then self:renderColor("colorFillLow")
+				elseif thisPerc < 85 then self:renderColor("colorFillHalf")
+				else                      self:renderColor("colorFillFull")
 				end
 
-				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, thisString)
-				fullTextSoFar = thisString .. fullTextSoFar
-				setTextColor(unpack(self:getColor("colorNormal")))
-				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, "|")
-				fullTextSoFar = "|" .. fullTextSoFar
+				fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisFill[1])
+				self:renderColor("colorFillType")
+				fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisFillType.title:lower() .. ":")
+				fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
 			end
 
-			local speedString = "|" .. txt[4]
+			local speedString = txt[4]
 
 			if g_gameSettings:getValue('useMiles') then
 				speedString = speedString .. "mph"
@@ -361,22 +297,20 @@ function SimpleInspector:update(dt)
 				speedString = speedString .. "kph"
 			end
 
-			setTextColor(unpack(self:getColor("colorNormal")))
-			renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, speedString)
-			fullTextSoFar = speedString .. fullTextSoFar
+			self:renderColor("colorSpeed")
+			fullTextSoFar = self:renderText(x, y, fullTextSoFar, speedString)
+			fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
 
-			if txt[1] == 0     then setTextColor(unpack(self:getColor("colorNormal")))
-			elseif txt[1] == 1 then setTextColor(unpack(self:getColor("colorAI")))
-			else                    setTextColor(unpack(self:getColor("colorUser")))
+			if txt[1] == 0     then self:renderColor("colorNormal")
+			elseif txt[1] == 1 then self:renderColor("colorAI")
+			else                    self:renderColor("colorUser")
 			end
 
-			renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, txt[3])
-			fullTextSoFar = txt[3] .. fullTextSoFar
+			fullTextSoFar = self:renderText(x, y, fullTextSoFar, txt[3])
 
 			if txt[2] then
-				setTextColor(unpack(self:getColor("colorAIMark")))
-				renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, "_AI_ ")
-				fullTextSoFar = "_AI_ " .. fullTextSoFar
+				self:renderColor("colorAIMark")
+				fullTextSoFar = self:renderText(x, y, fullTextSoFar, self.settings.textHelper)
 			end
 
 			y = y - self.inspectText.size
@@ -396,6 +330,7 @@ function SimpleInspector:update(dt)
 		self.inspectBox.overlay:setPosition(x - _w - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
 		self.inspectBox.overlay:setDimension(_w + self.inspectText.marginHeight + self.inspectText.marginWidth, _h)
 
+		-- reset text render to "defaults" to be kind
 		setTextColor(1,1,1,1)
 		setTextAlignment(RenderText.ALIGN_LEFT)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_BASELINE)
@@ -403,15 +338,34 @@ function SimpleInspector:update(dt)
 	end
 end
 
-function SimpleInspector:delete()
-	if self.inspectBox ~= nil then
-		self.inspectBox:delete()
+function SimpleInspector:renderColor(name)
+	print(tostring(self.isClient))
+	local settings    = self.settings
+	local colorString = Utils.getNoNil(settings[name], "1,1,1,1")
+
+	local t={}
+	for str in string.gmatch(colorString, "([^,]+)") do
+		table.insert(t, tonumber(str))
 	end
+
+	setTextColor(unpack(t))
 end
 
+function SimpleInspector:renderText(x, y, fullTextSoFar, text)
+	renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, text)
+	return text .. fullTextSoFar
+end
+
+function SimpleInspector:renderSep(x, y, fullTextSoFar)
+	self:renderColor("colorSep")
+	return self:renderText(x, y, fullTextSoFar, self.settings.textSep)
+end
+
+
 function SimpleInspector:createTextBox()
+	-- make the box we live in.
 	if ( self.settings.debugMode ) then
-		print("~~simpleInspector :: createTextBox")
+		print("~~" .. self.myName .." :: createTextBox")
 	end
 
 	local baseX, baseY = self.gameInfoDisplay:getPosition()
@@ -432,6 +386,7 @@ function SimpleInspector:createTextBox()
 end
 
 function SimpleInspector:shouldNotBeShown()
+	-- hide when menu open or paused or gui off
 	if g_currentMission.paused or
 		g_gui:getIsGuiVisible() or
 		g_currentMission.inGameMenu.paused or
@@ -444,6 +399,83 @@ function SimpleInspector:shouldNotBeShown()
 			return true
 		end
 		return false
+end
+
+function SimpleInspector:delete()
+	-- clean up on remove
+	if self.inspectBox ~= nil then
+		self.inspectBox:delete()
+	end
+end
+
+function SimpleInspector:createSettingsFile()
+	-- Write a settings file.
+	createFolder(self.settingsDirectory)
+	createFolder(self.confDirectory)
+
+	local defaults = self.settings
+	local defaultsOrdered = {}
+
+	for idx, _ in pairs(defaults) do
+		table.insert(defaultsOrdered, idx)
+	end
+
+	table.sort(defaultsOrdered)
+
+	local xml = createXMLFile(self.myName, self.confFile, self.myName)
+
+	for _, idx in pairs(defaultsOrdered) do
+		local groupNameTag = string.format("%s.%s(%d)", self.myName, idx, 0)
+		if     type(defaults[idx]) == "boolean" then
+			setXMLBool(xml, groupNameTag .. "#boolean", defaults[idx])
+		elseif type(defaults[idx]) == "number" then
+			setXMLInt(xml, groupNameTag .. "#int", defaults[idx])
+		else
+			setXMLString(xml, groupNameTag .. "#string", defaults[idx])
+		end
+	end
+
+	local groupNameTag = string.format("%s.%s(%d)", self.myName, "version", 0)
+	setXMLString(xml, groupNameTag .. "#string", self.version)
+
+	saveXMLFile(xml)
+	print("~~" .. self.myName .." :: saved config file")
+end
+
+function SimpleInspector:readSettingsFile()
+	-- Read settings from disk.
+	local settings = self.settings
+	local defaults = {}
+
+	for idx, value in pairs(settings) do
+		defaults[idx] = value
+	end
+
+	local xml = loadXMLFile(self.myName, self.confFile, self.myName)
+
+	for idx, value in pairs(defaults) do
+		local groupNameTag = string.format("%s.%s(%d)", self.myName, idx, 0)
+		if     type(value) == "boolean" then
+			settings[idx] = Utils.getNoNil(getXMLBool(xml, groupNameTag .. "#boolean"), value)
+		elseif type(value) == "number" then
+			settings[idx] = Utils.getNoNil(getXMLInt(xml, groupNameTag .. "#int"), value)
+		else
+			settings[idx] = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), value)
+		end
+	end
+
+	print("~~" .. self.myName .." :: read config file")
+
+	local groupNameTag = string.format("%s.%s(%d)", self.myName, "version", 0)
+	local confVersion  = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), "unknown")
+
+	if ( confVersion ~= self.version ) then
+		print("~~" .. self.myName .." :: old config file, forcing update")
+		self:createSettingsFile()
+	elseif ( self.settings.debugMode ) then
+		print("~~" .. self.myName .." :: debug mode, forcing update")
+		self:createSettingsFile()
+	end
 end
 
 

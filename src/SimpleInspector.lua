@@ -25,7 +25,9 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.i18n              = i18n
 	self.modDirectory      = modDirectory
 	self.modName           = modName
+	--self.parentHUD         = mission.hud
 	self.gameInfoDisplay   = mission.hud.gameInfoDisplay
+	self.inputHelpDisplay  = mission.hud.inputHelp
 	self.speedMeterDisplay = mission.hud.speedMeter
 
 	self.settingsDirectory = getUserProfileAppPath() .. "modSettings/"
@@ -196,43 +198,73 @@ function SimpleInspector:updateVehicles()
 	self.display_data = {unpack(new_data_table)}
 end
 
-function SimpleInspector:update(dt)
-	if not self.isClient then
-		return
-	end
-
-	if self:shouldNotBeShown() then
-		self.inspectBox:setVisible(false)
-		return
-	end
-
-	if g_updateLoopIndex % self.settings.timerFrequency == 0 then
-		-- Lets not be rediculous, only update the vehicles "infrequently"
-		self:updateVehicles()
-		if ( self.settings.debugMode ) then
-			self.debugTimerRuns = self.debugTimerRuns + 1
-			print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
-		end
-	end
+function SimpleInspector:draw()
 
 	if self.inspectBox ~= nil then
-		local hideBox   = true
 		local info_text = self.display_data
-		local deltaY    = 0
+		local overlayH, overlayW, dispTextH, dispTextW = 0, 0, 0, 0
 
-		if g_currentMission.hud.sideNotifications ~= nil then
-			if #g_currentMission.hud.sideNotifications.notificationQueue > 0 then
-				deltaY = g_currentMission.hud.sideNotifications:getHeight()
-			end
+		if #info_text == 0 then
+			-- we have no entries, hide the overlay and leave
+			self.inspectBox:setVisible(false)
+			return
+		elseif g_gameSettings:getValue("ingameMapState") == 4 and self.settings.displayMode % 2 ~= 0 and g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
+			-- Left side display hide on big map with help open
+			self.inspectBox:setVisible(false)
+			return
+		else
+			-- we have entries, lets get the overall height of the box and unhide
+			self.inspectBox:setVisible(true)
+			dispTextH = self.inspectText.size * #info_text
+			overlayH = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
-		setTextAlignment(RenderText.ALIGN_RIGHT)
 		setTextBold(true)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_TOP)
 
-		local x = self.inspectText.posX - self.inspectText.marginHeight
-		local y = self.inspectText.posY - self.inspectText.marginHeight - deltaY
-		local _w, _h = 0, self.inspectText.marginHeight * 2
+		-- overlayX/Y is where the box starts
+		local overlayX, overlayY = self:findOrigin()
+		-- dispTextX/Y is where the text starts (sort of)
+		local dispTextX, dispTextY = self:findOrigin()
+
+		if ( self.settings.displayMode == 2 ) then
+			-- top right (subtract both margins)
+			dispTextX = dispTextX - self.marginWidth
+			dispTextY = dispTextY - self.marginHeight
+		elseif ( self.settings.displayMode == 3 ) then
+			-- bottom left (add x width, add Y height)
+			dispTextX = dispTextX + self.marginWidth
+			dispTextY = dispTextY + self.marginHeight + dispTextH
+			-- note: dispTextY needs translation (positive) for total height
+		elseif ( self.settings.displayMode == 4 ) then
+			-- bottom right (subtract x width, add Y height)
+			dispTextX = dispTextX - self.marginWidth
+			dispTextY = dispTextY + self.marginHeight + dispTextH
+			-- note: dispTextY needs translation (positive) for total height
+		else
+			-- top left (add X width, subtract Y height)
+			dispTextX = dispTextX + self.marginWidth
+			dispTextY = dispTextY - self.marginHeight
+		end
+
+		if ( self.settings.displayMode % 2 == 0 ) then
+			setTextAlignment(RenderText.ALIGN_RIGHT)
+		else
+			setTextAlignment(RenderText.ALIGN_LEFT)
+		end
+
+		if g_currentMission.hud.sideNotifications ~= nil and self.settings.displayMode == 2 then
+			if #g_currentMission.hud.sideNotifications.notificationQueue > 0 then
+				dispTextY = dispTextY - g_currentMission.hud.sideNotifications:getHeight()
+			end
+		end
+
+		self.inspectText.posX = dispTextX
+		self.inspectText.posY = dispTextY
+
+		--local x = self.inspectText.posX - self.inspectText.marginHeight
+		--local y = self.inspectText.posY - self.inspectText.marginHeight - deltaY
+		--local _w, _h = 0, self.inspectText.marginHeight * 2
 
 		for _, txt in pairs(info_text) do
 			-- Data structure for each vehicle is:
@@ -243,9 +275,6 @@ function SimpleInspector:update(dt)
 			-- 	tostring(speed), (in the users units)
 			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
 			-- })
-
-			-- At least one entry, show the box.
-			hideBox = false
 
 			local thisTextLine = {}
 			local fullTextSoFar = ""
@@ -304,45 +333,66 @@ function SimpleInspector:update(dt)
 			if ( self.settings.displayMode % 2 ~= 0 ) then
 				for _, thisLine in ipairs(thisTextLine) do
 					if thisLine[3] then
-						fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
+						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
 					else
 						self:renderColor(thisLine[1])
-						fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisLine[2])
+						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisLine[2])
 					end
 				end
 			else
 				for i = #thisTextLine, 1, -1 do
 					if thisTextLine[i][3] then
-						fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
+						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
 					else
 						self:renderColor(thisTextLine[i][1])
-						fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisTextLine[i][2])
+						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])
 					end
 				end
 			end
 
-			y = y - self.inspectText.size
-			_h = _h + self.inspectText.size
-			local tmp = getTextWidth(self.inspectText.size, fullTextSoFar)
+			if ( self.settings.displayMode > 2 ) then
+				dispTextY = dispTextY + self.inspectText.size
+			else
+				dispTextY = dispTextY - self.inspectText.size
+			end
+			
+			local tmpW = getTextWidth(self.inspectText.size, fullTextSoFar)
 
-			if tmp > _w then _w = tmp end
-		end
-
-		if hideBox then
-			self.inspectBox:setVisible(false)
-		else
-			self.inspectBox:setVisible(true)
+			if tmpW > dispTextW then dispTextW = tmpW end
 		end
 
 		-- update overlay background
-		self.inspectBox.overlay:setPosition(x - _w - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
-		self.inspectBox.overlay:setDimension(_w + self.inspectText.marginHeight + self.inspectText.marginWidth, _h)
+		if ( self.settings.displayMode % 2 == 0 ) then
+			self.inspectBox.overlay:setPosition(dispTextX - dispTextW - self.inspectText.marginWidth, dispTextY - self.inspectText.marginHeight)
+			--self.inspectBox.overlay:setPosition(x - _w - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
+		else
+			self.inspectBox.overlay:setPosition(dispTextX - self.inspectText.marginWidth, dispTextY - self.inspectText.marginHeight)
+			--self.inspectBox.overlay:setPosition(x - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
+		end
+
+		--self.inspectBox.overlay:setDimension(_w + self.inspectText.marginHeight + self.inspectText.marginWidth, _h)
+		self.inspectBox.overlay:setDimension(dispTextW + (self.inspectText.marginWidth * 2), overlayH)
 
 		-- reset text render to "defaults" to be kind
 		setTextColor(1,1,1,1)
 		setTextAlignment(RenderText.ALIGN_LEFT)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_BASELINE)
 		setTextBold(false)
+	end
+end
+
+function SimpleInspector:update(dt)
+	if not self.isClient then
+		return
+	end
+
+	if g_updateLoopIndex % self.settings.timerFrequency == 0 then
+		-- Lets not be rediculous, only update the vehicles "infrequently"
+		self:updateVehicles()
+		if ( self.settings.debugMode ) then
+			self.debugTimerRuns = self.debugTimerRuns + 1
+			print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
+		end
 	end
 end
 
@@ -367,7 +417,7 @@ function SimpleInspector:renderText(x, y, fullTextSoFar, text)
 		newX = newX + getTextWidth(self.inspectText.size, fullTextSoFar)
 	end
 
-	renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, text)
+	renderText(newX, y, self.inspectText.size, text)
 	return text .. fullTextSoFar
 end
 
@@ -396,17 +446,55 @@ function SimpleInspector:onStartMission(mission)
 	self:createTextBox()
 end
 
+function SimpleInspector:findOrigin()
+	local tmpX = 0
+	local tmpY = 0
+
+	if ( self.settings.displayMode == 2 ) then
+		-- top right display
+		tmpX, tmpY = self.gameInfoDisplay:getPosition()
+		tmpX = 1
+		tmpY = tmpY - 0.012
+	elseif ( self.settings.displayMode == 3 ) then
+		-- bottom left display
+	elseif ( self.settings.displayMode == 4 ) then
+		-- bottom right display
+	else
+		-- top left display (brute force method)
+		tmpX, tmpY = self.inputHelpDisplay:getPosition()
+		tmpX = 0.01622
+		if g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
+			tmpY = tmpY - 0.048
+		end
+	end
+	if ( self.settings.debugMode ) then
+		if g_updateLoopIndex % self.settings.timerFrequency == 0 then
+			print("~~ " .. self.myName .. " : origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
+		end
+	end
+	return tmpX, tmpY
+end
+
 function SimpleInspector:createTextBox()
 	-- make the box we live in.
 	if ( self.settings.debugMode ) then
 		print("~~" .. self.myName .." :: createTextBox")
 	end
 
-	local baseX, baseY = self.gameInfoDisplay:getPosition()
+	local baseX, baseY = self:findOrigin()
+	
+	local boxOverlay = nil
+
 	self.marginWidth, self.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({ 8, 8 })
 
-	local boxOverlay = Overlay.new(self.bgName, 1, baseY - self.marginHeight, 1, 1)
+	if ( self.settings.displayMode % 2 == 0 ) then -- top right
+		boxOverlay = Overlay.new(self.bgName, baseX, baseY - self.marginHeight, 1, 1)
+	else -- default to 1
+		boxOverlay = Overlay.new(self.bgName, baseX, baseY + self.marginHeight, 1, 1)
+	end
+	
 	local boxElement = HUDElement.new(boxOverlay)
+
 	self.inspectBox = boxElement
 	
 	self.inspectBox:setUVs(GuiUtils.getUVs(self.boxBGColor))
@@ -414,8 +502,8 @@ function SimpleInspector:createTextBox()
 	self.inspectBox:setVisible(false)
 	self.gameInfoDisplay:addChild(boxElement)
 
-	self.inspectText.posX = 1
-	self.inspectText.posY = baseY - self.marginHeight
+	-- self.inspectText.posX = 1
+	-- self.inspectText.posY = baseY - self.marginHeight
 	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({self.settings.textMarginX, self.settings.textMarginY})
 	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings.textSize)
 end

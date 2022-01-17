@@ -33,7 +33,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
-		displayMode    = 1,
+		displayMode    = 2, -- 1: top left, 2: top right, 3: bot left, 4: bot right
 		debugMode      = false,
 		showAll        = false,
 		maxDepth       = 5,
@@ -269,48 +269,72 @@ function SimpleInspector:update(dt)
 			local thisTextLine = {}
 			local fullTextSoFar = ""
 
+			-- AI Tag, if needed
+			if txt[2] then
+				table.insert(thisTextLine, {"colorAIMark", self.settings.textHelper, false})
+			end
+
+			-- Vehicle name
+			if txt[1] == 0 then
+				table.insert(thisTextLine, {"colorNormal", txt[3], false})
+			elseif txt[1] == 1 then
+				table.insert(thisTextLine, {"colorAI", txt[3], false})
+			else 
+				table.insert(thisTextLine, {"colorUser", txt[3], false})
+			end
+
+			-- Seperator after vehicle
+			table.insert(thisTextLine, {false, false, true})
+
+			-- Vehicle speed
+			if g_gameSettings:getValue('useMiles') then
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
+			else
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
+			end
+
 			for idx, thisFill in pairs(txt[5]) do
+				-- Seperator between fill types / speed
+				table.insert(thisTextLine, {false, false, true})
+
 				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
 				local thisPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
 
-				if idx == 16 then thisPerc = 100 - thisPerc
+				-- For some fill types, we want the color reversed (consumables)
+				if idx == 16 or idx == 41 then thisPerc = 100 - thisPerc
 				elseif idx > 72 and idx < 79 then thisPerc = 100 - thisPerc
 				elseif idx > 79 and idx < 84 then thisPerc = 100 - thisPerc
 				end
 
-				if thisPerc < 50     then self:renderColor("colorFillLow")
-				elseif thisPerc < 85 then self:renderColor("colorFillHalf")
-				else                      self:renderColor("colorFillFull")
+				table.insert(thisTextLine, {"colorFillType", thisFillType.title:lower() .. ":"})
+
+				if thisPerc < 50 then
+					table.insert(thisTextLine, {"colorFillLow", tostring(thisFill[1]), false})
+				elseif thisPerc < 85 then
+					table.insert(thisTextLine, {"colorFillHalf", tostring(thisFill[1]), false})
+				else
+					table.insert(thisTextLine, {"colorFillFull", tostring(thisFill[1]), false})
 				end
-
-				fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisFill[1])
-				self:renderColor("colorFillType")
-				fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisFillType.title:lower() .. ":")
-				fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
 			end
 
-			local speedString = txt[4]
-
-			if g_gameSettings:getValue('useMiles') then
-				speedString = speedString .. "mph"
+			if ( self.settings.displayMode % 2 ~= 0 ) then
+				for _, thisLine in ipairs(thisTextLine) do
+					if thisLine[3] then
+						fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
+					else
+						self:renderColor(thisLine[1])
+						fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisLine[2])
+					end
+				end
 			else
-				speedString = speedString .. "kph"
-			end
-
-			self:renderColor("colorSpeed")
-			fullTextSoFar = self:renderText(x, y, fullTextSoFar, speedString)
-			fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
-
-			if txt[1] == 0     then self:renderColor("colorNormal")
-			elseif txt[1] == 1 then self:renderColor("colorAI")
-			else                    self:renderColor("colorUser")
-			end
-
-			fullTextSoFar = self:renderText(x, y, fullTextSoFar, txt[3])
-
-			if txt[2] then
-				self:renderColor("colorAIMark")
-				fullTextSoFar = self:renderText(x, y, fullTextSoFar, self.settings.textHelper)
+				for i = #thisTextLine, 1, -1 do
+					if thisTextLine[i][3] then
+						fullTextSoFar = self:renderSep(x, y, fullTextSoFar)
+					else
+						self:renderColor(thisTextLine[i][1])
+						fullTextSoFar = self:renderText(x, y, fullTextSoFar, thisTextLine[i][2])
+					end
+				end
 			end
 
 			y = y - self.inspectText.size
@@ -352,6 +376,14 @@ function SimpleInspector:renderColor(name)
 end
 
 function SimpleInspector:renderText(x, y, fullTextSoFar, text)
+	local newX = x
+
+	if self.settings.displayMode % 2 == 0 then
+		newX = newX - getTextWidth(self.inspectText.size, fullTextSoFar)
+	else
+		newX = newX + getTextWidth(self.inspectText.size, fullTextSoFar)
+	end
+
 	renderText(x - getTextWidth(self.inspectText.size, fullTextSoFar), y, self.inspectText.size, text)
 	return text .. fullTextSoFar
 end

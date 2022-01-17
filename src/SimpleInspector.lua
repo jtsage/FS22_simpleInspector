@@ -36,6 +36,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		displayMode    = 2, -- 1: top left, 2: top right, 3: bot left, 4: bot right
 		debugMode      = false,
 		showAll        = false,
+		showPercent    = true,
 		maxDepth       = 5,
 		timerFrequency = 15,
 		textMarginX    = 15,
@@ -58,7 +59,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.debugTimerRuns = 0
 	self.inspectText    = {}
 	self.boxBGColor     = { 544, 20, 200, 44 }
-	self.uiFilename     = Utils.getFilename("resources/HUD.dds", modDirectory)
+	self.bgName         = 'dataS/menu/blank.png'
 
 	local modDesc       = loadXMLFile("modDesc", modDirectory .. "modDesc.xml");
 	self.version        = getXMLString(modDesc, "modDesc.version");
@@ -68,27 +69,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	return self
 end
 
-function SimpleInspector:onStartMission(mission)
-	-- Load the mod, make the box that info lives in.
-	print("~~" .. self.myName .." :: version " .. self.version .. " loaded.")
-	if not self.isClient then
-		return
-	end
-
-	if fileExists(self.confFile) then
-		self:readSettingsFile()
-	else
-		self:createSettingsFile()
-	end
-
-	if ( self.settings.debugMode ) then
-		print("~~" .. self.myName .." :: onStartMission")
-	end
-
-	self:createTextBox()
-end
-
-function SimpleInspector:getVehSpeed(vehicle)
+function SimpleInspector:getSpeed(vehicle)
 	-- Get the current speed of the vehicle
 	local speed = Utils.getNoNil(vehicle.lastSpeed, 0) * 3600
 	if g_gameSettings:getValue('useMiles') then
@@ -185,7 +166,7 @@ function SimpleInspector:updateVehicles()
 					if ( self.settings.showAll or isConned or isRunning or isOnAI) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
-						local speed     = self:getVehSpeed(thisVeh)
+						local speed     = self:getSpeed(thisVeh)
 						local fills     = {}
 						local status    = 0
 						local isAI      = false
@@ -274,6 +255,16 @@ function SimpleInspector:update(dt)
 				table.insert(thisTextLine, {"colorAIMark", self.settings.textHelper, false})
 			end
 
+			-- Vehicle speed
+			if g_gameSettings:getValue('useMiles') then
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
+			else
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "kph", false})
+			end
+
+			-- Seperator after speed
+			table.insert(thisTextLine, {false, false, true})
+
 			-- Vehicle name
 			if txt[1] == 0 then
 				table.insert(thisTextLine, {"colorNormal", txt[3], false})
@@ -283,22 +274,13 @@ function SimpleInspector:update(dt)
 				table.insert(thisTextLine, {"colorUser", txt[3], false})
 			end
 
-			-- Seperator after vehicle
-			table.insert(thisTextLine, {false, false, true})
-
-			-- Vehicle speed
-			if g_gameSettings:getValue('useMiles') then
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
-			else
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
-			end
-
 			for idx, thisFill in pairs(txt[5]) do
-				-- Seperator between fill types / speed
+				-- Seperator between fill types / vehicle
 				table.insert(thisTextLine, {false, false, true})
 
 				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
 				local thisPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
+				local fillColor = nil
 
 				-- For some fill types, we want the color reversed (consumables)
 				if idx == 16 or idx == 41 then thisPerc = 100 - thisPerc
@@ -308,12 +290,14 @@ function SimpleInspector:update(dt)
 
 				table.insert(thisTextLine, {"colorFillType", thisFillType.title:lower() .. ":"})
 
-				if thisPerc < 50 then
-					table.insert(thisTextLine, {"colorFillLow", tostring(thisFill[1]), false})
-				elseif thisPerc < 85 then
-					table.insert(thisTextLine, {"colorFillHalf", tostring(thisFill[1]), false})
-				else
-					table.insert(thisTextLine, {"colorFillFull", tostring(thisFill[1]), false})
+				if thisPerc < 50     then fillColor = "colorFillLow"
+				elseif thisPerc < 85 then fillColor = "colorFillHalf"
+				else                      fillColor = "colorFillFull"
+				end
+
+				table.insert(thisTextLine, {fillColor, tostring(thisFill[1]), false})
+				if self.settings.showPercent then
+					table.insert(thisTextLine, {fillColor, " (" .. tostring(thisPerc) ..  "%)", false})
 				end
 			end
 
@@ -363,7 +347,6 @@ function SimpleInspector:update(dt)
 end
 
 function SimpleInspector:renderColor(name)
-	print(tostring(self.isClient))
 	local settings    = self.settings
 	local colorString = Utils.getNoNil(settings[name], "1,1,1,1")
 
@@ -393,6 +376,25 @@ function SimpleInspector:renderSep(x, y, fullTextSoFar)
 	return self:renderText(x, y, fullTextSoFar, self.settings.textSep)
 end
 
+function SimpleInspector:onStartMission(mission)
+	-- Load the mod, make the box that info lives in.
+	print("~~" .. self.myName .." :: version " .. self.version .. " loaded.")
+	if not self.isClient then
+		return
+	end
+
+	if fileExists(self.confFile) then
+		self:readSettingsFile()
+	else
+		self:createSettingsFile()
+	end
+
+	if ( self.settings.debugMode ) then
+		print("~~" .. self.myName .." :: onStartMission")
+	end
+
+	self:createTextBox()
+end
 
 function SimpleInspector:createTextBox()
 	-- make the box we live in.
@@ -403,9 +405,10 @@ function SimpleInspector:createTextBox()
 	local baseX, baseY = self.gameInfoDisplay:getPosition()
 	self.marginWidth, self.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({ 8, 8 })
 
-	local boxOverlay = Overlay.new(self.uiFilename, 1, baseY - self.marginHeight, 1, 1)
+	local boxOverlay = Overlay.new(self.bgName, 1, baseY - self.marginHeight, 1, 1)
 	local boxElement = HUDElement.new(boxOverlay)
 	self.inspectBox = boxElement
+	
 	self.inspectBox:setUVs(GuiUtils.getUVs(self.boxBGColor))
 	self.inspectBox:setColor(unpack(SpeedMeterDisplay.COLOR.GEARS_BG))
 	self.inspectBox:setVisible(false)

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="63">
+    <title>
+        <en>SimpleInspector</en>
+        <de>SimpleInspector</de>
+    </title>
+    <description>
+        <de><![CDATA[SimpleInspector]]></de>
+        <en><![CDATA[SimpleInspector]]></en>
+    </description>
+    <author>JTSage</author>
+    <version>1.0.0.0</version>
+    <iconFilename>store.dds</iconFilename>
+    <multiplayer supported="true"/>
+    <extraSourceFiles>
+        <sourceFile filename="SimpleInspector.lua"/>
+    </extraSourceFiles>
+</modDesc>

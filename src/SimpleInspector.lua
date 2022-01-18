@@ -29,13 +29,14 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.gameInfoDisplay   = mission.hud.gameInfoDisplay
 	self.inputHelpDisplay  = mission.hud.inputHelp
 	self.speedMeterDisplay = mission.hud.speedMeter
+	self.ingameMap         = mission.hud.ingameMap
 
 	self.settingsDirectory = getUserProfileAppPath() .. "modSettings/"
 	self.confDirectory     = self.settingsDirectory .."FS22_SimpleInspector/"
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
-		displayMode    = 2, -- 1: top left, 2: top right, 3: bot left, 4: bot right
+		displayMode    = 2, -- 1: top left, 2: top right (default), 3: bot left, 4: bot right
 		debugMode      = false,
 		showAll        = false,
 		showPercent    = true,
@@ -51,9 +52,9 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		colorFillType  = "0.7, 0.7, 0.7, 1",
 		colorUser      = "0, 1, 0, 1",
 		colorAI        = "0, 0.77, 1, 1",
-		colorAIMark    = "0, .5, 1, 1",
+		colorAIMark    = "1, 0, 0.64, 1",
 		colorSep       = "1, 1, 1, 1",
-		colorSpeed     = "0, 0.5, 1, 1",
+		colorSpeed     = "1, 0.4, 0, 1",
 		textHelper     = "_AI_ ",
 		textSep        = " | "
 	}
@@ -202,7 +203,7 @@ function SimpleInspector:draw()
 
 	if self.inspectBox ~= nil then
 		local info_text = self.display_data
-		local overlayH, overlayW, dispTextH, dispTextW = 0, 0, 0, 0
+		local overlayH, dispTextH, dispTextW = 0, 0, 0
 
 		if #info_text == 0 then
 			-- we have no entries, hide the overlay and leave
@@ -231,20 +232,20 @@ function SimpleInspector:draw()
 			-- top right (subtract both margins)
 			dispTextX = dispTextX - self.marginWidth
 			dispTextY = dispTextY - self.marginHeight
+			overlayY  = overlayY - overlayH
 		elseif ( self.settings.displayMode == 3 ) then
 			-- bottom left (add x width, add Y height)
 			dispTextX = dispTextX + self.marginWidth
-			dispTextY = dispTextY + self.marginHeight + dispTextH
-			-- note: dispTextY needs translation (positive) for total height
+			dispTextY = dispTextY - self.marginHeight + overlayH
 		elseif ( self.settings.displayMode == 4 ) then
 			-- bottom right (subtract x width, add Y height)
 			dispTextX = dispTextX - self.marginWidth
-			dispTextY = dispTextY + self.marginHeight + dispTextH
-			-- note: dispTextY needs translation (positive) for total height
+			dispTextY = dispTextY - self.marginHeight + overlayH
 		else
 			-- top left (add X width, subtract Y height)
 			dispTextX = dispTextX + self.marginWidth
 			dispTextY = dispTextY - self.marginHeight
+			overlayY  = overlayY - overlayH
 		end
 
 		if ( self.settings.displayMode % 2 == 0 ) then
@@ -262,10 +263,6 @@ function SimpleInspector:draw()
 		self.inspectText.posX = dispTextX
 		self.inspectText.posY = dispTextY
 
-		--local x = self.inspectText.posX - self.inspectText.marginHeight
-		--local y = self.inspectText.posY - self.inspectText.marginHeight - deltaY
-		--local _w, _h = 0, self.inspectText.marginHeight * 2
-
 		for _, txt in pairs(info_text) do
 			-- Data structure for each vehicle is:
 			-- (new_data_table, {
@@ -276,7 +273,7 @@ function SimpleInspector:draw()
 			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
 			-- })
 
-			local thisTextLine = {}
+			local thisTextLine  = {}
 			local fullTextSoFar = ""
 
 			-- AI Tag, if needed
@@ -309,6 +306,7 @@ function SimpleInspector:draw()
 
 				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
 				local thisPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
+				local dispPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
 				local fillColor = nil
 
 				-- For some fill types, we want the color reversed (consumables)
@@ -326,7 +324,7 @@ function SimpleInspector:draw()
 
 				table.insert(thisTextLine, {fillColor, tostring(thisFill[1]), false})
 				if self.settings.showPercent then
-					table.insert(thisTextLine, {fillColor, " (" .. tostring(thisPerc) ..  "%)", false})
+					table.insert(thisTextLine, {fillColor, " (" .. tostring(dispPerc) ..  "%)", false})
 				end
 			end
 
@@ -350,27 +348,20 @@ function SimpleInspector:draw()
 				end
 			end
 
-			if ( self.settings.displayMode > 2 ) then
-				dispTextY = dispTextY + self.inspectText.size
-			else
-				dispTextY = dispTextY - self.inspectText.size
-			end
-			
+			dispTextY = dispTextY - self.inspectText.size
+
 			local tmpW = getTextWidth(self.inspectText.size, fullTextSoFar)
 
 			if tmpW > dispTextW then dispTextW = tmpW end
 		end
 
 		-- update overlay background
-		if ( self.settings.displayMode % 2 == 0 ) then
-			self.inspectBox.overlay:setPosition(dispTextX - dispTextW - self.inspectText.marginWidth, dispTextY - self.inspectText.marginHeight)
-			--self.inspectBox.overlay:setPosition(x - _w - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
+		if self.settings.displayMode % 2 == 0 then
+			self.inspectBox.overlay:setPosition(overlayX - ( dispTextW + ( 2 * self.inspectText.marginWidth ) ), overlayY)
 		else
-			self.inspectBox.overlay:setPosition(dispTextX - self.inspectText.marginWidth, dispTextY - self.inspectText.marginHeight)
-			--self.inspectBox.overlay:setPosition(x - self.inspectText.marginWidth, y - self.inspectText.marginHeight)
+			self.inspectBox.overlay:setPosition(overlayX, overlayY)
 		end
 
-		--self.inspectBox.overlay:setDimension(_w + self.inspectText.marginHeight + self.inspectText.marginWidth, _h)
 		self.inspectBox.overlay:setDimension(dispTextW + (self.inspectText.marginWidth * 2), overlayH)
 
 		-- reset text render to "defaults" to be kind
@@ -456,20 +447,28 @@ function SimpleInspector:findOrigin()
 		tmpX = 1
 		tmpY = tmpY - 0.012
 	elseif ( self.settings.displayMode == 3 ) then
-		-- bottom left display
+		-- Bottom left, correct origin.
+		tmpX = 0.01622
+		tmpY = 0 + self.ingameMap:getHeight() + 0.01622
+		if g_gameSettings:getValue("ingameMapState") > 1 then
+			tmpY = tmpY + 0.032
+		end
 	elseif ( self.settings.displayMode == 4 ) then
 		-- bottom right display
+		tmpX = 1
+		tmpY = 0.01622
+		tmpY = tmpY + self.speedMeterDisplay:getHeight() + 0.032
 	else
-		-- top left display (brute force method)
-		tmpX, tmpY = self.inputHelpDisplay:getPosition()
-		tmpX = 0.01622
+		-- top left display
+		tmpX = 0.014
+		tmpY = 0.945
 		if g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
-			tmpY = tmpY - 0.048
+			tmpY = tmpY - self.inputHelpDisplay:getHeight() - 0.012
 		end
 	end
 	if ( self.settings.debugMode ) then
-		if g_updateLoopIndex % self.settings.timerFrequency == 0 then
-			print("~~ " .. self.myName .. " : origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
+		if g_updateLoopIndex % 50 == 0 then
+			print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
 		end
 	end
 	return tmpX, tmpY

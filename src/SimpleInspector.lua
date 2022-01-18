@@ -8,6 +8,9 @@
 CHANGELOG
 	v1.0.0.0
 		- First version.  not compatible with EnhancedVehicle new damage/paint/fuel display (set to mode 1!)
+TODO
+	Fields
+
 ]]--
 SimpleInspector= {}
 
@@ -36,24 +39,34 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
-		displayMode    = 2, -- 1: top left, 2: top right (default), 3: bot left, 4: bot right
-		debugMode      = false,
-		showAll        = false,
-		showPercent    = true,
-		maxDepth       = 5,
-		timerFrequency = 15,
-		textMarginX    = 15,
-		textMarginY    = 10,
-		textSize       = 12,
-		colorNormal    = "1, 1, 1, 1",
-		colorFillType  = "0.7, 0.7, 0.7, 1",
-		colorUser      = "0, 0.77, 1, 1",
-		colorAI        = "1, 0.44, 0.64, 1",
-		colorAIMark    = "1, 0, 0.64, 1",
-		colorSep       = "1, 1, 1, 1",
-		colorSpeed     = "1, 0.4, 0, 1",
-		textHelper     = "_AI_ ",
-		textSep        = " | "
+		displayMode     = 2,                     -- 1: top left, 2: top right (default), 3: bot left, 4: bot right
+		debugMode       = false,
+		showAll         = false,
+		showFillPercent = true,
+		showFuel        = true,
+		showSpeed       = true,
+		showFills       = true,
+		showField       = true,
+		maxDepth        = 5,
+		timerFrequency  = 15,
+		textMarginX     = 15,
+		textMarginY     = 10,
+		textSize        = 12,
+		colorNormal     = "1, 1, 1, 1",
+		colorFillType   = "0.7, 0.7, 0.7, 1",
+		colorUser       = "0, 0.77, 1, 1",
+		colorAI         = "1, 0.44, 0.64, 1",
+		colorAIMark     = "1, 0, 0.64, 1",
+		colorSep        = "1, 1, 1, 1",
+		colorSpeed      = "1, 0.4, 0, 1",
+		textHelper      = "_AI_ ",
+		colorDiesel     = "0.43, 0.31, 0, 1",
+		textDiesel      = "D:",
+		colorMethane    = "1, 0.93, 0, 1",
+		textMethane     = "M:",
+		colorElectric   = "0.03, 0.57, 0.81, 1",
+		textElectric    = "E:",
+		textSep         = " | "
 	}
 
 	self.debugTimerRuns = 0
@@ -177,6 +190,35 @@ function SimpleInspector:getIsTypeInverted(fillTypeID)
 	end
 end
 
+function SimpleInspector:getFuel(vehicle)
+	local fuelTypeList = {
+		{
+			FillType.DIESEL,
+			"colorDiesel",
+			self.settings.textDiesel
+		}, {
+			FillType.ELECTRICCHARGE,
+			"colorElectric",
+			self.settings.textElectric
+		}, {
+			FillType.METHANE, 
+
+			"colorMethane",
+			self.settings.textMethane
+		}
+	}
+	for _, fuelType in pairs(fuelTypeList) do
+		local fillUnitIndex = vehicle:getConsumerFillUnitIndex(fuelType[1])
+		if ( fillUnitIndex ~= nil ) then
+			local fuelLevel = vehicle:getFillUnitFillLevel(fillUnitIndex)
+			local capacity  = vehicle:getFillUnitCapacity(fillUnitIndex)
+			local percentage = math.floor((fuelLevel / capacity) * 100)
+			return { fuelType[2], fuelType[3], percentage }
+		end
+	end
+	return { false } -- unknown fuel type, should not be possible.
+end
+
 function SimpleInspector:getSpeed(vehicle)
 	-- Get the current speed of the vehicle
 	local speed = Utils.getNoNil(vehicle.lastSpeed, 0) * 3600
@@ -284,6 +326,7 @@ function SimpleInspector:updateVehicles()
 						local fills     = {}
 						local status    = 0
 						local isAI      = false
+						local fuelLevel = self:getFuel(thisVeh)
 
 						if isOnAI then
 							status = 1
@@ -299,7 +342,8 @@ function SimpleInspector:updateVehicles()
 							isAI,
 							thisBrand.title .. " " .. thisName,
 							tostring(speed),
-							fills
+							fuelLevel,
+							fills,
 						})
 					end
 				end
@@ -311,7 +355,6 @@ function SimpleInspector:updateVehicles()
 end
 
 function SimpleInspector:draw()
-
 	if self.inspectBox ~= nil then
 		local info_text = self.display_data
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
@@ -381,21 +424,33 @@ function SimpleInspector:draw()
 			-- 	isAI, (true / false - if status is 1 & 2)
 			-- 	thisBrand.title .. " " .. thisName,
 			-- 	tostring(speed), (in the users units)
+			--  fuel (fuel table)
 			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
 			-- })
 
 			local thisTextLine  = {}
 			local fullTextSoFar = ""
 
-			-- Vehicle speed
-			if g_gameSettings:getValue('useMiles') then
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
-			else
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+			if self.settings.showSpeed then
+				-- Vehicle speed
+				if g_gameSettings:getValue('useMiles') then
+					table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
+				else
+					table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+				end
+
+				-- Seperator after speed
+				table.insert(thisTextLine, {false, false, false})
 			end
 
-			-- Seperator after speed
-			table.insert(thisTextLine, {false, false, false})
+			if self.settings.showFuel and txt[5][1] ~= false then
+				-- Vehicle fuel color[1], text[2], percentage[3]
+				table.insert(thisTextLine, { txt[5][1], txt[5][2], false})
+				table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
+
+				-- Seperator after speed
+				table.insert(thisTextLine, {false, false, false})
+			end
 
 			-- AI Tag, if needed
 			if txt[2] then
@@ -411,20 +466,22 @@ function SimpleInspector:draw()
 				table.insert(thisTextLine, {"colorUser", txt[3], false})
 			end
 
-			for idx, thisFill in pairs(txt[5]) do
-				-- Seperator between fill types / vehicle
-				table.insert(thisTextLine, {false, false, false})
+			if self.settings.showFills then
+				for idx, thisFill in pairs(txt[6]) do
+					-- Seperator between fill types / vehicle
+					table.insert(thisTextLine, {false, false, false})
 
-				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
-				local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
+					local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
+					local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
 
-				local fillColor = self:makeFillColor(dispPerc, thisFill[3])
+					local fillColor = self:makeFillColor(dispPerc, thisFill[3])
 
-				table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
+					table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
 
-				table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
-				if self.settings.showPercent then
-					table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
+					table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
+					if self.settings.showFillPercent then
+						table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
+					end
 				end
 			end
 
@@ -612,21 +669,21 @@ function SimpleInspector:createTextBox()
 	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings.textSize)
 end
 
-function SimpleInspector:shouldNotBeShown()
-	-- hide when menu open or paused or gui off
-	if g_currentMission.paused or
-		g_gui:getIsGuiVisible() or
-		g_currentMission.inGameMenu.paused or
-		g_currentMission.inGameMenu.isOpen or
-		g_currentMission.physicsPaused or
-		not g_currentMission.hud.isVisible then
+-- function SimpleInspector:shouldNotBeShown()
+-- 	-- hide when menu open or paused or gui off
+-- 	if g_currentMission.paused or
+-- 		g_gui:getIsGuiVisible() or
+-- 		g_currentMission.inGameMenu.paused or
+-- 		g_currentMission.inGameMenu.isOpen or
+-- 		g_currentMission.physicsPaused or
+-- 		not g_currentMission.hud.isVisible then
 
-			if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.manualPaused then return false end
+-- 			if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.manualPaused then return false end
 
-			return true
-		end
-		return false
-end
+-- 			return true
+-- 		end
+-- 		return false
+-- end
 
 function SimpleInspector:delete()
 	-- clean up on remove

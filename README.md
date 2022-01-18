@@ -1,4 +1,4 @@
-# FS22_simpleInspector
+# FS22_SimpleInspector
 Spiritual ripoff of VehicleInspector - pared down to what I need/want
 
 ## Features

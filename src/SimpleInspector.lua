@@ -46,12 +46,9 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		textMarginY    = 10,
 		textSize       = 12,
 		colorNormal    = "1, 1, 1, 1",
-		colorFillFull  = "1, 0, 0, 1",
-		colorFillHalf  = "1, 1, 0, 1",
-		colorFillLow   = "0, 1, 0, 1",
 		colorFillType  = "0.7, 0.7, 0.7, 1",
-		colorUser      = "0, 1, 0, 1",
-		colorAI        = "0, 0.77, 1, 1",
+		colorUser      = "0, 0.77, 1, 1",
+		colorAI        = "1, 0.44, 0.64, 1",
 		colorAIMark    = "1, 0, 0.64, 1",
 		colorSep       = "1, 1, 1, 1",
 		colorSpeed     = "1, 0.4, 0, 1",
@@ -102,8 +99,76 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		73, -- wet fert
 		79, -- lime
 	}
+	self.fill_color_CB = {
+		{ 1.00, 0.76, 0.04, 1 },
+		{ 0.98, 0.75, 0.15, 1 },
+		{ 0.96, 0.73, 0.20, 1 },
+		{ 0.94, 0.72, 0.25, 1 },
+		{ 0.92, 0.71, 0.29, 1 },
+		{ 0.90, 0.69, 0.33, 1 },
+		{ 0.87, 0.68, 0.37, 1 },
+		{ 0.85, 0.67, 0.40, 1 },
+		{ 0.83, 0.66, 0.43, 1 },
+		{ 0.81, 0.65, 0.46, 1 },
+		{ 0.78, 0.64, 0.49, 1 },
+		{ 0.76, 0.62, 0.52, 1 },
+		{ 0.73, 0.61, 0.55, 1 },
+		{ 0.70, 0.60, 0.57, 1 },
+		{ 0.67, 0.59, 0.60, 1 },
+		{ 0.64, 0.58, 0.63, 1 },
+		{ 0.61, 0.56, 0.65, 1 },
+		{ 0.57, 0.55, 0.68, 1 },
+		{ 0.53, 0.54, 0.71, 1 },
+		{ 0.49, 0.53, 0.73, 1 },
+		{ 0.45, 0.52, 0.76, 1 },
+		{ 0.39, 0.51, 0.78, 1 },
+		{ 0.33, 0.50, 0.81, 1 },
+		{ 0.24, 0.49, 0.84, 1 },
+		{ 0.05, 0.48, 0.86, 1 }
+	}
+	self.fill_color = {
+		{ 1.00, 0.00, 0.00, 1 },
+		{ 1.00, 0.15, 0.00, 1 },
+		{ 1.00, 0.22, 0.00, 1 },
+		{ 0.99, 0.29, 0.00, 1 },
+		{ 0.98, 0.34, 0.00, 1 },
+		{ 0.98, 0.38, 0.00, 1 },
+		{ 0.96, 0.43, 0.00, 1 },
+		{ 0.95, 0.47, 0.00, 1 },
+		{ 0.93, 0.51, 0.00, 1 },
+		{ 0.91, 0.55, 0.00, 1 },
+		{ 0.89, 0.58, 0.00, 1 },
+		{ 0.87, 0.62, 0.00, 1 },
+		{ 0.84, 0.65, 0.00, 1 },
+		{ 0.81, 0.69, 0.00, 1 },
+		{ 0.78, 0.72, 0.00, 1 },
+		{ 0.75, 0.75, 0.00, 1 },
+		{ 0.71, 0.78, 0.00, 1 },
+		{ 0.67, 0.81, 0.00, 1 },
+		{ 0.63, 0.84, 0.00, 1 },
+		{ 0.58, 0.87, 0.00, 1 },
+		{ 0.53, 0.89, 0.00, 1 },
+		{ 0.46, 0.92, 0.00, 1 },
+		{ 0.38, 0.95, 0.00, 1 },
+		{ 0.27, 0.98, 0.00, 1 },
+		{ 0.00, 1.00, 0.00, 1 }
+	}
 
 	return self
+end
+
+function SimpleInspector:makeFillColor(percentage, flip)
+	local colorIndex = math.floor(percentage/4) + 1
+
+	if percentage == 100 then colorIndex = 25 end
+
+	if not flip then colorIndex = 26 - colorIndex end
+
+	if g_gameSettings:getValue('useColorblindMode') then
+		return self.fill_color_CB[colorIndex]
+	end
+
+	return self.fill_color[colorIndex]
 end
 
 function SimpleInspector:getIsTypeInverted(fillTypeID)
@@ -322,20 +387,20 @@ function SimpleInspector:draw()
 			local thisTextLine  = {}
 			local fullTextSoFar = ""
 
+			-- Vehicle speed
+			if g_gameSettings:getValue('useMiles') then
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
+			else
+				table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+			end
+
+			-- Seperator after speed
+			table.insert(thisTextLine, {false, false, false})
+
 			-- AI Tag, if needed
 			if txt[2] then
 				table.insert(thisTextLine, {"colorAIMark", self.settings.textHelper, false})
 			end
-
-			-- Vehicle speed
-			if g_gameSettings:getValue('useMiles') then
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "mph", false})
-			else
-				table.insert(thisTextLine, {"colorSpeed", txt[4] .. "kph", false})
-			end
-
-			-- Seperator after speed
-			table.insert(thisTextLine, {false, false, true})
 
 			-- Vehicle name
 			if txt[1] == 0 then
@@ -348,33 +413,28 @@ function SimpleInspector:draw()
 
 			for idx, thisFill in pairs(txt[5]) do
 				-- Seperator between fill types / vehicle
-				table.insert(thisTextLine, {false, false, true})
+				table.insert(thisTextLine, {false, false, false})
 
 				local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
-				local thisPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
-				local dispPerc = math.ceil((thisFill[1] / thisFill[2]) * 100 )
-				local fillColor = nil
+				local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
 
-				-- For some fill types, we want the color reversed (consumables)
-				if thisFill[3] then thisPerc = 100 - thisPerc end
+				local fillColor = self:makeFillColor(dispPerc, thisFill[3])
 
-				table.insert(thisTextLine, {"colorFillType", thisFillType.title:lower() .. ":"})
+				table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
 
-				if thisPerc < 50     then fillColor = "colorFillLow"
-				elseif thisPerc < 85 then fillColor = "colorFillHalf"
-				else                      fillColor = "colorFillFull"
-				end
-
-				table.insert(thisTextLine, {fillColor, tostring(thisFill[1]), false})
+				table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
 				if self.settings.showPercent then
-					table.insert(thisTextLine, {fillColor, " (" .. tostring(dispPerc) ..  "%)", false})
+					table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
 				end
 			end
 
 			if ( self.settings.displayMode % 2 ~= 0 ) then
 				for _, thisLine in ipairs(thisTextLine) do
-					if thisLine[3] then
+					if thisLine[1] == false then
 						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
+					elseif thisLine[1] == "rawFillColor" then
+						setTextColor(unpack(thisLine[3]))
+						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisLine[2])
 					else
 						self:renderColor(thisLine[1])
 						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisLine[2])
@@ -382,8 +442,10 @@ function SimpleInspector:draw()
 				end
 			else
 				for i = #thisTextLine, 1, -1 do
-					if thisTextLine[i][3] then
+					if thisTextLine[i][1] == false then
 						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
+					elseif thisTextLine[i][1] == "rawFillColor" then
+						setTextColor(unpack(thisTextLine[i][3]))
 					else
 						self:renderColor(thisTextLine[i][1])
 						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])

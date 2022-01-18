@@ -1,4 +1,8 @@
 # FS22_SimpleInspector
+<p align="left">
+  <img src="https://github.com/jtsage/FS22_simpleInspector/raw/main/modIcon.png">
+</p>
+
 Spiritual ripoff of VehicleInspector - pared down to what I need/want
 
 ## Features

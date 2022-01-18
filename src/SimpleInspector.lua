@@ -69,7 +69,47 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 
 	self.display_data = { }
 
+	self.fill_invert_all = {
+		fertilizingcultivatorroller    = true,
+		manuretrailer                  = true,
+		manurebarrel                   = true,
+		selfpropelledmanurebarrel      = true,
+		watertrailer                   = true,
+		weederfertilizing              = true,
+		saltspreader                   = true,
+		fertilizingcultivator          = true,
+		weedersowingmachine            = true,
+		fertilizingsowingmachine       = true,
+		treeplanter                    = true,
+		weederfertilizingsowingmachine = true,
+		spreader                       = true,
+		sprayer                        = true,
+		sowingmachine                  = true,
+		manurespreader                 = true,
+		cultivatingsowingmachine       = true,
+		strawblower                    = true,
+		fueltrailer                    = true,
+		seedingroller                  = true,
+		selfpropelledsprayer           = true,
+	}
+	self.fill_invert_some = {
+		tippingaugerwagon = true,
+		augerwagon        = true,
+	}
+	self.fill_invert_types = {
+		11, -- seeds
+		72, -- dry fert
+		73, -- wet fert
+		79, -- lime
+	}
+
 	return self
+end
+
+function SimpleInspector:getIsTypeInverted(fillTypeID)
+	for i = 1, #self.fill_invert_types do
+		if self.fill_invert_types[i] == fillTypeID then return true end
+	end
 end
 
 function SimpleInspector:getSpeed(vehicle)
@@ -83,12 +123,16 @@ end
 
 function SimpleInspector:getSingleFill(vehicle, theseFills)
 	-- This is the single run at the fill type, for the current vehicle only.
-	-- Borrowed heavily from older versions of similar plugins, ignores unknonw fill types
+	-- Borrowed heavily from older versions of similar plugins, ignores unknown fill types
+
 	local spec_fillUnit = vehicle.spec_fillUnit
 
 	if spec_fillUnit ~= nil and spec_fillUnit.fillUnits ~= nil then
+		local vehicleTypeName = Utils.getNoNil(vehicle.typeName, "unknown"):lower()
+		local isInverted      = self.fill_invert_all[vehicleTypeName] ~= nil
+		local checkInvert     = self.fill_invert_some[vehicleTypeName] ~= nil
+
 		for i = 1, #spec_fillUnit.fillUnits do
-			local goodFillType = false
 			local fillUnit = spec_fillUnit.fillUnits[i]
 			if fillUnit.capacity > 0 and fillUnit.showOnHud then
 				local fillType = fillUnit.fillType;
@@ -123,11 +167,13 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 				end
 				
 				if fillLevel > 0 then
+					if checkInvert then isInverted =  self:getIsTypeInverted(fillType) end
+
 					if ( theseFills[fillType] ~= nil ) then
 						theseFills[fillType][1] = theseFills[fillType][1] + fillLevel
 						theseFills[fillType][2] = theseFills[fillType][2] + capacity
 					else
-						theseFills[fillType] = { fillLevel, capacity }
+						theseFills[fillType] = { fillLevel, capacity, isInverted }
 					end
 				end
 			end
@@ -310,10 +356,7 @@ function SimpleInspector:draw()
 				local fillColor = nil
 
 				-- For some fill types, we want the color reversed (consumables)
-				if idx == 16 or idx == 41 then thisPerc = 100 - thisPerc
-				elseif idx > 72 and idx < 79 then thisPerc = 100 - thisPerc
-				elseif idx > 79 and idx < 84 then thisPerc = 100 - thisPerc
-				end
+				if thisFill[3] then thisPerc = 100 - thisPerc end
 
 				table.insert(thisTextLine, {"colorFillType", thisFillType.title:lower() .. ":"})
 

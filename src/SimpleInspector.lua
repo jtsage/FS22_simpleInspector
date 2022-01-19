@@ -73,6 +73,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		textMethane     = "M:",
 		textElectric    = "E:",
 		textField       = "F-",
+		textFieldNoNum  = "-F-",
 		textSep         = " | "
 	}
 
@@ -533,7 +534,11 @@ function SimpleInspector:draw()
 
 			-- Field Mark, if needed / wanted
 			if self.settings.showField and txt[7][1] == true then
-				table.insert(thisTextLine, {"colorField", self.settings.textField .. txt[7][2] .. " ", false})
+				if txt[7][2] == 0 then
+					table.insert(thisTextLine, {"colorField", self.settings.textFieldNoNum .. " ", false})
+				else
+					table.insert(thisTextLine, {"colorField", self.settings.textField .. txt[7][2] .. " ", false})
+				end
 			end
 
 			-- AI Tag, if needed

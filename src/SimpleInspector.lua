@@ -3,14 +3,12 @@
 --
 -- Author: JTSage
 -- source: https://github.com/jtsage/FS22_Simple_Inspector
+-- credits: HappyLooser/VehicleInspector for the isOnField logic, and some pointers on where to find info
 
 --[[
 CHANGELOG
 	v1.0.0.0
 		- First version.  not compatible with EnhancedVehicle new damage/paint/fuel display (set to mode 1!)
-TODO
-	Fields
-
 ]]--
 SimpleInspector= {}
 
@@ -39,33 +37,42 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
-		displayMode     = 2,                     -- 1: top left, 2: top right (default), 3: bot left, 4: bot right
+		displayMode     = 2,                     -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
+		displayMode5X   = 0.2,
+		displayMode5Y   = 0.2,
 		debugMode       = false,
+
 		showAll         = false,
 		showFillPercent = true,
 		showFuel        = true,
 		showSpeed       = true,
 		showFills       = true,
 		showField       = true,
+
 		maxDepth        = 5,
 		timerFrequency  = 15,
 		textMarginX     = 15,
 		textMarginY     = 10,
 		textSize        = 12,
-		colorNormal     = "1, 1, 1, 1",
-		colorFillType   = "0.7, 0.7, 0.7, 1",
-		colorUser       = "0, 0.77, 1, 1",
-		colorAI         = "1, 0.44, 0.64, 1",
-		colorAIMark     = "1, 0, 0.64, 1",
-		colorSep        = "1, 1, 1, 1",
-		colorSpeed      = "1, 0.4, 0, 1",
+
+		colorNormal     = "1.000, 1.000, 1.000, 1",
+		colorFillType   = "0.700, 0.700, 0.700, 1",
+		colorUser       = "0.000, 0.777, 1.000, 1",
+		colorAI         = "0.956, 0.462, 0.644, 1",
+		colorRunning    = "0.871, 0.956, 0.423, 1",
+		colorAIMark     = "1.000, 0.082, 0.314, 1",
+		colorSep        = "1.000, 1.000, 1.000, 1",
+		colorSpeed      = "1.000, 0.400, 0.000, 1",
+		colorDiesel     = "0.434, 0.314, 0.000, 1",
+		colorMethane    = "1.000, 0.930, 0.000, 1",
+		colorElectric   = "0.031, 0.578, 0.314, 1",
+		colorField      = "0.423, 0.956, 0.624, 1",
+
 		textHelper      = "_AI_ ",
-		colorDiesel     = "0.43, 0.31, 0, 1",
 		textDiesel      = "D:",
-		colorMethane    = "1, 0.93, 0, 1",
 		textMethane     = "M:",
-		colorElectric   = "0.03, 0.57, 0.81, 1",
 		textElectric    = "E:",
+		textField       = "F-",
 		textSep         = " | "
 	}
 
@@ -188,6 +195,61 @@ function SimpleInspector:getIsTypeInverted(fillTypeID)
 	for i = 1, #self.fill_invert_types do
 		if self.fill_invert_types[i] == fillTypeID then return true end
 	end
+end
+
+function SimpleInspector:getIsOnField(vehicle)
+	local fieldNumber = 0
+	local isField     = false
+	local wx, wy, wz  = 0, 0, 0
+
+	local function getIsOnField()
+		if vehicle.components == nil then return false end
+
+		for _, component in pairs(vehicle.components) do
+			wx, wy, wz = localToWorld(component.node, getCenterOfMass(component.node))
+			local h = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, wy, wz)
+			if wy < h - 1 then
+				break
+			end
+			local isOnField, _ = FSDensityMapUtil.getFieldDataAtWorldPosition(wx, wy, wz)
+			if isOnField then
+				isField = true
+				return true
+			end
+		end
+		return false
+	end
+	if getIsOnField() then
+		local farmlandId = g_farmlandManager:getFarmlandIdAtWorldPosition(wx, wz)
+		if farmlandId ~= nil then
+
+			local foundField = false
+
+			for f=1, #g_fieldManager.fields do
+
+				if foundField then break end
+
+				local field = g_fieldManager.fields[f]
+
+				if field ~= nil and field.farmland ~= nil and field.farmland.id == farmlandId then
+					local fieldId = field.fieldId
+
+					for a=1, #field.setFieldStatusPartitions do --field.getFieldStatusPartitions
+						local b                    = field.setFieldStatusPartitions[a]
+						local x, z, wX, wZ, hX, hZ = b.x0, b.z0, b.widthX, b.widthZ, b.heightX, b.heightZ
+						local distanceMax          = math.max(wX,wZ,hX,hZ)
+						local distance             = MathUtil.vector2Length(wx-x,wz-z);
+						if distance <= distanceMax then
+							fieldNumber = fieldId
+							foundField  = true
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+	return { isField, fieldNumber }
 end
 
 function SimpleInspector:getFuel(vehicle)
@@ -327,14 +389,28 @@ function SimpleInspector:updateVehicles()
 						local status    = 0
 						local isAI      = false
 						local fuelLevel = self:getFuel(thisVeh)
+						local isOnField = {false, false}
 
+						if self.settings.showField then
+							-- This may be compute heavy, only do it when wanted.
+							isOnField = self:getIsOnField(thisVeh)
+						end
+
+						if self.settings.showAll and isRunning then
+							-- If we show all, use "colorRunning", otherwise just the normal one
+							-- AI and user control take precedence, in that order
+							status = 3
+						end
 						if isOnAI then
+							-- second highest precendence
 							status = 1
 							isAI = true
 						end
-						if thisVeh:getIsControlled() then
+						if isConned then
+							-- highest precendence
 							status = 2
 						end
+						
 
 						self:getAllFills(thisVeh, fills, 0)
 						table.insert(new_data_table, {
@@ -344,6 +420,7 @@ function SimpleInspector:updateVehicles()
 							tostring(speed),
 							fuelLevel,
 							fills,
+							isOnField
 						})
 					end
 				end
@@ -410,7 +487,9 @@ function SimpleInspector:draw()
 
 		if g_currentMission.hud.sideNotifications ~= nil and self.settings.displayMode == 2 then
 			if #g_currentMission.hud.sideNotifications.notificationQueue > 0 then
-				dispTextY = dispTextY - g_currentMission.hud.sideNotifications:getHeight()
+				local deltaY = g_currentMission.hud.sideNotifications:getHeight()
+				dispTextY = dispTextY - deltaY
+				overlayY  = overlayY - deltaY
 			end
 		end
 
@@ -452,6 +531,11 @@ function SimpleInspector:draw()
 				table.insert(thisTextLine, {false, false, false})
 			end
 
+			-- Field Mark, if needed / wanted
+			if self.settings.showField and txt[7][1] == true then
+				table.insert(thisTextLine, {"colorField", self.settings.textField .. txt[7][2] .. " ", false})
+			end
+
 			-- AI Tag, if needed
 			if txt[2] then
 				table.insert(thisTextLine, {"colorAIMark", self.settings.textHelper, false})
@@ -462,6 +546,8 @@ function SimpleInspector:draw()
 				table.insert(thisTextLine, {"colorNormal", txt[3], false})
 			elseif txt[1] == 1 then
 				table.insert(thisTextLine, {"colorAI", txt[3], false})
+			elseif txt[1] == 3 then
+				table.insert(thisTextLine, {"colorRunning", txt[3], false})
 			else 
 				table.insert(thisTextLine, {"colorUser", txt[3], false})
 			end
@@ -619,7 +705,15 @@ function SimpleInspector:findOrigin()
 		-- bottom right display
 		tmpX = 1
 		tmpY = 0.01622
-		tmpY = tmpY + self.speedMeterDisplay:getHeight() + 0.032
+		if g_currentMission.inGameMenu.hud.speedMeter.overlay.visible then
+			tmpY = tmpY + self.speedMeterDisplay:getHeight() + 0.032
+			if g_modIsLoaded["FS22_EnhancedVehicle"] then
+				tmpY = tmpY + 0.03
+			end
+		end
+	elseif ( self.settings.displayMode == 5 ) then
+		tmpX = self.settings.displayMode5X
+		tmpY = self.settings.displayMode5Y
 	else
 		-- top left display
 		tmpX = 0.014
@@ -630,6 +724,7 @@ function SimpleInspector:findOrigin()
 	end
 	if ( self.settings.debugMode ) then
 		if g_updateLoopIndex % 50 == 0 then
+			
 			print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
 		end
 	end
@@ -669,22 +764,6 @@ function SimpleInspector:createTextBox()
 	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings.textSize)
 end
 
--- function SimpleInspector:shouldNotBeShown()
--- 	-- hide when menu open or paused or gui off
--- 	if g_currentMission.paused or
--- 		g_gui:getIsGuiVisible() or
--- 		g_currentMission.inGameMenu.paused or
--- 		g_currentMission.inGameMenu.isOpen or
--- 		g_currentMission.physicsPaused or
--- 		not g_currentMission.hud.isVisible then
-
--- 			if g_currentMission.missionDynamicInfo.isMultiplayer and g_currentMission.manualPaused then return false end
-
--- 			return true
--- 		end
--- 		return false
--- end
-
 function SimpleInspector:delete()
 	-- clean up on remove
 	if self.inspectBox ~= nil then
@@ -713,7 +792,11 @@ function SimpleInspector:createSettingsFile()
 		if     type(defaults[idx]) == "boolean" then
 			setXMLBool(xml, groupNameTag .. "#boolean", defaults[idx])
 		elseif type(defaults[idx]) == "number" then
-			setXMLInt(xml, groupNameTag .. "#int", defaults[idx])
+			if ( defaults[idx] % 1 == 0 ) then
+				setXMLInt(xml, groupNameTag .. "#int", defaults[idx])
+			else
+				setXMLFloat(xml, groupNameTag .. "#float", defaults[idx])
+			end
 		else
 			setXMLString(xml, groupNameTag .. "#string", defaults[idx])
 		end
@@ -742,7 +825,11 @@ function SimpleInspector:readSettingsFile()
 		if     type(value) == "boolean" then
 			settings[idx] = Utils.getNoNil(getXMLBool(xml, groupNameTag .. "#boolean"), value)
 		elseif type(value) == "number" then
-			settings[idx] = Utils.getNoNil(getXMLInt(xml, groupNameTag .. "#int"), value)
+			if value % 1 == 0 then
+				settings[idx] = Utils.getNoNil(getXMLInt(xml, groupNameTag .. "#int"), value)
+			else
+				settings[idx] = Utils.getNoNil(getXMLFloat(xml, groupNameTag .. "#float"), value)
+			end
 		else
 			settings[idx] = Utils.getNoNil(getXMLString(xml, groupNameTag .. "#string"), value)
 		end

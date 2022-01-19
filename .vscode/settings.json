@@ -41,6 +41,16 @@
 		"setXMLInt",
 		"getUserProfileAppPath",
 		"g_gui",
-		"g_simpleInspector"
+		"g_simpleInspector",
+		"localToWorld",
+		"getCenterOfMass",
+		"getTerrainHeightAtWorldPos",
+		"FSDensityMapUtil",
+		"g_farmlandManager",
+		"g_fieldManager",
+		"MathUtil",
+		"setXMLFloat",
+		"g_modIsLoaded",
+		"getXMLFloat"
 	]
 }

@@ -53,12 +53,12 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 
 ### text
 
-* __textDiesel__ - text for diesel fuel, default="D:"
-* __textElectric__ - text for electric fuel, default="E:"
-* __textField__ - text for on-field indicator, default="F-"
-* __textHelper__ - text for AI marker, default="_AI_ "
-* __textMethane__ - text for methane fuel, default="M:"
-* __textSep__ - text for separators, default=" | "
+* __textDiesel__ - text for diesel fuel, default "D:"
+* __textElectric__ - text for electric fuel, default "E:"
+* __textField__ - text for on-field indicator, default "F-"
+* __textHelper__ - text for AI marker, default "_AI_ "
+* __textMethane__ - text for methane fuel, default "M:"
+* __textSep__ - text for separators, default " | "
 
 * __textMarginX__ - text margin height, default "15"
 * __textMarginY__ - text margin width, default "10"

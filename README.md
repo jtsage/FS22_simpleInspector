@@ -59,7 +59,6 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 * __textHelper__ - text for AI marker, default "_AI_ "
 * __textMethane__ - text for methane fuel, default "M:"
 * __textSep__ - text for separators, default " | "
-
 * __textMarginX__ - text margin height, default "15"
 * __textMarginY__ - text margin width, default "10"
 * __textSize__ - text size, default "12"

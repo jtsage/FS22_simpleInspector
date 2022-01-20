@@ -48,6 +48,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		showSpeed       = true,
 		showFills       = true,
 		showField       = true,
+		showFieldNum    = true,
 
 		maxDepth        = 5,
 		timerFrequency  = 15,
@@ -224,6 +225,11 @@ function SimpleInspector:getIsOnField(vehicle)
 		return false
 	end
 	if getIsOnField() then
+		if ( not self.settings.showFieldNum ) then
+			-- short cut field number detection if we won't display it anyways.
+			return { isField, 0 }
+		end
+
 		local farmlandId = g_farmlandManager:getFarmlandIdAtWorldPosition(wx, wz)
 		if farmlandId ~= nil then
 
@@ -238,9 +244,12 @@ function SimpleInspector:getIsOnField(vehicle)
 				if field ~= nil and field.farmland ~= nil and field.farmland.id == farmlandId then
 					local fieldId = field.fieldId
 
-					fieldNumber = fieldId -- set this as a "fall back"
+					-- set this as a "fall back" if we don't get a "real" field number below
+					-- this is likely to happen on any enlarged fields, and at the borders of a lot
+					-- of the base game maps.
+					fieldNumber = fieldId
 
-					for a=1, #field.setFieldStatusPartitions do --field.getFieldStatusPartitions
+					for a=1, #field.setFieldStatusPartitions do
 						local b                    = field.setFieldStatusPartitions[a]
 						local x, z, wX, wZ, hX, hZ = b.x0, b.z0, b.widthX, b.widthZ, b.heightX, b.heightZ
 						local distanceMax          = math.max(wX,wZ,hX,hZ)

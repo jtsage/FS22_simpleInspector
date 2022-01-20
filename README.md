@@ -29,6 +29,7 @@ All options are set via a xml file in modSettings - you can change colors, mode,
 
 * __showAll__ - always show all vehicles (default no)
 * __showField__ - show on-field status (default yes)
+* __showFieldNum__ - show field number when on-field (default yes - turn off for maps like NML)
 * __showFillPercent__ - show fill level percentage (default yes)
 * __showFills__ - show fill levels (default yes)
 * __showFuel__ - show fuel levels (default yes)

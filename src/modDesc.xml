@@ -6,11 +6,11 @@
     </title>
     <description>
         <en><![CDATA[SimpleInspector shows a HUD overlay with all of the currently running vehicles
-(optionally all vehicles), their speed, fill levels, and if they are occupied by a user
-or a helper]]></en>
-        <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell laufenden Fahrzeugen
-(optional alle Fahrzeuge), deren Geschwindigkeit, Füllstände und ob sie von einem Nutzer besetzt sind
-oder ein Helfer]]></de>
+(optionally all vehicles), their speed, fill levels, fuel level, on field status, and if they are
+occupied by a user or a helper]]></en>
+        <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
+(optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
+sie von einem Benutzer oder einem Helfer besetzt sind]]></de>
     </description>
     <author>JTSage</author>
     <version>1.0.0.0</version>

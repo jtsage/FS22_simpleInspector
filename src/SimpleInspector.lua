@@ -208,10 +208,13 @@ function SimpleInspector:getIsOnField(vehicle)
 
 		for _, component in pairs(vehicle.components) do
 			wx, wy, wz = localToWorld(component.node, getCenterOfMass(component.node))
+
 			local h = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, wy, wz)
-			if wy < h - 1 then
+
+			if h-1 > wy then -- 1m threshold since ground tools are working slightly under the ground
 				break
 			end
+			
 			local isOnField, _ = FSDensityMapUtil.getFieldDataAtWorldPosition(wx, wy, wz)
 			if isOnField then
 				isField = true
@@ -234,6 +237,8 @@ function SimpleInspector:getIsOnField(vehicle)
 
 				if field ~= nil and field.farmland ~= nil and field.farmland.id == farmlandId then
 					local fieldId = field.fieldId
+
+					fieldNumber = fieldId -- set this as a "fall back"
 
 					for a=1, #field.setFieldStatusPartitions do --field.getFieldStatusPartitions
 						local b                    = field.setFieldStatusPartitions[a]
@@ -264,8 +269,7 @@ function SimpleInspector:getFuel(vehicle)
 			"colorElectric",
 			self.settings.textElectric
 		}, {
-			FillType.METHANE, 
-
+			FillType.METHANE,
 			"colorMethane",
 			self.settings.textMethane
 		}
@@ -335,7 +339,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 				if maxReached then
 					capacity = fillLevel
 				end
-				
+
 				if fillLevel > 0 then
 					if checkInvert then isInverted =  self:getIsTypeInverted(fillType) end
 
@@ -411,7 +415,6 @@ function SimpleInspector:updateVehicles()
 							-- highest precendence
 							status = 2
 						end
-						
 
 						self:getAllFills(thisVeh, fills, 0)
 						table.insert(new_data_table, {
@@ -564,8 +567,7 @@ function SimpleInspector:draw()
 
 					local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
 					local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
-
-					local fillColor = self:makeFillColor(dispPerc, thisFill[3])
+					local fillColor    = self:makeFillColor(dispPerc, thisFill[3])
 
 					table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
 
@@ -729,7 +731,6 @@ function SimpleInspector:findOrigin()
 	end
 	if ( self.settings.debugMode ) then
 		if g_updateLoopIndex % 50 == 0 then
-			
 			print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
 		end
 	end
@@ -743,7 +744,7 @@ function SimpleInspector:createTextBox()
 	end
 
 	local baseX, baseY = self:findOrigin()
-	
+
 	local boxOverlay = nil
 
 	self.marginWidth, self.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({ 8, 8 })
@@ -753,18 +754,16 @@ function SimpleInspector:createTextBox()
 	else -- default to 1
 		boxOverlay = Overlay.new(self.bgName, baseX, baseY + self.marginHeight, 1, 1)
 	end
-	
+
 	local boxElement = HUDElement.new(boxOverlay)
 
 	self.inspectBox = boxElement
-	
+
 	self.inspectBox:setUVs(GuiUtils.getUVs(self.boxBGColor))
 	self.inspectBox:setColor(unpack(SpeedMeterDisplay.COLOR.GEARS_BG))
 	self.inspectBox:setVisible(false)
 	self.gameInfoDisplay:addChild(boxElement)
 
-	-- self.inspectText.posX = 1
-	-- self.inspectText.posY = baseY - self.marginHeight
 	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({self.settings.textMarginX, self.settings.textMarginY})
 	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings.textSize)
 end
@@ -858,9 +857,6 @@ end
 local modDirectory = g_currentModDirectory or ""
 local modName = g_currentModName or "unknown"
 local modEnvironment
-
----Fix for registering the savegame schema (perhaps this can be better).
--- g_simpleInspectorModName = modName
 
 local function load(mission)
 	assert(g_simpleInspector == nil)

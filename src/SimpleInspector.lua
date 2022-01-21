@@ -116,10 +116,10 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		augerwagon        = true,
 	}
 	self.fill_invert_types = {
-		11, -- seeds
-		72, -- dry fert
-		73, -- wet fert
-		79, -- lime
+		FillType.SEEDS,
+		FillType.ROADSALT,
+		FillType.FERTILIZER,
+		FillType.LIME,
 	}
 	self.fill_color_CB = {
 		{ 1.00, 0.76, 0.04, 1 },
@@ -197,6 +197,7 @@ function SimpleInspector:getIsTypeInverted(fillTypeID)
 	for i = 1, #self.fill_invert_types do
 		if self.fill_invert_types[i] == fillTypeID then return true end
 	end
+	return false
 end
 
 function SimpleInspector:getIsOnField(vehicle)

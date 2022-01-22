@@ -7,13 +7,19 @@
     <description>
         <en><![CDATA[SimpleInspector shows a HUD overlay with all of the currently running vehicles
 (optionally all vehicles), their speed, fill levels, fuel level, on field status, and if they are
-occupied by a user or a helper]]></en>
+occupied by a user or a helper
+
+CHANGELOG:
+
+v1.0.0.1
+ - Fix for missing fillLevel info on right justified displays.
+]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
 sie von einem Benutzer oder einem Helfer besetzt sind]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.0</version>
+    <version>1.0.0.1</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

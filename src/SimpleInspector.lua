@@ -606,6 +606,7 @@ function SimpleInspector:draw()
 						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
 					elseif thisTextLine[i][1] == "rawFillColor" then
 						setTextColor(unpack(thisTextLine[i][3]))
+						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])
 					else
 						self:renderColor(thisTextLine[i][1])
 						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])

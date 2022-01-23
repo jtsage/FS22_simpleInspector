@@ -425,8 +425,9 @@ function SimpleInspector:updateVehicles()
 			if thisVeh ~= nil and thisVeh.getIsControlled ~= nil then
 				local typeName = Utils.getNoNil(thisVeh.typeName, "unknown")
 				local isTrain = typeName == "locomotive"
+				local isBelt = typeName == "conveyorBelt" or typeName == "pickupConveyorBelt"
 				local isRidable = SpecializationUtil.hasSpecialization(Rideable, thisVeh.specializations)
-				if ( not isTrain and not isRidable) then
+				if ( not isTrain and not isRidable and not isBelt) then
 					local isRunning = thisVeh.getIsMotorStarted ~= nil and thisVeh:getIsMotorStarted()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
@@ -462,10 +463,16 @@ function SimpleInspector:updateVehicles()
 						if isOnAI then
 							-- second highest precendence
 							status = 1
+
+							-- default text, override for AD & CP below.
 							isAI = {true, self.settings.textHelper}
+
+							-- is AD driving
 							if thisVeh.ad ~= nil and thisVeh.ad.stateModule ~= nil and thisVeh.ad.stateModule:isActive() then
 								isAI[2] = self.settings.textADHelper
 							end
+
+							-- is CP driving, and should we show waypoints?
 							if thisVeh.getCpStatus ~= nil then
 								local cpStatus = thisVeh:getCpStatus()
 								if cpStatus:getIsActive() then

@@ -28,6 +28,8 @@ All options are set via a xml file in modSettings - you can change colors, mode,
 ### general
 
 * __showAll__ - always show all vehicles (default no)
+* __showDamage__ - show damage marker if vehicle or attachments are over threshold.
+* __damageThreshold__ - damage threshold (default 0.2 == 80% damaged)
 * __showField__ - show on-field status (default yes)
 * __showFieldNum__ - show field number when on-field (default yes - turn off for maps like NML)
 * __showFillPercent__ - show fill level percentage (default yes)
@@ -41,6 +43,7 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 
 * __colorAI__ - Color for vehicle name when AI controlled (second highest priority)
 * __colorAIMark__ - Color for AI marker
+* __colorDamaged__ - Color for the damage marker
 * __colorDiesel__ - Color for diesel fuel type
 * __colorElectric__ - Color for electric fuel type
 * __colorField__ - Color for on field number indicator
@@ -54,6 +57,7 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 
 ### text
 
+* __textDamaged__ - text for damage marker, default "-!!- "
 * __textDiesel__ - text for diesel fuel, default "D:"
 * __textElectric__ - text for electric fuel, default "E:"
 * __textField__ - text for on-field indicator, default "F-"

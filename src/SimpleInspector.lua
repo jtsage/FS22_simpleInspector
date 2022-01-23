@@ -37,7 +37,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.confFile          = self.confDirectory .. "FS22_SimpleInspectorSettings.xml"
 
 	self.settings = {
-		displayMode     = 2,                     -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
+		displayMode     = 2, -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
 		displayMode5X   = 0.2,
 		displayMode5Y   = 0.2,
 		debugMode       = false,
@@ -49,6 +49,8 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		showFills       = true,
 		showField       = true,
 		showFieldNum    = true,
+		showDamage      = true,
+		damageThreshold = 0.2, -- a.k.a. 80% damaged
 
 		maxDepth        = 5,
 		timerFrequency  = 15,
@@ -68,6 +70,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		colorMethane    = "1.000, 0.930, 0.000, 1",
 		colorElectric   = "0.031, 0.578, 0.314, 1",
 		colorField      = "0.423, 0.956, 0.624, 1",
+		colorDamaged    = "0.830, 0.019, 0.033, 1",
 
 		textHelper      = "_AI_ ",
 		textDiesel      = "D:",
@@ -75,6 +78,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		textElectric    = "E:",
 		textField       = "F-",
 		textFieldNoNum  = "-F-",
+		textDamaged     = "-!!- ",
 		textSep         = " | "
 	}
 
@@ -177,6 +181,33 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	}
 
 	return self
+end
+
+function SimpleInspector:getAllDamage(vehicle )
+	-- This is not recusive.  It checks the tractor, and immediate implements only.
+	-- Shortcut method, first damage above threshold returns true.
+	if self:getDamageBad(vehicle) then return true end
+
+	if vehicle.getAttachedImplements ~= nil then
+		local attachedImplements = vehicle:getAttachedImplements();
+		for _, implement in pairs(attachedImplements) do
+			if implement.object ~= nil then
+				if self:getDamageBad(implement.object) then return true end
+			end
+		end
+	end
+
+	return false
+end
+
+function SimpleInspector:getDamageBad(vehicle)
+	if vehicle.getDamageAmount == nil then return false end
+
+	local damageLevel = math.min(1, 1 - vehicle:getDamageAmount())
+
+	if damageLevel == nil then return false end
+
+	return vehicle.isBroken or damageLevel < self.settings.damageThreshold
 end
 
 function SimpleInspector:makeFillColor(percentage, flip)
@@ -405,10 +436,16 @@ function SimpleInspector:updateVehicles()
 						local isAI      = false
 						local fuelLevel = self:getFuel(thisVeh)
 						local isOnField = {false, false}
+						local isBroken  = false
 
 						if self.settings.showField then
 							-- This may be compute heavy, only do it when wanted.
 							isOnField = self:getIsOnField(thisVeh)
+						end
+
+						if self.settings.showDamage then
+							-- If we don't care to see damage, don't look it up
+							isBroken = self:getAllDamage(thisVeh)
 						end
 
 						if self.settings.showAll and isRunning then
@@ -434,7 +471,8 @@ function SimpleInspector:updateVehicles()
 							tostring(speed),
 							fuelLevel,
 							fills,
-							isOnField
+							isOnField,
+							isBroken
 						})
 					end
 				end
@@ -543,6 +581,11 @@ function SimpleInspector:draw()
 
 				-- Seperator after speed
 				table.insert(thisTextLine, {false, false, false})
+			end
+
+			-- Damage marker Tag, if needed
+			if self.settings.showDamage and txt[8] then
+				table.insert(thisTextLine, {"colorDamaged", self.settings.textDamaged, false})
 			end
 
 			-- Field Mark, if needed / wanted

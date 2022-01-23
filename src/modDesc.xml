@@ -13,13 +13,16 @@ CHANGELOG:
 
 v1.0.0.1
  - Fix for missing fillLevel info on right justified displays.
+
+v1.0.0.2
+ - Add damage indicator (default if tractor or attached implement is 80% damaged)
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
 sie von einem Benutzer oder einem Helfer besetzt sind]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.1</version>
+    <version>1.0.0.2</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

@@ -9,21 +9,34 @@
 (optionally all vehicles), their speed, fill levels, fuel level, on field status, and if they are
 occupied by a user or a helper
 
-CHANGELOG:
-
-v1.0.0.1
+Changelog:
+1.0.0.1:
  - Fix for missing fillLevel info on right justified displays.
 
-v1.0.0.2
+1.0.0.2:
  - Add damage indicator (default if tractor or attached implement is 80% damaged)
 
-v1.0.0.3
+1.0.0.3:
  - Add CoursePlay and AutoDrive AI detection
  - Hide conveyor belts, they don't have any useful information to share.
+ - Initial ModHub version
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
-sie von einem Benutzer oder einem Helfer besetzt sind]]></de>
+sie von einem Benutzer oder einem Helfer besetzt sind
+
+Changelog:
+1.0.0.1:
+ - Fix für fehlende FillLevel-Informationen bei rechtsbündigen Anzeigen.
+
+1.0.0.2:
+ - Hinzufügen einer Schadensanzeige (Standard, wenn der Traktor oder das angehängte Gerät zu 80% beschädigt ist)
+
+1.0.0.3:
+ - Hinzufügen von CoursePlay und AutoDrive AI-Erkennung
+ - Ausblenden von Förderbändern, da sie keine nützlichen Informationen liefern.
+ - Erste ModHub-Version
+]]></de>
     </description>
     <author>JTSage</author>
     <version>1.0.0.3</version>

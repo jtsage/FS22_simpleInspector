@@ -36,6 +36,7 @@ All options are set via a xml file in modSettings - you can change colors, mode,
 * __showFills__ - show fill levels (default yes)
 * __showFuel__ - show fuel levels (default yes)
 * __showSpeed__ - show vehicle speed (default yes)
+* __showCPWaypoints__ - show CoursePlay waypoint status when on a course.
 
 ### colors
 
@@ -63,6 +64,9 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 * __textField__ - text for on-field indicator, default "F-"
 * __textFieldNoNum__ - text for on-field indicator when field number is unknown, default "-F-"
 * __textHelper__ - text for AI marker, default "_AI_ "
+* __textADHelper__ - text for AutoDrive driver, default "_AD_ "
+* __textCPHelper__ - text for CoursePlayer worker, default "_CP_ "
+* __textCPWaypoint__ - text for CoursePlayer worker w/ waypoints, default "_CP: "
 * __textMethane__ - text for methane fuel, default "M:"
 * __textSep__ - text for separators, default " | "
 * __textMarginX__ - text margin height, default "15"

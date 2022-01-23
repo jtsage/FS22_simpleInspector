@@ -51,6 +51,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		showFieldNum    = true,
 		showDamage      = true,
 		damageThreshold = 0.2, -- a.k.a. 80% damaged
+		showCPWaypoints = true,
 
 		maxDepth        = 5,
 		timerFrequency  = 15,
@@ -73,6 +74,9 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		colorDamaged    = "0.830, 0.019, 0.033, 1",
 
 		textHelper      = "_AI_ ",
+		textADHelper    = "_AD_ ",
+		textCPHelper    = "_CP_ ",
+		textCPWaypoint  = "_CP: ",
 		textDiesel      = "D:",
 		textMethane     = "M:",
 		textElectric    = "E:",
@@ -427,13 +431,15 @@ function SimpleInspector:updateVehicles()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
 
+					
+
 					if ( self.settings.showAll or isConned or isRunning or isOnAI) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
 						local speed     = self:getSpeed(thisVeh)
 						local fills     = {}
 						local status    = 0
-						local isAI      = false
+						local isAI      = {false, false}
 						local fuelLevel = self:getFuel(thisVeh)
 						local isOnField = {false, false}
 						local isBroken  = false
@@ -456,7 +462,19 @@ function SimpleInspector:updateVehicles()
 						if isOnAI then
 							-- second highest precendence
 							status = 1
-							isAI = true
+							isAI = {true, self.settings.textHelper}
+							if thisVeh.ad ~= nil and thisVeh.ad.stateModule ~= nil and thisVeh.ad.stateModule:isActive() then
+								isAI[2] = self.settings.textADHelper
+							end
+							if thisVeh.getCpStatus ~= nil then
+								local cpStatus = thisVeh:getCpStatus()
+								if cpStatus:getIsActive() then
+									isAI[2] = self.settings.textCPHelper
+									if ( self.settings.showCPWaypoints ) then
+										isAI[2] = self.settings.textCPWaypoint .. cpStatus:getWaypointText() .. "_ "
+									end
+								end
+							end
 						end
 						if isConned then
 							-- highest precendence
@@ -598,8 +616,8 @@ function SimpleInspector:draw()
 			end
 
 			-- AI Tag, if needed
-			if txt[2] then
-				table.insert(thisTextLine, {"colorAIMark", self.settings.textHelper, false})
+			if txt[2][1] then
+				table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
 			end
 
 			-- Vehicle name

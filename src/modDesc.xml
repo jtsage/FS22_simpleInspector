@@ -9,6 +9,10 @@
 (optionally all vehicles), their speed, fill levels, fuel level, on field status, and if they are
 occupied by a user or a helper
 
+Default Input Bindings:
+Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
+Left Ctrl + Left Alt + Num Pad 8 : Toggle Display Mode 1, 2, 3, 4
+
 Changelog:
 1.0.0.1:
  - Fix for missing fillLevel info on right justified displays.
@@ -20,10 +24,18 @@ Changelog:
  - Add CoursePlay and AutoDrive AI detection
  - Hide conveyor belts, they don't have any useful information to share.
  - Initial ModHub version
+
+ 1.0.0.4:
+ - Add keybindings
+ - Add option to zero pad field numbers less than 10
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
 sie von einem Benutzer oder einem Helfer besetzt sind
+
+Standard-Eingabebindungen:
+Left Ctrl + Left Alt + Num Pad 9: Konfigurationsdatei von der Festplatte neu laden
+Left Ctrl + Left Alt + Num Pad 8: Umschalten des Anzeigemodus 1, 2, 3, 4
 
 Changelog:
 1.0.0.1:
@@ -36,10 +48,14 @@ Changelog:
  - Hinzufügen von CoursePlay und AutoDrive AI-Erkennung
  - Ausblenden von Förderbändern, da sie keine nützlichen Informationen liefern.
  - Erste ModHub-Version
+
+1.0.0.4
+ - Tastaturbelegungen hinzufügen
+ - Option zum Auffüllen von Feldern mit weniger als 10 Punkten hinzufügen
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.3</version>
+    <version>1.0.0.4</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

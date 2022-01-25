@@ -49,9 +49,11 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		showFills       = true,
 		showField       = true,
 		showFieldNum    = true,
+		padFieldNum     = false,
 		showDamage      = true,
 		damageThreshold = 0.2, -- a.k.a. 80% damaged
 		showCPWaypoints = true,
+
 
 		maxDepth        = 5,
 		timerFrequency  = 15,
@@ -251,7 +253,7 @@ function SimpleInspector:getIsOnField(vehicle)
 			if h-1 > wy then -- 1m threshold since ground tools are working slightly under the ground
 				break
 			end
-			
+
 			local isOnField, _ = FSDensityMapUtil.getFieldDataAtWorldPosition(wx, wy, wz)
 			if isOnField then
 				isField = true
@@ -432,8 +434,6 @@ function SimpleInspector:updateVehicles()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
 
-					
-
 					if ( self.settings.showAll or isConned or isRunning or isOnAI) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
@@ -574,15 +574,6 @@ function SimpleInspector:draw()
 		self.inspectText.posY = dispTextY
 
 		for _, txt in pairs(info_text) do
-			-- Data structure for each vehicle is:
-			-- (new_data_table, {
-			-- 	status, (0 no special status, 1 = AI, 2 = user controlled)
-			-- 	isAI, (true / false - if status is 1 & 2)
-			-- 	thisBrand.title .. " " .. thisName,
-			-- 	tostring(speed), (in the users units)
-			--  fuel (fuel table)
-			-- 	fills (table - index is fillType, contents are 1:level, 2:capacity)
-			-- })
 
 			local thisTextLine  = {}
 			local fullTextSoFar = ""
@@ -618,7 +609,11 @@ function SimpleInspector:draw()
 				if txt[7][2] == 0 then
 					table.insert(thisTextLine, {"colorField", self.settings.textFieldNoNum .. " ", false})
 				else
-					table.insert(thisTextLine, {"colorField", self.settings.textField .. txt[7][2] .. " ", false})
+					if self.settings.padFieldNum and txt[7][2] < 10 then
+						table.insert(thisTextLine, {"colorField", self.settings.textField .. "0" .. txt[7][2] .. " ", false})
+					else
+						table.insert(thisTextLine, {"colorField", self.settings.textField .. txt[7][2] .. " ", false})
+					end
 				end
 			end
 
@@ -714,10 +709,6 @@ function SimpleInspector:update(dt)
 	if g_updateLoopIndex % self.settings.timerFrequency == 0 then
 		-- Lets not be rediculous, only update the vehicles "infrequently"
 		self:updateVehicles()
-		-- if ( self.settings.debugMode ) then
-		-- 	self.debugTimerRuns = self.debugTimerRuns + 1
-		-- 	print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
-		-- end
 	end
 end
 
@@ -808,11 +799,7 @@ function SimpleInspector:findOrigin()
 			tmpY = tmpY - self.inputHelpDisplay:getHeight() - 0.012
 		end
 	end
-	-- if ( self.settings.debugMode ) then
-	-- 	if g_updateLoopIndex % 50 == 0 then
-	-- 		print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
-	-- 	end
-	-- end
+
 	return tmpX, tmpY
 end
 

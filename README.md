@@ -13,6 +13,11 @@ Spiritual ripoff of VehicleInspector - pared down to what I need/want
 * Show is the vehicle is AI or user controlled
 * Show fill level of the vehicle
 
+## Default Input Bindings
+
+* `Left Ctrl` + `Left Alt` + `Num Pad 8` : Toggle Display Mode 1, 2, 3, 4
+* `Left Ctrl` + `Left Alt` + `Num Pad 9` : Reload configuration file from disk
+
 ## Options
 
 All options are set via a xml file in modSettings - you can change colors, mode, and which vehicles are displayed
@@ -32,6 +37,7 @@ All options are set via a xml file in modSettings - you can change colors, mode,
 * __damageThreshold__ - damage threshold (default 0.2 == 80% damaged)
 * __showField__ - show on-field status (default yes)
 * __showFieldNum__ - show field number when on-field (default yes - turn off for maps like NML)
+* __padFieldNum__ - Pad field numbers less than 10 with a zero ( F-9 becomes F-09, default no )
 * __showFillPercent__ - show fill level percentage (default yes)
 * __showFills__ - show fill levels (default yes)
 * __showFuel__ - show fuel levels (default yes)

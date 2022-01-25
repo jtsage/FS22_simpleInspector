@@ -45,4 +45,36 @@ Changelog:
     <extraSourceFiles>
         <sourceFile filename="SimpleInspector.lua"/>
     </extraSourceFiles>
+    <l10n>
+        <text name="input_SimpleInspector_reload_config">
+            <de>
+                <![CDATA[Konfiguration neu laden]]>
+            </de>
+            <en>
+                <![CDATA[Reload configuration]]>
+            </en>
+        </text>
+        <text name="input_SimpleInspector_cycle_display">
+            <de>
+                <![CDATA[Darstellung umschalten]]>
+            </de>
+            <en>
+                <![CDATA[Switch display mode]]>
+            </en>
+        </text>
+    </l10n>
+    <actions>
+        <action name="SimpleInspector_reload_config" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
+        <action name="SimpleInspector_cycle_display" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
+    </actions>
+    <inputBinding>
+        <actionBinding action="SimpleInspector_reload_config">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_9" axisComponent="+" neutralInput="0" index="1" />
+        </actionBinding>
+    </inputBinding>
+    <inputBinding>
+        <actionBinding action="SimpleInspector_cycle_display">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_8" axisComponent="+" neutralInput="0" index="1" />
+        </actionBinding>
+    </inputBinding>
 </modDesc>

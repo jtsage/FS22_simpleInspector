@@ -714,10 +714,10 @@ function SimpleInspector:update(dt)
 	if g_updateLoopIndex % self.settings.timerFrequency == 0 then
 		-- Lets not be rediculous, only update the vehicles "infrequently"
 		self:updateVehicles()
-		if ( self.settings.debugMode ) then
-			self.debugTimerRuns = self.debugTimerRuns + 1
-			print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
-		end
+		-- if ( self.settings.debugMode ) then
+		-- 	self.debugTimerRuns = self.debugTimerRuns + 1
+		-- 	print("~~" .. self.myName .." :: update (" .. self.debugTimerRuns .. ")")
+		-- end
 	end
 end
 
@@ -808,11 +808,11 @@ function SimpleInspector:findOrigin()
 			tmpY = tmpY - self.inputHelpDisplay:getHeight() - 0.012
 		end
 	end
-	if ( self.settings.debugMode ) then
-		if g_updateLoopIndex % 50 == 0 then
-			print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
-		end
-	end
+	-- if ( self.settings.debugMode ) then
+	-- 	if g_updateLoopIndex % 50 == 0 then
+	-- 		print("~~ " .. self.myName .. " :: origin point x:" .. tostring(tmpX) .. " y:" .. tostring(tmpY))
+	-- 	end
+	-- end
 	return tmpX, tmpY
 end
 
@@ -932,6 +932,35 @@ function SimpleInspector:readSettingsFile()
 	end
 end
 
+function SimpleInspector:registerActionEvents()
+	local _, reloadConfig = g_inputBinding:registerActionEvent('SimpleInspector_reload_config', self,
+		SimpleInspector.actionReloadConfig, false, true, false, true)
+	g_inputBinding:setActionEventTextVisibility(reloadConfig, false)
+	local _, cycleDisplay = g_inputBinding:registerActionEvent('SimpleInspector_cycle_display', self,
+		SimpleInspector.actionCycleDisplay, false, true, false, true)
+	g_inputBinding:setActionEventTextVisibility(cycleDisplay, false)
+end
+
+function SimpleInspector:actionCycleDisplay()
+	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
+	if ( thisModEnviroment.settings.debugMode ) then
+		print("~~" .. thisModEnviroment.myName .." :: cycle display mode")
+	end
+	if ( thisModEnviroment.settings.displayMode > 3 ) then
+		thisModEnviroment.settings.displayMode = 1
+	else
+		thisModEnviroment.settings.displayMode = thisModEnviroment.settings.displayMode + 1
+	end
+	thisModEnviroment:createSettingsFile()
+end
+
+function SimpleInspector:actionReloadConfig()
+	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
+	if ( thisModEnviroment.settings.debugMode ) then
+		print("~~" .. thisModEnviroment.myName .." :: reload settings from disk")
+	end
+	thisModEnviroment:readSettingsFile()
+end
 
 local modDirectory = g_currentModDirectory or ""
 local modName = g_currentModName or "unknown"
@@ -944,7 +973,10 @@ local function load(mission)
 
 	getfenv(0)["g_simpleInspector"] = modEnvironment
 
-	addModEventListener(modEnvironment)
+	if g_client then
+		addModEventListener(modEnvironment)
+		FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, SimpleInspector.registerActionEvents);
+	end
 end
 
 local function unload()

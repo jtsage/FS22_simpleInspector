@@ -71,8 +71,6 @@ Changelog:
         <actionBinding action="SimpleInspector_reload_config">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_9" axisComponent="+" neutralInput="0" index="1" />
         </actionBinding>
-    </inputBinding>
-    <inputBinding>
         <actionBinding action="SimpleInspector_cycle_display">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_8" axisComponent="+" neutralInput="0" index="1" />
         </actionBinding>

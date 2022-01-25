@@ -51,6 +51,8 @@
 		"MathUtil",
 		"setXMLFloat",
 		"g_modIsLoaded",
-		"getXMLFloat"
+		"getXMLFloat",
+		"g_inputBinding",
+		"g_client"
 	]
 }

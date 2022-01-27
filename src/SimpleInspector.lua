@@ -218,16 +218,23 @@ end
 
 function SimpleInspector:makeFillColor(percentage, flip)
 	local colorIndex = math.floor(percentage/4) + 1
+	local colorTab = nil
 
 	if percentage == 100 then colorIndex = 25 end
 
 	if not flip then colorIndex = 26 - colorIndex end
 
 	if g_gameSettings:getValue('useColorblindMode') then
-		return self.fill_color_CB[colorIndex]
+		colorTab = self.fill_color_CB[colorIndex]
+	else
+		colorTab = self.fill_color[colorIndex]
 	end
 
-	return self.fill_color[colorIndex]
+	if colorTab ~= nil then
+		return colorTab
+	else
+		return {1,1,1,1}
+	end
 end
 
 function SimpleInspector:getIsTypeInverted(fillTypeID)

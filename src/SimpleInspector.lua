@@ -60,6 +60,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		textMarginX     = 15,
 		textMarginY     = 10,
 		textSize        = 12,
+		textBold        = false,
 
 		colorNormal     = "1.000, 1.000, 1.000, 1",
 		colorFillType   = "0.700, 0.700, 0.700, 1",
@@ -535,7 +536,7 @@ function SimpleInspector:draw()
 			overlayH = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
-		setTextBold(true)
+		setTextBold(self.settings.textBold)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_TOP)
 
 		-- overlayX/Y is where the box starts

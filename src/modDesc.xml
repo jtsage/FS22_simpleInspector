@@ -28,6 +28,10 @@ Changelog:
  1.0.0.4:
  - Add keybindings
  - Add option to zero pad field numbers less than 10
+
+1.0.0.5:
+ - Make bold text optional
+ - Bug fix for invalid fill levels maybe?
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
@@ -52,10 +56,14 @@ Changelog:
 1.0.0.4
  - Tastaturbelegungen hinzufügen
  - Option zum Auffüllen von Feldern mit weniger als 10 Punkten hinzufügen
+
+1.0.0.5
+ - Fettschrift optional machen
+ - Fehlerbehebung für ungültige Füllstände vielleicht?
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.4</version>
+    <version>1.0.0.5</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

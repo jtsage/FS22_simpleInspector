@@ -53,6 +53,7 @@
 		"g_modIsLoaded",
 		"getXMLFloat",
 		"g_inputBinding",
-		"g_client"
+		"g_client",
+		"delete"
 	]
 }

@@ -73,7 +73,7 @@ Changelog:
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>
-        <sourceFile filename="SimpleInspector.lua"/>
+        <sourceFile filename="loader.lua"/>
     </extraSourceFiles>
     <l10n>
         <text name="input_SimpleInspector_reload_config">

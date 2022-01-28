@@ -22,6 +22,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.myName            = "SimpleInspector"
 	self.isServer          = mission:getIsServer()
 	self.isClient          = mission:getIsClient()
+	self.isMPGame          = g_currentMission.missionDynamicInfo.isMultiplayer
 	self.mission           = mission
 	self.i18n              = i18n
 	self.modDirectory      = modDirectory
@@ -42,6 +43,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		displayMode5Y   = 0.2,
 		debugMode       = false,
 
+		showPlayer      = true,
 		showAll         = false,
 		showFillPercent = true,
 		showFuel        = true,
@@ -79,7 +81,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		textHelper      = "_AI_ ",
 		textADHelper    = "_AD_ ",
 		textCPHelper    = "_CP_ ",
-		textCPWaypoint  = "_CP: ",
+		textCPWaypoint  = "_CP:",
 		textDiesel      = "D:",
 		textMethane     = "M:",
 		textElectric    = "E:",
@@ -438,6 +440,7 @@ function SimpleInspector:updateVehicles()
 				local isBelt = typeName == "conveyorBelt" or typeName == "pickupConveyorBelt"
 				local isRidable = SpecializationUtil.hasSpecialization(Rideable, thisVeh.specializations)
 				if ( not isTrain and not isRidable and not isBelt) then
+					local plyrName = nil
 					local isRunning = thisVeh.getIsMotorStarted ~= nil and thisVeh:getIsMotorStarted()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
@@ -452,6 +455,10 @@ function SimpleInspector:updateVehicles()
 						local fuelLevel = self:getFuel(thisVeh)
 						local isOnField = {false, false}
 						local isBroken  = false
+
+						if self.isMPGame and self.settings.showPlayer and isConned and thisVeh.getControllerName ~= nil then
+							plyrName = thisVeh:getControllerName()
+						end
 
 						if self.settings.showField then
 							-- This may be compute heavy, only do it when wanted.
@@ -505,7 +512,8 @@ function SimpleInspector:updateVehicles()
 							fuelLevel,
 							fills,
 							isOnField,
-							isBroken
+							isBroken,
+							plyrName
 						})
 					end
 				end
@@ -634,6 +642,11 @@ function SimpleInspector:draw()
 				table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
 			end
 
+			-- User name
+			if txt[9] ~= nil then
+				table.insert(thisTextLine, {"colorUser", "[" .. txt[9] .. "] ", false})
+			end
+
 			-- Vehicle name
 			if txt[1] == 0 then
 				table.insert(thisTextLine, {"colorNormal", txt[3], false})
@@ -641,7 +654,7 @@ function SimpleInspector:draw()
 				table.insert(thisTextLine, {"colorAI", txt[3], false})
 			elseif txt[1] == 3 then
 				table.insert(thisTextLine, {"colorRunning", txt[3], false})
-			else 
+			else
 				table.insert(thisTextLine, {"colorUser", txt[3], false})
 			end
 

@@ -33,6 +33,7 @@ All options are set via a xml file in modSettings - you can change colors, mode,
 ### general
 
 * __showAll__ - always show all vehicles (default no)
+* __showPlayer__ - show player name for user controlled vehicles, multi-player only (default yes)
 * __showDamage__ - show damage marker if vehicle or attachments are over threshold.
 * __damageThreshold__ - damage threshold (default 0.2 == 80% damaged)
 * __showField__ - show on-field status (default yes)
@@ -72,12 +73,13 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 * __textHelper__ - text for AI marker, default "\_AI_ "
 * __textADHelper__ - text for AutoDrive driver, default "\_AD_ "
 * __textCPHelper__ - text for CoursePlayer worker, default "\_CP_ "
-* __textCPWaypoint__ - text for CoursePlayer worker w/ waypoints, default "_CP: "
+* __textCPWaypoint__ - text for CoursePlayer worker w/ waypoints, default "_CP:"
 * __textMethane__ - text for methane fuel, default "M:"
 * __textSep__ - text for separators, default " | "
 * __textMarginX__ - text margin height, default "15"
 * __textMarginY__ - text margin width, default "10"
 * __textSize__ - text size, default "12"
+* __textBold__ - use bold font, default no
 
 ### dev and debug
 

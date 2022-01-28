@@ -32,6 +32,9 @@ Changelog:
 1.0.0.5:
  - Make bold text optional
  - Bug fix for invalid fill levels maybe?
+
+1.0.0.6:
+ - Add user name for controlled vehicles.
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
@@ -60,10 +63,13 @@ Changelog:
 1.0.0.5
  - Fettschrift optional machen
  - Fehlerbehebung für ungültige Füllstände vielleicht?
+
+1.0.0.6:
+ - Benutzernamen für kontrollierte Fahrzeuge hinzufügen.
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.5</version>
+    <version>1.0.0.6</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

@@ -517,6 +517,10 @@ function SimpleInspector:updateVehicles()
 end
 
 function SimpleInspector:draw()
+	if not self.isClient then
+		return
+	end
+
 	if self.inspectBox ~= nil then
 		local info_text = self.display_data
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
@@ -968,7 +972,7 @@ local function load(mission)
 
 	getfenv(0)["g_simpleInspector"] = modEnvironment
 
-	if g_client then
+	if mission:getIsClient() then
 		addModEventListener(modEnvironment)
 		FSBaseMission.registerActionEvents = Utils.appendedFunction(FSBaseMission.registerActionEvents, SimpleInspector.registerActionEvents);
 	end

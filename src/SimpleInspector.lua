@@ -812,13 +812,9 @@ function SimpleInspector:onStartMission(mission)
 		return
 	end
 
+	-- Just call both, load fails gracefully if it doesn't exists.
 	self:loadSettings()
 	self:saveSettings()
-	-- if fileExists(self.confFile) then
-	-- 	self:readSettingsFile()
-	-- else
-	-- 	self:createSettingsFile()
-	-- end
 
 	if ( g_simpleInspector.debugMode ) then
 		print("~~" .. self.myName .." :: onStartMission")
@@ -907,12 +903,16 @@ function SimpleInspector:delete()
 end
 
 function SimpleInspector:saveSettings()
-	local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory
-	if savegameFolderPath == nil then
-		savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+	local savegameFolderPath = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+	local savegameFile = savegameFolderPath .. "/simpleInspector.xml"
+
+	if ( not fileExists(savegameFile) ) then
+		createFolder(('%smodSettings/FS22_SimpleExplorer'):format(getUserProfileAppPath()))
+		createFolder(savegameFolderPath)
 	end
+
 	local key = "simpleInspector"
-	local xmlFile = createXMLFile(key, savegameFolderPath .. "/simpleInspector.xml", key)
+	local xmlFile = createXMLFile(key, savegameFile, key)
 
 	for _, setting in pairs(g_simpleInspector.settingsNames) do
 		if ( setting[2] == "bool" ) then
@@ -937,10 +937,7 @@ function SimpleInspector:saveSettings()
 end
 
 function SimpleInspector:loadSettings()
-	local savegameFolderPath = g_currentMission.missionInfo.savegameDirectory
-	if savegameFolderPath == nil then
-		savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
-	end
+	local savegameFolderPath = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
 	local key = "simpleInspector"
 
 	if fileExists(savegameFolderPath .. "/simpleInspector.xml") then

@@ -6,6 +6,12 @@
 
 Spiritual ripoff of VehicleInspector - pared down to what I need/want
 
+## Note about the ZIP in the repo
+
+That ZIP file, while the ?working? mod, is usually my test version.  It's updated multiple times per
+version string, so be aware if you download from there, instead of the releases page, you might be
+unknowingly using an old version.  For "official" releases, please use the release link to the right.
+
 ## Features
 
 * Display all (enterable) vehicles or just those with the motor running

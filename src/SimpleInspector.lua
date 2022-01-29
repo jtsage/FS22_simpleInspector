@@ -40,7 +40,7 @@ SimpleInspector.setValueTimerFrequency  = 15
 SimpleInspector.setValueTextMarginX     = 15
 SimpleInspector.setValueTextMarginY     = 10
 SimpleInspector.setValueTextSize        = 12
-SimpleInspector.setValueTextBold        = false
+SimpleInspector.isEnabledTextBold       = false
 
 SimpleInspector.colorNormal     = {1.000, 1.000, 1.000, 1}
 SimpleInspector.colorFillType   = {0.700, 0.700, 0.700, 1}
@@ -69,9 +69,7 @@ SimpleInspector.setStringTextDamaged     = "-!!- "
 SimpleInspector.setStringTextSep         = " | "
 
 function SimpleInspector:new(mission, i18n, modDirectory, modName)
-	local self = {}
-
-	setmetatable(self, SimpleInspector_mt)
+	local self = setmetatable({}, SimpleInspector_mt)
 
 	self.myName            = "SimpleInspector"
 	self.isServer          = mission:getIsServer()
@@ -207,7 +205,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"setValueTextMarginX", "int" },
 		{"setValueTextMarginY", "int" },
 		{"setValueTextSize", "int" },
-		{"setValueTextBold", "bool" },
+		{"isEnabledTextBold", "bool" },
 		{"colorNormal", "color"},
 		{"colorFillType", "color"},
 		{"colorUser", "color"},
@@ -593,7 +591,7 @@ function SimpleInspector:draw()
 			overlayH = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
-		setTextBold(g_simpleInspector.setValueTextBold)
+		setTextBold(g_simpleInspector.isEnabledTextBold)
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_TOP)
 
 		-- overlayX/Y is where the box starts
@@ -814,6 +812,7 @@ function SimpleInspector:onStartMission(mission)
 		return
 	end
 
+	self:loadSettings()
 	self:saveSettings()
 	-- if fileExists(self.confFile) then
 	-- 	self:readSettingsFile()
@@ -826,13 +825,6 @@ function SimpleInspector:onStartMission(mission)
 	end
 
 	self:createTextBox()
-
-	if not g_simpleInspector.createdGUI then
-		print("not yet!")
-		print(g_simpleInspector.isEnabledshowAll)
-
-		g_simpleInspector.createdGUI = true
-	end
 end
 
 function SimpleInspector:findOrigin()
@@ -922,7 +914,7 @@ function SimpleInspector:saveSettings()
 	local key = "simpleInspector"
 	local xmlFile = createXMLFile(key, savegameFolderPath .. "/simpleInspector.xml", key)
 
-	for _, setting in pairs(self.settingsNames) do
+	for _, setting in pairs(g_simpleInspector.settingsNames) do
 		if ( setting[2] == "bool" ) then
 			setXMLBool(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
 		elseif ( setting[2] == "string" ) then
@@ -933,7 +925,6 @@ function SimpleInspector:saveSettings()
 			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
 		elseif ( setting[2] == "color" ) then
 			local r, g, b, a = unpack(g_simpleInspector[setting[1]])
-			print("found color: " .. r .. g .. b .. a)
 			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#r", r)
 			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#g", g)
 			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#b", b)
@@ -942,7 +933,7 @@ function SimpleInspector:saveSettings()
 	end
 
 	saveXMLFile(xmlFile)
-	print("~~" .. self.myName .." :: saved config file")
+	print("~~" .. g_simpleInspector.myName .." :: saved config file")
 end
 
 function SimpleInspector:loadSettings()
@@ -967,10 +958,10 @@ function SimpleInspector:loadSettings()
 				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])
 			elseif ( setting[2] == "color" ) then
 				local r, g, b, a = unpack(g_simpleInspector[setting[1]])
-				r = Utils.getNoNil(setXMLBool(xmlFile, key .. "." .. setting[1] .. "#r"), r)
-				g = Utils.getNoNil(setXMLBool(xmlFile, key .. "." .. setting[1] .. "#g"), g)
-				b = Utils.getNoNil(setXMLBool(xmlFile, key .. "." .. setting[1] .. "#b"), b)
-				a = Utils.getNoNil(setXMLBool(xmlFile, key .. "." .. setting[1] .. "#a"), a)
+				r = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#r"), r)
+				g = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#g"), g)
+				b = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#b"), b)
+				a = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#a"), a)
 				g_simpleInspector[setting[1]] = {r, g, b, a}
 			end
 		end
@@ -983,28 +974,87 @@ function SimpleInspector:registerActionEvents()
 	local _, reloadConfig = g_inputBinding:registerActionEvent('SimpleInspector_reload_config', self,
 		SimpleInspector.actionReloadConfig, false, true, false, true)
 	g_inputBinding:setActionEventTextVisibility(reloadConfig, false)
-	local _, cycleDisplay = g_inputBinding:registerActionEvent('SimpleInspector_cycle_display', self,
-		SimpleInspector.actionCycleDisplay, false, true, false, true)
-	g_inputBinding:setActionEventTextVisibility(cycleDisplay, false)
-end
-
-function SimpleInspector:actionCycleDisplay()
-	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
-	if ( thisModEnviroment.settings.debugMode ) then
-		print("~~" .. thisModEnviroment.myName .." :: cycle display mode")
-	end
-	if ( thisModEnviroment.settings.displayMode > 3 ) then
-		thisModEnviroment.settings.displayMode = 1
-	else
-		thisModEnviroment.settings.displayMode = thisModEnviroment.settings.displayMode + 1
-	end
-	thisModEnviroment:createSettingsFile()
 end
 
 function SimpleInspector:actionReloadConfig()
 	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
-	if ( thisModEnviroment.settings.debugMode ) then
+	if ( thisModEnviroment.debugMode ) then
 		print("~~" .. thisModEnviroment.myName .." :: reload settings from disk")
 	end
-	thisModEnviroment:readSettingsFile()
+	thisModEnviroment:loadSettings()
+end
+
+function SimpleInspector.initGui(self)
+	local boolMenuOptions = {
+		"ShowAll", "ShowPlayer", "ShowFillPercent", "ShowFuel", "ShowSpeed",
+		"ShowFills", "ShowField", "ShowFieldNum", "PadFieldNum", "ShowDamage",
+		"ShowCPWaypoints", "TextBold"
+	}
+
+	if not g_simpleInspector.createdGUI then -- Skip if we've already done this once
+		self.menuOption_DisplayMode = self.checkAutoMotorStart:clone()
+		self.menuOption_DisplayMode.target = g_simpleInspector
+		self.menuOption_DisplayMode.id = "simpleInspector_DisplayMode"
+		self.menuOption_DisplayMode:setCallback("onClickCallback", "onMenuOptionChanged_DisplayMode")
+
+		local settingTitle = self.menuOption_DisplayMode.elements[4]
+		local toolTip = self.menuOption_DisplayMode.elements[6]
+
+		self.menuOption_DisplayMode:setTexts({
+			g_i18n:getText("setting_simpleInspector_DisplayMode1"),
+			g_i18n:getText("setting_simpleInspector_DisplayMode2"),
+			g_i18n:getText("setting_simpleInspector_DisplayMode3"),
+			g_i18n:getText("setting_simpleInspector_DisplayMode4")
+		})
+
+		settingTitle:setText(g_i18n:getText("setting_simpleInspector_DisplayMode"))
+		toolTip:setText(g_i18n:getText("toolTip_simpleInspector_DisplayMode"))
+
+
+		for _, optName in pairs(boolMenuOptions) do
+			local fullName = "menuOption_" .. optName
+
+			self[fullName]           = self.checkAutoMotorStart:clone()
+			self[fullName]["target"] = g_simpleInspector
+			self[fullName]["id"]     = "simpleInspector_" .. optName
+			self[fullName]:setCallback("onClickCallback", "onMenuOptionChanged_boolOpt")
+
+			local settingTitle = self[fullName]["elements"][4]
+			local toolTip      = self[fullName]["elements"][6]
+
+			self[fullName]:setTexts({g_i18n:getText("ui_no"), g_i18n:getText("ui_yes")})
+
+			settingTitle:setText(g_i18n:getText("setting_simpleInspector_" .. optName))
+			toolTip:setText(g_i18n:getText("toolTip_simpleInspector_" .. optName))
+		end
+
+		local title = TextElement.new()
+		title:applyProfile("settingsMenuSubtitle", true)
+		title:setText(g_i18n:getText("title_simpleInspector"))
+
+		self.boxLayout:addElement(title)
+		self.boxLayout:addElement(self.menuOption_DisplayMode)
+		for _, value in ipairs(boolMenuOptions) do
+			local thisOption = "menuOption_" .. value
+			self.boxLayout:addElement(self[thisOption])
+		end
+	end
+
+	self.menuOption_DisplayMode:setState(g_simpleInspector.displayMode)
+	for _, value in ipairs(boolMenuOptions) do
+		local thisMenuOption = "menuOption_" .. value
+		local thisRealOption = "isEnabled" .. value
+		self[thisMenuOption]:setIsChecked(g_simpleInspector[thisRealOption])
+	end
+end
+
+function SimpleInspector:onMenuOptionChanged_DisplayMode(state)
+	self.displayMode = state
+	SimpleInspector:saveSettings()
+end
+
+function SimpleInspector:onMenuOptionChanged_boolOpt(state, info)
+	local thisOption = "isEnabled" .. string.sub(info.id,17)
+	self[thisOption] = state == CheckedOptionElement.STATE_CHECKED
+	SimpleInspector:saveSettings()
 end

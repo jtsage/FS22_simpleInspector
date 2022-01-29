@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <translationContributors>JTSage</translationContributors>
+
+  <texts>
+	<text name="input_SimpleInspector_reload_config" text="Reload configuration" />
+	<text name="title_simpleInspector"  text="Simple Inspector" />
+	<text name="setting_simpleInspector_ShowAll"  text="Show All Vehicles" />
+	<text name="toolTip_simpleInspector_ShowAll"  text="Show All Vehicles, not just those running, occupied, or AI working" />
+	<text name="setting_simpleInspector_ShowPlayer"  text="Show Player Names" />
+	<text name="toolTip_simpleInspector_ShowPlayer"  text="Multiplayer only, show name of controlling player" />
+	<text name="setting_simpleInspector_ShowFillPercent"  text="Show Fill Level Percentages" />
+	<text name="toolTip_simpleInspector_ShowFillPercent"  text="Show a percentage next to the numeric fill level" />
+	<text name="setting_simpleInspector_ShowFuel"  text="Show Fuel Level" />
+	<text name="toolTip_simpleInspector_ShowFuel"  text="Show the type and fill percentage of Fuel in each vehicle" />
+	<text name="setting_simpleInspector_ShowSpeed"  text="Show Speed" />
+	<text name="toolTip_simpleInspector_ShowSpeed"  text="Show the current speed of each vehicle" />
+	<text name="setting_simpleInspector_ShowFills"  text="Show Fill Levels" />
+	<text name="toolTip_simpleInspector_ShowFills"  text="Show fill type and amount for each vehicle and it's attachments" />
+	<text name="setting_simpleInspector_ShowField"  text="Show On-Field Status" />
+	<text name="toolTip_simpleInspector_ShowField"  text="Show on field status for each vehicle" />
+	<text name="setting_simpleInspector_ShowFieldNum"  text="Show field number" />
+	<text name="toolTip_simpleInspector_ShowFieldNum"  text="Show field number (if known) for each on-field vehicle" />
+	<text name="setting_simpleInspector_PadFieldNum"  text="Pad Field Numbers" />
+	<text name="toolTip_simpleInspector_PadFieldNum"  text="Pad field numebers to two digits" />
+	<text name="setting_simpleInspector_ShowDamage"  text="Show Damage" />
+	<text name="toolTip_simpleInspector_ShowDamage"  text="Show a marker when vehicle hits the damage threshold (20% remaining by default)" />
+	<text name="setting_simpleInspector_ShowCPWaypoints"  text="Show CoursePlay Way Points" />
+	<text name="toolTip_simpleInspector_ShowCPWaypoints"  text="When vehicle is working a CoursePlay course, show it's current waypoint and the total number of waypoints" />
+	<text name="setting_simpleInspector_TextBold"  text="Use Bold Font" />
+	<text name="toolTip_simpleInspector_TextBold"  text="Always use a bold font in the display" />
+	<text name="setting_simpleInspector_DisplayMode"  text="Display Mode" />
+	<text name="toolTip_simpleInspector_DisplayMode"  text="Mode to use to display data" />
+	<text name="setting_simpleInspector_DisplayMode1"  text="Top Left, Under Help" />
+	<text name="setting_simpleInspector_DisplayMode2"  text="Top Right, Under Clock" />
+	<text name="setting_simpleInspector_DisplayMode3"  text="Bottom Left, Above Map" />
+	<text name="setting_simpleInspector_DisplayMode4"  text="Bottom Right, Above Speedometer" />
+  </texts>
+</l10n>

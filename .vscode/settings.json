@@ -54,6 +54,8 @@
 		"getXMLFloat",
 		"g_inputBinding",
 		"g_client",
-		"delete"
+		"delete",
+		"CheckedOptionElement",
+		"TextElement"
 	]
 }

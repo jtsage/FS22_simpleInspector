@@ -11,7 +11,6 @@ occupied by a user or a helper
 
 Default Input Bindings:
 Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
-Left Ctrl + Left Alt + Num Pad 8 : Toggle Display Mode 1, 2, 3, 4
 
 Changelog:
 1.0.0.1:
@@ -35,6 +34,10 @@ Changelog:
 
 1.0.0.6:
  - Add user name for controlled vehicles.
+
+1.0.1.0:
+ - Add bulk of options to the game config menu
+ - Save settings on a per savegame basis, not globally
 ]]></en>
         <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
 (optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
@@ -42,7 +45,6 @@ sie von einem Benutzer oder einem Helfer besetzt sind
 
 Standard-Eingabebindungen:
 Left Ctrl + Left Alt + Num Pad 9: Konfigurationsdatei von der Festplatte neu laden
-Left Ctrl + Left Alt + Num Pad 8: Umschalten des Anzeigemodus 1, 2, 3, 4
 
 Changelog:
 1.0.0.1:
@@ -66,43 +68,27 @@ Changelog:
 
 1.0.0.6:
  - Benutzernamen für kontrollierte Fahrzeuge hinzufügen.
+
+1.0.1.0:
+ - Hinzufügen einer Vielzahl von Optionen in das Konfigurationsmenü des Spiels
+ - Speichern der Einstellungen pro Spielstand, nicht global
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.0.6</version>
+    <version>1.0.1.0</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>
         <sourceFile filename="loader.lua"/>
     </extraSourceFiles>
-    <l10n>
-        <text name="input_SimpleInspector_reload_config">
-            <de>
-                <![CDATA[Konfiguration neu laden]]>
-            </de>
-            <en>
-                <![CDATA[Reload configuration]]>
-            </en>
-        </text>
-        <text name="input_SimpleInspector_cycle_display">
-            <de>
-                <![CDATA[Darstellung umschalten]]>
-            </de>
-            <en>
-                <![CDATA[Switch display mode]]>
-            </en>
-        </text>
-    </l10n>
+    <l10n filenamePrefix="translations/translation"/>
+
     <actions>
         <action name="SimpleInspector_reload_config" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
-        <action name="SimpleInspector_cycle_display" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
     </actions>
     <inputBinding>
         <actionBinding action="SimpleInspector_reload_config">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_9" axisComponent="+" neutralInput="0" index="1" />
-        </actionBinding>
-        <actionBinding action="SimpleInspector_cycle_display">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_8" axisComponent="+" neutralInput="0" index="1" />
         </actionBinding>
     </inputBinding>
 </modDesc>

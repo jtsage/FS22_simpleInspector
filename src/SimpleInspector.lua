@@ -993,7 +993,7 @@ function SimpleInspector.initGui(self)
 	if not g_simpleInspector.createdGUI then -- Skip if we've already done this once
 		g_simpleInspector.createdGUI = true
 
-		self.menuOption_DisplayMode = self.checkAutoMotorStart:clone()
+		self.menuOption_DisplayMode = self.checkInvertYLook:clone()
 		self.menuOption_DisplayMode.target = g_simpleInspector
 		self.menuOption_DisplayMode.id = "simpleInspector_DisplayMode"
 		self.menuOption_DisplayMode:setCallback("onClickCallback", "onMenuOptionChanged_DisplayMode")
@@ -1016,7 +1016,7 @@ function SimpleInspector.initGui(self)
 		for _, optName in pairs(boolMenuOptions) do
 			local fullName = "menuOption_" .. optName
 
-			self[fullName]           = self.checkAutoMotorStart:clone()
+			self[fullName]           = self.checkInvertYLook:clone()
 			self[fullName]["target"] = g_simpleInspector
 			self[fullName]["id"]     = "simpleInspector_" .. optName
 			self[fullName]:setCallback("onClickCallback", "onMenuOptionChanged_boolOpt")

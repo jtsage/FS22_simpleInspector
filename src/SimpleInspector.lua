@@ -22,6 +22,7 @@ SimpleInspector.displayMode5Y   = 0.2
 
 SimpleInspector.debugMode       = false
 
+SimpleInspector.isEnabledVisible         = true
 SimpleInspector.isEnabledShowPlayer      = true
 SimpleInspector.isEnabledShowAll         = false
 SimpleInspector.isEnabledShowFillPercent = true
@@ -188,6 +189,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"displayMode5X", "float"},
 		{"displayMode5Y", "float"},
 		{"debugMode", "bool"},
+		{"isEnabledVisible", "bool"},
 		{"isEnabledShowPlayer", "bool"},
 		{"isEnabledShowAll", "bool"},
 		{"isEnabledShowFillPercent", "bool"},
@@ -576,7 +578,7 @@ function SimpleInspector:draw()
 		local info_text = self.display_data
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
 
-		if #info_text == 0 then
+		if #info_text == 0 or not g_simpleInspector.isEnabledVisible then
 			-- we have no entries, hide the overlay and leave
 			self.inspectBox:setVisible(false)
 			return
@@ -983,16 +985,19 @@ end
 
 function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
-		"ShowAll", "ShowPlayer", "ShowFillPercent", "ShowFuel", "ShowSpeed",
+		"Visible", "ShowAll", "ShowPlayer", "ShowFillPercent", "ShowFuel", "ShowSpeed",
 		"ShowFills", "ShowField", "ShowFieldNum", "PadFieldNum", "ShowDamage",
 		"ShowCPWaypoints", "TextBold"
 	}
 
 	if not g_simpleInspector.createdGUI then -- Skip if we've already done this once
+		g_simpleInspector.createdGUI = true
+
 		self.menuOption_DisplayMode = self.checkAutoMotorStart:clone()
 		self.menuOption_DisplayMode.target = g_simpleInspector
 		self.menuOption_DisplayMode.id = "simpleInspector_DisplayMode"
 		self.menuOption_DisplayMode:setCallback("onClickCallback", "onMenuOptionChanged_DisplayMode")
+		self.menuOption_DisplayMode:setDisabled(false)
 
 		local settingTitle = self.menuOption_DisplayMode.elements[4]
 		local toolTip = self.menuOption_DisplayMode.elements[6]
@@ -1015,6 +1020,7 @@ function SimpleInspector.initGui(self)
 			self[fullName]["target"] = g_simpleInspector
 			self[fullName]["id"]     = "simpleInspector_" .. optName
 			self[fullName]:setCallback("onClickCallback", "onMenuOptionChanged_boolOpt")
+			self[fullName]:setDisabled(false)
 
 			local settingTitle = self[fullName]["elements"][4]
 			local toolTip      = self[fullName]["elements"][6]

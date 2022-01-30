@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="63">
     <title>
-        <en>SimpleInspector Vehicle Information Overlay</en>
-        <de>SimpleInspector Fahrzeuginformations-Overlay</de>
+        <en>SimpleInspector</en>
+        <de>SimpleInspector</de>
     </title>
     <description>
         <en><![CDATA[SimpleInspector shows a HUD overlay with all of the currently running vehicles

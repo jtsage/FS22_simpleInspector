@@ -16,7 +16,7 @@ local SimpleInspector_mt = Class(SimpleInspector)
 
 
 -- default options
-SimpleInspector.displayMode     = 2 -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
+SimpleInspector.displayMode     = 3 -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
 SimpleInspector.displayMode5X   = 0.2
 SimpleInspector.displayMode5Y   = 0.2
 

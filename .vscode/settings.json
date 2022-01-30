@@ -56,6 +56,21 @@
 		"g_client",
 		"delete",
 		"CheckedOptionElement",
-		"TextElement"
+		"TextElement",
+		"g_simpleInspector",
+		"delete",
+		"setXMLFloat",
+		"getXMLFloat",
+		"g_modIsLoaded",
+		"g_inputBinding",
+		"TextElement",
+		"CheckedOptionElement",
+		"MathUtil",
+		"g_fieldManager",
+		"getCenterOfMass",
+		"FSDensityMapUtil",
+		"g_farmlandManager",
+		"localToWorld",
+		"getTerrainHeightAtWorldPos"
 	]
 }

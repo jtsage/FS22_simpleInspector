@@ -5,6 +5,8 @@
   <texts>
 	<text name="input_SimpleInspector_reload_config" text="Reload configuration" />
 	<text name="title_simpleInspector"  text="Simple Inspector" />
+	<text name="setting_simpleInspector_Visible" text="HUD Visible" />
+	<text name="toolTip_simpleInspector_Visible" text="Is the HUD visible" />
 	<text name="setting_simpleInspector_ShowAll"  text="Show All Vehicles" />
 	<text name="toolTip_simpleInspector_ShowAll"  text="Show All Vehicles, not just those running, occupied, or AI working" />
 	<text name="setting_simpleInspector_ShowPlayer"  text="Show Player Names" />

@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <l10n>
-  <translationContributors>DeepL</translationContributors>
+  <translationContributors>JtSage via DeepL</translationContributors>
 
   <texts>
-	<text name="input_SimpleInspector_reload_config" text="Konfiguration neu laden" />
-	<text name="title_simpleInspector"  text="Simple Inspector" />
-	<text name="setting_simpleInspector_Visible" text="HUD Sichtbar" />
-	<text name="toolTip_simpleInspector_Visible" text="Ist das HUD sichtbar?" />
-	<text name="setting_simpleInspector_ShowAll"  text="Alle Fahrzeuge anzeigen" />
-	<text name="toolTip_simpleInspector_ShowAll"  text="Alle Fahrzeuge anzeigen, nicht nur die fahrenden, besetzten oder AI arbeitenden" />
-	<text name="setting_simpleInspector_ShowPlayer"  text="Spielernamen anzeigen" />
-	<text name="toolTip_simpleInspector_ShowPlayer"  text="Nur Multiplayer, zeigt den Namen des kontrollierenden Spielers" />
-	<text name="setting_simpleInspector_ShowFillPercent"  text="Füllstandsprozentsätze anzeigen" />
-	<text name="toolTip_simpleInspector_ShowFillPercent"  text="Zeigt einen Prozentsatz neben dem numerischen Füllstand an" />
-	<text name="setting_simpleInspector_ShowFuel"  text="Treibstoffstand anzeigen" />
-	<text name="toolTip_simpleInspector_ShowFuel"  text="Zeigt die Art und den prozentualen Füllstand des Kraftstoffs in jedem Fahrzeug an" />
-	<text name="setting_simpleInspector_ShowSpeed"  text="Geschwindigkeit anzeigen" />
-	<text name="toolTip_simpleInspector_ShowSpeed"  text="Zeigt die aktuelle Geschwindigkeit der einzelnen Fahrzeuge an." />
-	<text name="setting_simpleInspector_ShowFills"  text="Füllstände anzeigen" />
-	<text name="toolTip_simpleInspector_ShowFills"  text="Zeigt Art und Menge der Füllung für jedes Fahrzeug und seine Anbaugeräte" />
-	<text name="setting_simpleInspector_ShowField"  text="On-Field-Status anzeigen" />
-	<text name="toolTip_simpleInspector_ShowField"  text="Zeigt den Feldstatus für jedes Fahrzeug an" />
-	<text name="setting_simpleInspector_ShowFieldNum"  text="Feldnummer anzeigen" />
-	<text name="toolTip_simpleInspector_ShowFieldNum"  text="Feldnummer (falls bekannt) für jedes Fahrzeug auf dem Feld anzeigen" />
-	<text name="setting_simpleInspector_PadFieldNum"  text="Feldnummern auffüllen" />
-	<text name="toolTip_simpleInspector_PadFieldNum"  text="Feldnummern auf zwei Ziffern auffüllen" />
-	<text name="setting_simpleInspector_ShowDamage"  text="Beschädigung anzeigen" />
-	<text name="toolTip_simpleInspector_ShowDamage"  text="Zeigt eine Markierung an, wenn das Fahrzeug die Schadensschwelle erreicht (standardmäßig 20%)" />
-	<text name="setting_simpleInspector_ShowCPWaypoints"  text="CoursePlay Wegpunkte anzeigen" />
-	<text name="toolTip_simpleInspector_ShowCPWaypoints"  text="Wenn das Fahrzeug einen CoursePlay-Kurs abfährt, werden der aktuelle Wegpunkt und die Gesamtzahl der Wegpunkte angezeigt." />
-	<text name="setting_simpleInspector_TextBold"  text="Fettgedruckte Schrift verwenden" />
-	<text name="toolTip_simpleInspector_TextBold"  text="Immer eine fette Schrift in der Anzeige verwenden" />
-	<text name="setting_simpleInspector_DisplayMode"  text="Anzeigemodus" />
-	<text name="toolTip_simpleInspector_DisplayMode"  text="Modus für die Anzeige der Daten" />
-	<text name="setting_simpleInspector_DisplayMode1"  text="Oben links, unter Hilfe" />
-	<text name="setting_simpleInspector_DisplayMode2"  text="Oben rechts, unter der Uhr" />
-	<text name="setting_simpleInspector_DisplayMode3"  text="Unten links, über Karte" />
-	<text name="setting_simpleInspector_DisplayMode4"  text="Unten rechts, über dem Tachometer" />
+	<text name="input_SimpleInspector_reload_config"     text="Konfiguration neu laden" />
+	<text name="title_simpleInspector"                   text="Einfacher Inspektor" />
+	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
+	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
+	<text name="setting_simpleInspector_ShowAll"         text="Alle anzeigen" />
+	<text name="toolTip_simpleInspector_ShowAll"         text="Wenn aktiviert, werden alle Fahrzeuge angezeigt.  Wenn deaktiviert, werden nur fahrende, von der KI gesteuerte oder von einem Spieler besetzte Fahrzeuge angezeigt." />
+	<text name="setting_simpleInspector_ShowPlayer"      text="Spielernamen anzeigen" />
+	<text name="toolTip_simpleInspector_ShowPlayer"      text="Wenn aktiviert, wird der Name des Spielers angezeigt, der ein Fahrzeug steuert. Nur in Multiplayer-Spielen aktiv." />
+	<text name="setting_simpleInspector_ShowFillPercent" text="Füllstandsprozentsätze anzeigen" />
+	<text name="toolTip_simpleInspector_ShowFillPercent" text="Wenn aktiviert, wird ein Prozentsatz zusammen mit dem Füllstand eines Fahrzeugs oder Geräts angezeigt" />
+	<text name="setting_simpleInspector_ShowFuel"        text="Kraftstoffstand anzeigen" />
+	<text name="toolTip_simpleInspector_ShowFuel"        text="Wenn diese Funktion aktiviert ist, werden der Kraftstoffstand und die Art des Kraftstoffs in den Fahrzeugen angezeigt." />
+	<text name="setting_simpleInspector_ShowSpeed"       text="Geschwindigkeit anzeigen" />
+	<text name="toolTip_simpleInspector_ShowSpeed"       text="Wenn aktiviert, wird die Geschwindigkeit der Fahrzeuge angezeigt" />
+	<text name="setting_simpleInspector_ShowFills"       text="Füllstände anzeigen" />
+	<text name="toolTip_simpleInspector_ShowFills"       text="Wenn aktiviert, wird der Füllstand der Fahrzeuge und ihrer Anbaugeräte angezeigt." />
+	<text name="setting_simpleInspector_ShowField"       text="Status auf dem Feld anzeigen" />
+	<text name="toolTip_simpleInspector_ShowField"       text="Wenn aktiviert, wird eine Markierung angezeigt, wenn sich ein Fahrzeug auf einem Feld befindet." />
+	<text name="setting_simpleInspector_ShowFieldNum"    text="Feldnummer anzeigen" />
+	<text name="toolTip_simpleInspector_ShowFieldNum"    text="Wenn aktiviert, wird die Nummer des Feldes angezeigt, auf dem sich ein Fahrzeug befindet, falls bekannt." />
+	<text name="setting_simpleInspector_PadFieldNum"     text="Feldnummern auffüllen" />
+	<text name="toolTip_simpleInspector_PadFieldNum"     text="Wenn aktiviert, wird die Feldnummer mit mindestens 2 Ziffern angezeigt (1 -> 01)" />
+	<text name="setting_simpleInspector_ShowDamage"      text="Schaden anzeigen" />
+	<text name="toolTip_simpleInspector_ShowDamage"      text="Wenn aktiviert, wird eine Markierung angezeigt, wenn das Fahrzeug die Schadensschwelle erreicht (20% verbleibend / 80% beschädigt)" />
+	<text name="setting_simpleInspector_ShowCPWaypoints" text="CoursePlay Wegpunkte anzeigen" />
+	<text name="toolTip_simpleInspector_ShowCPWaypoints" text="Wenn diese Option aktiviert ist, werden die aktuelle und die Gesamtanzahl der Wegpunkte angezeigt, wenn CoursePlay ein Fahrzeug steuert." />
+	<text name="setting_simpleInspector_TextBold"        text="Fettgedruckte Schrift verwenden" />
+	<text name="toolTip_simpleInspector_TextBold"        text="Wenn diese Option aktiviert ist, wird in der gesamten Anzeige fetter Text verwendet." />
+	<text name="setting_simpleInspector_DisplayMode"     text="Anzeigemodus" />
+	<text name="toolTip_simpleInspector_DisplayMode"     text="Position der Overlay-Anzeige" />
+	<text name="setting_simpleInspector_DisplayMode1"    text="Oben links, unter Hilfe" />
+	<text name="setting_simpleInspector_DisplayMode2"    text="Oben rechts, unter der Uhr" />
+	<text name="setting_simpleInspector_DisplayMode3"    text="Unten links, über Karte" />
+	<text name="setting_simpleInspector_DisplayMode4"    text="Unten rechts, über dem Tachometer" />
   </texts>
 </l10n>

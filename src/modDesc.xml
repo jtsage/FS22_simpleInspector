@@ -1,13 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="63">
     <title>
-        <en>SimpleInspector</en>
-        <de>SimpleInspector</de>
+        <en>Simple Inspector</en>
+        <de>Einfacher Inspektor</de>
     </title>
     <description>
-        <en><![CDATA[SimpleInspector shows a HUD overlay with all of the currently running vehicles
-(optionally all vehicles), their speed, fill levels, fuel level, on field status, and if they are
-occupied by a user or a helper
+        <en><![CDATA[Simple Inspector shows a HUD overlay with vehicle statistics
+
+Display Options:
+ - 4 on screen placement locations - each corner of the display
+ - Just your vehicles or all vehicles
+ - Speed of vehicles
+ - Fuel level of vehicles
+ - On Field Status, optionally with Field number
+ - Occupation status - Vanilla AI, AutoDrive, CoursePlay, user, or noone
+ - CoursePlay course progression, if applicable
+ - Fill level of vehicle and attached implements
+ - Damage warning if vehicle or attached implement is over threshold
 
 Default Input Bindings:
 Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
@@ -22,7 +31,6 @@ Changelog:
 1.0.0.3:
  - Add CoursePlay and AutoDrive AI detection
  - Hide conveyor belts, they don't have any useful information to share.
- - Initial ModHub version
 
  1.0.0.4:
  - Add keybindings
@@ -30,48 +38,59 @@ Changelog:
 
 1.0.0.5:
  - Make bold text optional
- - Bug fix for invalid fill levels maybe?
+ - Bug fix for invalid fill levels
 
 1.0.0.6:
  - Add user name for controlled vehicles.
 
 1.0.1.0:
- - Add bulk of options to the game config menu
+ - Add bulk of options to the general config menu
  - Save settings on a per savegame basis, not globally
+ - Initial ModHub version
 ]]></en>
-        <de><![CDATA[SimpleInspector zeigt ein HUD-Overlay mit allen aktuell fahrenden Fahrzeugen 
-(optional allen Fahrzeugen), deren Geschwindigkeit, Füllständen, Kraftstoffstand, Feldstatus und ob
-sie von einem Benutzer oder einem Helfer besetzt sind
+        <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
+
+Anzeigeoptionen:
+ - 4 Platzierungsorte auf dem Bildschirm 
+ - jede Ecke der Anzeige 
+ - nur Ihre Fahrzeuge oder alle Fahrzeuge 
+ - Geschwindigkeit der Fahrzeuge 
+ - Kraftstoffstand der Fahrzeuge 
+ - Status auf dem Feld, optional mit Feldnummer 
+ - Besetzungsstatus - Vanilla AI, AutoDrive, CoursePlay, Benutzer oder niemand 
+ - CoursePlay-Kursverlauf, falls zutreffend 
+ - Füllstand des Fahrzeugs und der angehängten Arbeitsgeräte
+ - Schadenswarnung, wenn das Fahrzeug oder das angehängte Gerät den Schwellenwert überschreitet
 
 Standard-Eingabebindungen:
-Left Ctrl + Left Alt + Num Pad 9: Konfigurationsdatei von der Festplatte neu laden
+Left Ctrl + Left Alt + Num Pad 9 : Konfigurationsdatei von der Festplatte neu laden
 
 Changelog:
 1.0.0.1:
- - Fix für fehlende FillLevel-Informationen bei rechtsbündigen Anzeigen.
+ - Fix für fehlende fillLevel-Informationen bei rechtsbündigen Anzeigen.
 
 1.0.0.2:
- - Hinzufügen einer Schadensanzeige (Standard, wenn der Traktor oder das angehängte Gerät zu 80% beschädigt ist)
+ - Schadensanzeige hinzufügen (Standard, wenn Traktor oder Anbaugerät zu 80% beschädigt ist)
 
 1.0.0.3:
- - Hinzufügen von CoursePlay und AutoDrive AI-Erkennung
- - Ausblenden von Förderbändern, da sie keine nützlichen Informationen liefern.
- - Erste ModHub-Version
+ - CoursePlay und AutoDrive AI-Erkennung hinzufügen
+ - Verstecken Sie Förderbänder, sie haben keine nützlichen Informationen zu teilen.
 
-1.0.0.4
+1.0.0.4:
  - Tastaturbelegungen hinzufügen
  - Option zum Auffüllen von Feldern mit weniger als 10 Punkten hinzufügen
 
-1.0.0.5
- - Fettschrift optional machen
- - Fehlerbehebung für ungültige Füllstände vielleicht?
+1.0.0.5:
+ - Fettschrift optional machen 
+ - Fehlerbehebung für ungültige Füllstände
 
 1.0.0.6:
  - Benutzernamen für kontrollierte Fahrzeuge hinzufügen.
 
 1.0.1.0:
- - Hinzufügen einer Vielzahl von Optionen in das Konfigurationsmenü des Spiels
- - Speichern der Einstellungen pro Spielstand, nicht global
+ - Hinzufügen einer Vielzahl von Optionen zum allgemeinen Konfigurationsmenü 
+ - Speichern der Einstellungen pro Spielstand, nicht global 
+ - Erste ModHub-Version
 ]]></de>
     </description>
     <author>JTSage</author>

@@ -14,10 +14,15 @@ unknowingly using an old version.  For "official" releases, please use the relea
 
 ## Features
 
-* Display all (enterable) vehicles or just those with the motor running
-* Show speed for vehicles
-* Show is the vehicle is AI or user controlled
-* Show fill level of the vehicle
+* 4 on screen placement locations - each corner of the display
+* Just your vehicles or all vehicles
+* Speed of vehicles
+* Fuel level of vehicles
+* On Field Status, optionally with Field number
+* Occupation status - Vanilla AI, AutoDrive, CoursePlay, user, or noone
+* CoursePlay course progression, if applicable
+* Fill level of vehicle and attached implements
+* Damage warning if vehicle or attached implement is over threshold
 
 ## Default Input Bindings
 

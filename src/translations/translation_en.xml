@@ -5,37 +5,37 @@
   <texts>
 	<text name="input_SimpleInspector_reload_config" text="Reload configuration" />
 	<text name="title_simpleInspector"  text="Simple Inspector" />
-	<text name="setting_simpleInspector_Visible" text="HUD Visible" />
-	<text name="toolTip_simpleInspector_Visible" text="Is the HUD visible" />
-	<text name="setting_simpleInspector_ShowAll"  text="Show All Vehicles" />
-	<text name="toolTip_simpleInspector_ShowAll"  text="Show All Vehicles, not just those running, occupied, or AI working" />
-	<text name="setting_simpleInspector_ShowPlayer"  text="Show Player Names" />
-	<text name="toolTip_simpleInspector_ShowPlayer"  text="Multiplayer only, show name of controlling player" />
-	<text name="setting_simpleInspector_ShowFillPercent"  text="Show Fill Level Percentages" />
-	<text name="toolTip_simpleInspector_ShowFillPercent"  text="Show a percentage next to the numeric fill level" />
-	<text name="setting_simpleInspector_ShowFuel"  text="Show Fuel Level" />
-	<text name="toolTip_simpleInspector_ShowFuel"  text="Show the type and fill percentage of Fuel in each vehicle" />
-	<text name="setting_simpleInspector_ShowSpeed"  text="Show Speed" />
-	<text name="toolTip_simpleInspector_ShowSpeed"  text="Show the current speed of each vehicle" />
-	<text name="setting_simpleInspector_ShowFills"  text="Show Fill Levels" />
-	<text name="toolTip_simpleInspector_ShowFills"  text="Show fill type and amount for each vehicle and it's attachments" />
-	<text name="setting_simpleInspector_ShowField"  text="Show On-Field Status" />
-	<text name="toolTip_simpleInspector_ShowField"  text="Show on field status for each vehicle" />
-	<text name="setting_simpleInspector_ShowFieldNum"  text="Show field number" />
-	<text name="toolTip_simpleInspector_ShowFieldNum"  text="Show field number (if known) for each on-field vehicle" />
-	<text name="setting_simpleInspector_PadFieldNum"  text="Pad Field Numbers" />
-	<text name="toolTip_simpleInspector_PadFieldNum"  text="Pad field numebers to two digits" />
-	<text name="setting_simpleInspector_ShowDamage"  text="Show Damage" />
-	<text name="toolTip_simpleInspector_ShowDamage"  text="Show a marker when vehicle hits the damage threshold (20% remaining by default)" />
-	<text name="setting_simpleInspector_ShowCPWaypoints"  text="Show CoursePlay Way Points" />
-	<text name="toolTip_simpleInspector_ShowCPWaypoints"  text="When vehicle is working a CoursePlay course, show it's current waypoint and the total number of waypoints" />
-	<text name="setting_simpleInspector_TextBold"  text="Use Bold Font" />
-	<text name="toolTip_simpleInspector_TextBold"  text="Always use a bold font in the display" />
-	<text name="setting_simpleInspector_DisplayMode"  text="Display Mode" />
-	<text name="toolTip_simpleInspector_DisplayMode"  text="Mode to use to display data" />
-	<text name="setting_simpleInspector_DisplayMode1"  text="Top Left, Under Help" />
-	<text name="setting_simpleInspector_DisplayMode2"  text="Top Right, Under Clock" />
-	<text name="setting_simpleInspector_DisplayMode3"  text="Bottom Left, Above Map" />
-	<text name="setting_simpleInspector_DisplayMode4"  text="Bottom Right, Above Speedometer" />
+	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
+	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
+	<text name="setting_simpleInspector_ShowAll"         text="Show All" />
+	<text name="toolTip_simpleInspector_ShowAll"         text="When enabled, show all vehicles.  When disabled, limit to running vehicles, those controlled by AI, or occupied by a player" />
+	<text name="setting_simpleInspector_ShowPlayer"      text="Show Player Names" />
+	<text name="toolTip_simpleInspector_ShowPlayer"      text="When enabled, show the name of the player controlling a vehicle. Active in multiplayer games only." />
+	<text name="setting_simpleInspector_ShowFillPercent" text="Show Fill Level Percentages" />
+	<text name="toolTip_simpleInspector_ShowFillPercent" text="When enabled, show a percentage along with the fill level of a vehicle or implement" />
+	<text name="setting_simpleInspector_ShowFuel"        text="Show Fuel Level" />
+	<text name="toolTip_simpleInspector_ShowFuel"        text="When enabled, show the fuel level and type of fuel in vehicles" />
+	<text name="setting_simpleInspector_ShowSpeed"       text="Show Speed" />
+	<text name="toolTip_simpleInspector_ShowSpeed"       text="When enabled, show the speed of vehicles" />
+	<text name="setting_simpleInspector_ShowFills"       text="Show Fill Levels" />
+	<text name="toolTip_simpleInspector_ShowFills"       text="When enabled, show the fill level of vehicles and their implements" />
+	<text name="setting_simpleInspector_ShowField"       text="Show On-Field Status" />
+	<text name="toolTip_simpleInspector_ShowField"       text="When enabled, show a marker if a vehicle is on a field" />
+	<text name="setting_simpleInspector_ShowFieldNum"    text="Show field number" />
+	<text name="toolTip_simpleInspector_ShowFieldNum"    text="When enabled, show the number of the field a vehicle is on, if known" />
+	<text name="setting_simpleInspector_PadFieldNum"     text="Pad Field Numbers" />
+	<text name="toolTip_simpleInspector_PadFieldNum"     text="When enabled, show the field number as at least 2 digits (1 -> 01)" />
+	<text name="setting_simpleInspector_ShowDamage"      text="Show Damage" />
+	<text name="toolTip_simpleInspector_ShowDamage"      text="When enabled, show a marker when vehicle hits the damage threshold (20% remaining / 80% damaged)" />
+	<text name="setting_simpleInspector_ShowCPWaypoints" text="Show CoursePlay Way Points" />
+	<text name="toolTip_simpleInspector_ShowCPWaypoints" text="When enabled, show the current and total number of waypoints when CoursePlay controls a vehicle." />
+	<text name="setting_simpleInspector_TextBold"        text="Use Bold Font" />
+	<text name="toolTip_simpleInspector_TextBold"        text="When enabled, use bold text throughout the display" />
+	<text name="setting_simpleInspector_DisplayMode"     text="Display Mode" />
+	<text name="toolTip_simpleInspector_DisplayMode"     text="Position of the overlay display" />
+	<text name="setting_simpleInspector_DisplayMode1"    text="Top Left, Under Help" />
+	<text name="setting_simpleInspector_DisplayMode2"    text="Top Right, Under Clock" />
+	<text name="setting_simpleInspector_DisplayMode3"    text="Bottom Left, Above Map" />
+	<text name="setting_simpleInspector_DisplayMode4"    text="Bottom Right, Above Speedometer" />
   </texts>
 </l10n>

@@ -985,8 +985,8 @@ end
 
 function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
-		"Visible", "ShowAll", "ShowPlayer", "ShowFillPercent", "ShowFuel", "ShowSpeed",
-		"ShowFills", "ShowField", "ShowFieldNum", "PadFieldNum", "ShowDamage",
+		"Visible", "ShowAll", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
+		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "TextBold"
 	}
 

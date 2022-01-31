@@ -71,6 +71,7 @@
 		"FSDensityMapUtil",
 		"g_farmlandManager",
 		"localToWorld",
-		"getTerrainHeightAtWorldPos"
+		"getTerrainHeightAtWorldPos",
+		"g_sleepManager"
 	]
 }

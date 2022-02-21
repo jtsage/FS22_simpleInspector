@@ -5,11 +5,6 @@
 -- source: https://github.com/jtsage/FS22_Simple_Inspector
 -- credits: HappyLooser/VehicleInspector for the isOnField logic, and some pointers on where to find info
 
---[[
-CHANGELOG
-	v1.0.0.0
-		- First version.  not compatible with EnhancedVehicle new damage/paint/fuel display (set to mode 1!)
-]]--
 SimpleInspector= {}
 
 local SimpleInspector_mt = Class(SimpleInspector)
@@ -235,6 +230,11 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	}
 
 	return self
+end
+
+function SimpleInspector:openConstructionScreen()
+	-- hack for construction screen showing blank box.
+	g_simpleInspector.inspectBox:setVisible(false)
 end
 
 function SimpleInspector:getAllDamage(vehicle )
@@ -973,6 +973,9 @@ function SimpleInspector:registerActionEvents()
 	local _, reloadConfig = g_inputBinding:registerActionEvent('SimpleInspector_reload_config', self,
 		SimpleInspector.actionReloadConfig, false, true, false, true)
 	g_inputBinding:setActionEventTextVisibility(reloadConfig, false)
+	local _, toggleVisible = g_inputBinding:registerActionEvent('SimpleInspector_toggle_visible', self,
+		SimpleInspector.actionToggleVisible, false, true, false, true)
+	g_inputBinding:setActionEventTextVisibility(toggleVisible, false)
 end
 
 function SimpleInspector:actionReloadConfig()
@@ -981,6 +984,15 @@ function SimpleInspector:actionReloadConfig()
 		print("~~" .. thisModEnviroment.myName .." :: reload settings from disk")
 	end
 	thisModEnviroment:loadSettings()
+end
+
+function SimpleInspector:actionToggleVisible()
+	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
+	if ( thisModEnviroment.debugMode ) then
+		print("~~" .. thisModEnviroment.myName .." :: toggle display on/off")
+	end
+	thisModEnviroment.isEnabledVisible = (not thisModEnviroment.isEnabledVisible)
+	thisModEnviroment:saveSettings()
 end
 
 function SimpleInspector.initGui(self)

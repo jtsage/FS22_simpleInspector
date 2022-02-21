@@ -20,6 +20,7 @@ Display Options:
 
 Default Input Bindings:
 Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
+Left Ctrl + Left Alt + Num Pad 6 : Toggle HUD Visibility
 
 Changelog:
 1.0.0.1:
@@ -47,6 +48,10 @@ Changelog:
  - Add bulk of options to the general config menu
  - Save settings on a per savegame basis, not globally
  - Initial ModHub version
+
+1.0.1.1:
+ - Add keybind for visibility toggle
+ - Hide on construction screen
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -64,6 +69,7 @@ Anzeigeoptionen:
 
 Standard-Eingabebindungen:
 Left Ctrl + Left Alt + Num Pad 9 : Konfigurationsdatei von der Festplatte neu laden
+Left Ctrl + Left Alt + Num Pad 6 : HUD-Sichtbarkeit umschalten
 
 Changelog:
 1.0.0.1:
@@ -91,10 +97,14 @@ Changelog:
  - Hinzufügen einer Vielzahl von Optionen zum allgemeinen Konfigurationsmenü 
  - Speichern der Einstellungen pro Spielstand, nicht global 
  - Erste ModHub-Version
+
+ 1.0.1.1:
+ - Keybind für Sichtbarkeitsumschaltung hinzufügen
+ - Auf dem Konstruktionsbildschirm ausblenden
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.0</version>
+    <version>1.0.1.1</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>
@@ -104,10 +114,14 @@ Changelog:
 
     <actions>
         <action name="SimpleInspector_reload_config" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
+        <action name="SimpleInspector_toggle_visible" category="SYSTEM" axisType="HALF" ignoreComboMask="false" />
     </actions>
     <inputBinding>
         <actionBinding action="SimpleInspector_reload_config">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_9" axisComponent="+" neutralInput="0" index="1" />
+        </actionBinding>
+        <actionBinding action="SimpleInspector_toggle_visible">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_lalt KEY_KP_5" axisComponent="+" neutralInput="0" index="1" />
         </actionBinding>
     </inputBinding>
 </modDesc>

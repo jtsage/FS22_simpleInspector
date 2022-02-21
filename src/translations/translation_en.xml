@@ -3,8 +3,9 @@
   <translationContributors>JTSage</translationContributors>
 
   <texts>
-	<text name="input_SimpleInspector_reload_config" text="Reload configuration" />
-	<text name="title_simpleInspector"  text="Simple Inspector" />
+	<text name="input_SimpleInspector_reload_config"     text="Reload configuration" />
+	<text name="input_SimpleInspector_toggle_visible"    text="Toggle Display On/Off" />
+	<text name="title_simpleInspector"                   text="Simple Inspector" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
 	<text name="setting_simpleInspector_ShowAll"         text="Show All" />

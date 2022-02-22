@@ -29,10 +29,11 @@ unknowingly using an old version.  For "official" releases, please use the relea
 ## Default Input Bindings
 
 * `Left Ctrl` + `Left Alt` + `Num Pad 9` : Reload configuration file from disk
+* `Left Alt` + `Num Pad 9` : Toggle Visibility
 
 ## Options
 
-All options are set via a xml file your savegame folder - simpleInspector.xml
+All options are set via a xml file in `modSettings/FS22_SimpleInspector/savegame##/simpleInspector.xml`
 
 Most view options can be set in the in-game settings menu (scroll down)
 

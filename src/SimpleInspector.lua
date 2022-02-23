@@ -436,10 +436,26 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					fillType = spec_fillUnit.fillUnits[fillUnit.childUnitOnHud].fillType
 				end
 
-				local maxReached = not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit and vehicle.getMaxComponentMassReached ~= nil and vehicle:getMaxComponentMassReached();
+				local maxMatters = not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit
+				local maxReached = maxMatters and vehicle.getMaxComponentMassReached ~= nil and vehicle:getMaxComponentMassReached();
 
 				if maxReached then
+					-- We be full, do no more math.
 					capacity = fillLevel
+				elseif maxMatters and fillLevel > 0 then
+					-- adjust capacity for max weight (must have a fillLevel)
+					if ( math.huge ~= vehicle.maxComponentMass ) then
+						-- if max is infinity, just use stated capactiy
+						local fillTypeDesc  = g_fillTypeManager:getFillTypeByIndex(fillType)
+
+						-- get the weight available to fill
+						local vehCapacityByWeight = vehicle.maxComponentMass - vehicle:getDefaultMass()
+						-- divide that by the mass of our filltype to get max available liters
+						local vehCapacityByWeightLiters = math.ceil(vehCapacityByWeight / fillTypeDesc.massPerLiter)
+
+						-- take the smaller number of allowed mass or stated cap limit
+						capacity = math.min(capacity, vehCapacityByWeightLiters)
+					end
 				end
 
 				if fillLevel > 0 then

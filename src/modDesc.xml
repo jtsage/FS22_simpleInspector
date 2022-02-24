@@ -58,6 +58,7 @@ Changelog:
 
 1.0.1.3:
  - Compute fill percentage with maxMass respected when possible
+ - Add optional alphebetic sorting of the list (uses purchase / tab order otherwise)
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -113,6 +114,7 @@ Changelog:
 
  1.0.1.3:
  - Berechnung des Füllungsgrads unter Berücksichtigung von maxMass, wenn möglich
+ - Fügen Sie eine optionale alphebetische Sortierung der Liste hinzu (sonst wird die Kauf-/Tab-Reihenfolge verwendet)
 ]]></de>
     </description>
     <author>JTSage</author>

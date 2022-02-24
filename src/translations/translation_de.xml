@@ -8,6 +8,8 @@
 	<text name="title_simpleInspector"                   text="Einfacher Inspektor" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
+	<text name="setting_simpleInspector_AlphaSort"       text="Liste alphabetisch sortieren" />
+	<text name="toolTip_simpleInspector_AlphaSort"       text="Wenn aktiviert, wird die Liste alphabetisch sortiert, andernfalls wird die Tabulatorreihenfolge verwendet." />
 	<text name="setting_simpleInspector_ShowAll"         text="Alle anzeigen" />
 	<text name="toolTip_simpleInspector_ShowAll"         text="Wenn aktiviert, werden alle Fahrzeuge angezeigt.  Wenn deaktiviert, werden nur fahrende, von der KI gesteuerte oder von einem Spieler besetzte Fahrzeuge angezeigt." />
 	<text name="setting_simpleInspector_ShowPlayer"      text="Spielernamen anzeigen" />

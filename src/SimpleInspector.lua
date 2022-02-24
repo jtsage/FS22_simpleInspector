@@ -18,6 +18,7 @@ SimpleInspector.displayMode5Y   = 0.2
 SimpleInspector.debugMode       = false
 
 SimpleInspector.isEnabledVisible         = true
+SimpleInspector.isEnabledAlphaSort       = false
 SimpleInspector.isEnabledShowPlayer      = true
 SimpleInspector.isEnabledShowAll         = false
 SimpleInspector.isEnabledShowFillPercent = true
@@ -117,12 +118,16 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.fill_invert_some = {
 		tippingaugerwagon = true,
 		augerwagon        = true,
+		combinedrivable   = true,
+		foragewagon       = true,
+		baler             = true
 	}
 	self.fill_invert_types = {
 		FillType.SEEDS,
 		FillType.ROADSALT,
 		FillType.FERTILIZER,
 		FillType.LIME,
+		FillType.SILAGE_ADDITIVE,
 	}
 	self.fill_color_CB = {
 		{ 1.00, 0.76, 0.04, 1 },
@@ -185,6 +190,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"displayMode5Y", "float"},
 		{"debugMode", "bool"},
 		{"isEnabledVisible", "bool"},
+		{"isEnabledAlphaSort", "bool"},
 		{"isEnabledShowPlayer", "bool"},
 		{"isEnabledShowAll", "bool"},
 		{"isEnabledShowFillPercent", "bool"},
@@ -493,8 +499,21 @@ end
 function SimpleInspector:updateVehicles()
 	local new_data_table = {}
 	if g_currentMission ~= nil and g_currentMission.vehicles ~= nil then
+
+		local sortOrder = {}
+
 		for v=1, #g_currentMission.vehicles do
 			local thisVeh = g_currentMission.vehicles[v]
+			table.insert(sortOrder, {v, thisVeh:getFullName()})
+		end
+
+		if g_simpleInspector.isEnabledAlphaSort then
+			local function sorter(a,b) return a[2] < b[2] end
+			table.sort(sortOrder, sorter)
+		end
+
+		for _, sortEntry in ipairs(sortOrder) do
+			local thisVeh = g_currentMission.vehicles[sortEntry[1]]
 			if thisVeh ~= nil and thisVeh.getIsControlled ~= nil then
 				local typeName = Utils.getNoNil(thisVeh.typeName, "unknown")
 				local isTrain = typeName == "locomotive"
@@ -1013,7 +1032,7 @@ end
 
 function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
-		"Visible", "ShowAll", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
+		"Visible", "AlphaSort", "ShowAll", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "TextBold"
 	}

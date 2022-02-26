@@ -12,6 +12,8 @@
 	<text name="toolTip_simpleInspector_AlphaSort"       text="Wenn aktiviert, wird die Liste alphabetisch sortiert, andernfalls wird die Tabulatorreihenfolge verwendet." />
 	<text name="setting_simpleInspector_ShowAll"         text="Alle anzeigen" />
 	<text name="toolTip_simpleInspector_ShowAll"         text="Wenn aktiviert, werden alle Fahrzeuge angezeigt.  Wenn deaktiviert, werden nur fahrende, von der KI gesteuerte oder von einem Spieler besetzte Fahrzeuge angezeigt." />
+	<text name="setting_simpleInspector_ShowUnowned"     text="Alle Bauernhöfe anzeigen" />
+	<text name="toolTip_simpleInspector_ShowUnowned"     text="Wenn diese Option aktiviert ist, werden Fahrzeuge von Farmen angezeigt, zu denen du nicht gehörst.  Im Einzelspieler-Modus hat dies keine Auswirkung." />
 	<text name="setting_simpleInspector_ShowPlayer"      text="Spielernamen anzeigen" />
 	<text name="toolTip_simpleInspector_ShowPlayer"      text="Wenn aktiviert, wird der Name des Spielers angezeigt, der ein Fahrzeug steuert. Nur in Multiplayer-Spielen aktiv." />
 	<text name="setting_simpleInspector_ShowFillPercent" text="Füllstandsprozentsätze anzeigen" />

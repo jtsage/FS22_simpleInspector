@@ -5,6 +5,7 @@
   <texts>
 	<text name="input_SimpleInspector_reload_config"     text="Reload configuration" />
 	<text name="input_SimpleInspector_toggle_visible"    text="Toggle Display On/Off" />
+	<text name="input_SimpleInspector_toggle_allfarms"   text="Toggle Show All Farms On/Off" />
 	<text name="title_simpleInspector"                   text="Simple Inspector" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
@@ -12,6 +13,8 @@
 	<text name="toolTip_simpleInspector_AlphaSort"       text="When enabled, sort list alphebetically, otherwise, use the tab order." />
 	<text name="setting_simpleInspector_ShowAll"         text="Show All" />
 	<text name="toolTip_simpleInspector_ShowAll"         text="When enabled, show all vehicles.  When disabled, limit to running vehicles, those controlled by AI, or occupied by a player" />
+	<text name="setting_simpleInspector_ShowUnowned"     text="Show All Farms" />
+	<text name="toolTip_simpleInspector_ShowUnowned"     text="When enabled, show vehicles from farms you are not a part of.  This has no effect in single player." />
 	<text name="setting_simpleInspector_ShowPlayer"      text="Show Player Names" />
 	<text name="toolTip_simpleInspector_ShowPlayer"      text="When enabled, show the name of the player controlling a vehicle. Active in multiplayer games only." />
 	<text name="setting_simpleInspector_ShowFillPercent" text="Show Fill Level Percentages" />

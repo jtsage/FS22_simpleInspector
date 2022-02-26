@@ -72,6 +72,8 @@
 		"g_farmlandManager",
 		"localToWorld",
 		"getTerrainHeightAtWorldPos",
-		"g_sleepManager"
+		"g_sleepManager",
+		"g_farmManager",
+		"Farm"
 	]
 }

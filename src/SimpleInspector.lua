@@ -21,6 +21,7 @@ SimpleInspector.isEnabledVisible         = true
 SimpleInspector.isEnabledAlphaSort       = false
 SimpleInspector.isEnabledShowPlayer      = true
 SimpleInspector.isEnabledShowAll         = false
+SimpleInspector.isEnabledShowUnowned     = false
 SimpleInspector.isEnabledShowFillPercent = true
 SimpleInspector.isEnabledShowFuel        = true
 SimpleInspector.isEnabledShowSpeed       = true
@@ -91,6 +92,8 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	delete(modDesc)
 
 	self.display_data = { }
+
+	self.shown_farms_mp = 0
 
 	self.fill_invert_all = {
 		fertilizingcultivatorroller    = true,
@@ -193,6 +196,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"isEnabledAlphaSort", "bool"},
 		{"isEnabledShowPlayer", "bool"},
 		{"isEnabledShowAll", "bool"},
+		{"isEnabledShowUnowned", "bool"},
 		{"isEnabledShowFillPercent", "bool"},
 		{"isEnabledShowFuel", "bool"},
 		{"isEnabledShowSpeed", "bool"},
@@ -498,13 +502,25 @@ end
 
 function SimpleInspector:updateVehicles()
 	local new_data_table = {}
+	local myFarmID = self.mission:getFarmId()
+
+	self.shown_farms_mp = 0
+
 	if g_currentMission ~= nil and g_currentMission.vehicles ~= nil then
 
 		local sortOrder = {}
 
 		for v=1, #g_currentMission.vehicles do
-			local thisVeh = g_currentMission.vehicles[v]
-			table.insert(sortOrder, {v, thisVeh:getFullName()})
+			local thisVeh    = g_currentMission.vehicles[v]
+			local thisFarmID = 0
+
+			if ( self.isMPGame ) then
+				thisFarmID = thisVeh.ownerFarmId
+			end
+
+			if ( not self.isMPGame or g_simpleInspector.isEnabledShowUnowned or myFarmID == thisFarmID ) then
+				table.insert(sortOrder, {v, thisVeh:getFullName(), thisFarmID})
+			end
 		end
 
 		if g_simpleInspector.isEnabledAlphaSort then
@@ -512,8 +528,19 @@ function SimpleInspector:updateVehicles()
 			table.sort(sortOrder, sorter)
 		end
 
+		local function farmSorter(a,b) return a[3] < b[3] end
+
+		if self.isMPGame then
+			-- We need to sort by farmID last, as this also controls how many headings we
+			-- are going to see later.
+			table.sort(sortOrder, farmSorter)
+		end
+
+		local lastFarmID = 0
+
 		for _, sortEntry in ipairs(sortOrder) do
 			local thisVeh = g_currentMission.vehicles[sortEntry[1]]
+			local thisVehFarm = g_farmManager:getFarmById(sortEntry[3])
 			if thisVeh ~= nil and thisVeh.getIsControlled ~= nil then
 				local typeName = Utils.getNoNil(thisVeh.typeName, "unknown")
 				local isTrain = typeName == "locomotive"
@@ -584,6 +611,13 @@ function SimpleInspector:updateVehicles()
 						end
 
 						self:getAllFills(thisVeh, fills, 0)
+
+						if self.isMPGame and sortEntry[3] ~= lastFarmID then
+							-- this counts how many farms we have active in the display
+							lastFarmID = sortEntry[3]
+							self.shown_farms_mp = self.shown_farms_mp + 1
+						end
+
 						table.insert(new_data_table, {
 							status,
 							isAI,
@@ -593,7 +627,8 @@ function SimpleInspector:updateVehicles()
 							fills,
 							isOnField,
 							isBroken,
-							plyrName
+							plyrName,
+							{sortEntry[3], thisVehFarm.name, thisVehFarm.color}
 						})
 					end
 				end
@@ -624,7 +659,7 @@ function SimpleInspector:draw()
 		else
 			-- we have entries, lets get the overall height of the box and unhide
 			self.inspectBox:setVisible(true)
-			dispTextH = self.inspectText.size * #info_text
+			dispTextH = (self.inspectText.size * #info_text) + (self.inspectText.size * self.shown_farms_mp)
 			overlayH = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
@@ -673,7 +708,25 @@ function SimpleInspector:draw()
 		self.inspectText.posX = dispTextX
 		self.inspectText.posY = dispTextY
 
+		local lastFarmID = -1
+
 		for _, txt in pairs(info_text) do
+
+			if self.isMPGame and lastFarmID ~= txt[10][1] then
+				-- Show the farm name, it's different from the last entry
+				lastFarmID = txt[10][1]
+				local farmText = ""
+
+				setTextColor(unpack(Farm.COLORS[txt[10][3]]))
+
+				farmText = self:renderText(dispTextX, dispTextY, farmText, txt[10][2])
+
+				dispTextY = dispTextY - self.inspectText.size
+
+				local tmpW = getTextWidth(self.inspectText.size, farmText)
+
+				if tmpW > dispTextW then dispTextW = tmpW end
+			end
 
 			local thisTextLine  = {}
 			local fullTextSoFar = ""
@@ -1011,6 +1064,9 @@ function SimpleInspector:registerActionEvents()
 	local _, toggleVisible = g_inputBinding:registerActionEvent('SimpleInspector_toggle_visible', self,
 		SimpleInspector.actionToggleVisible, false, true, false, true)
 	g_inputBinding:setActionEventTextVisibility(toggleVisible, false)
+	local _, toggleAllFarms = g_inputBinding:registerActionEvent('SimpleInspector_toggle_allfarms', self,
+		SimpleInspector.actionToggleAllFarms, false, true, false, true)
+	g_inputBinding:setActionEventTextVisibility(toggleAllFarms, false)
 end
 
 function SimpleInspector:actionReloadConfig()
@@ -1019,6 +1075,15 @@ function SimpleInspector:actionReloadConfig()
 		print("~~" .. thisModEnviroment.myName .." :: reload settings from disk")
 	end
 	thisModEnviroment:loadSettings()
+end
+
+function SimpleInspector:actionToggleAllFarms()
+	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
+	if ( thisModEnviroment.debugMode ) then
+		print("~~" .. thisModEnviroment.myName .." :: toggle all farms on/off")
+	end
+	thisModEnviroment.isEnabledShowUnowned = (not thisModEnviroment.isEnabledShowUnowned)
+	thisModEnviroment:saveSettings()
 end
 
 function SimpleInspector:actionToggleVisible()
@@ -1032,7 +1097,7 @@ end
 
 function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
-		"Visible", "AlphaSort", "ShowAll", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
+		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "TextBold"
 	}

@@ -9,6 +9,8 @@
 	<text name="title_simpleInspector"                   text="Simple Inspector" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
+	<text name="setting_simpleInspector_TextSize"        text="Font Size" />
+	<text name="toolTip_simpleInspector_TextSize"        text="Font Size for display, in relative pixels." />
 	<text name="setting_simpleInspector_AlphaSort"       text="Sort List Alphabetically" />
 	<text name="toolTip_simpleInspector_AlphaSort"       text="When enabled, sort list alphebetically, otherwise, use the tab order." />
 	<text name="setting_simpleInspector_ShowAll"         text="Show All" />

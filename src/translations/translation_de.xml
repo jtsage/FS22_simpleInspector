@@ -8,6 +8,8 @@
 	<text name="title_simpleInspector"                   text="Einfacher Inspektor" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
+	<text name="setting_simpleInspector_TextSize"        text="Schriftgröße" />
+	<text name="toolTip_simpleInspector_TextSize"        text="Schriftgröße für die Anzeige, in relativen Pixeln." />
 	<text name="setting_simpleInspector_AlphaSort"       text="Liste alphabetisch sortieren" />
 	<text name="toolTip_simpleInspector_AlphaSort"       text="Wenn aktiviert, wird die Liste alphabetisch sortiert, andernfalls wird die Tabulatorreihenfolge verwendet." />
 	<text name="setting_simpleInspector_ShowAll"         text="Alle anzeigen" />

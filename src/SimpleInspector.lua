@@ -66,6 +66,8 @@ SimpleInspector.setStringTextFieldNoNum  = "-F-"
 SimpleInspector.setStringTextDamaged     = "-!!- "
 SimpleInspector.setStringTextSep         = " | "
 
+SimpleInspector.menuTextSizes = { 8, 10, 12, 14, 16 }
+
 function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	local self = setmetatable({}, SimpleInspector_mt)
 
@@ -1054,6 +1056,9 @@ function SimpleInspector:loadSettings()
 		end
 
 		delete(xmlFile)
+
+		-- Update text size.
+		g_simpleInspector.inspectText.size = g_simpleInspector.gameInfoDisplay:scalePixelToScreenHeight(g_simpleInspector.setValueTextSize)
 	end
 end
 
@@ -1124,7 +1129,6 @@ function SimpleInspector.initGui(self)
 		settingTitle:setText(g_i18n:getText("setting_simpleInspector_DisplayMode"))
 		toolTip:setText(g_i18n:getText("toolTip_simpleInspector_DisplayMode"))
 
-
 		for _, optName in pairs(boolMenuOptions) do
 			local fullName = "menuOption_" .. optName
 
@@ -1147,12 +1151,32 @@ function SimpleInspector.initGui(self)
 		title:applyProfile("settingsMenuSubtitle", true)
 		title:setText(g_i18n:getText("title_simpleInspector"))
 
+		self.menuOption_TextSize = self.checkInvertYLook:clone()
+		self.menuOption_TextSize.target = g_simpleInspector
+		self.menuOption_TextSize.id = "simpleInspector_setValueTextSize"
+		self.menuOption_TextSize:setCallback("onClickCallback", "onMenuOptionChanged_setValueTextSize")
+		self.menuOption_TextSize:setDisabled(false)
+
+		settingTitle = self.menuOption_TextSize.elements[4]
+		toolTip = self.menuOption_TextSize.elements[6]
+
+		local textSizeTexts = {}
+		for _, size in ipairs(g_simpleInspector.menuTextSizes) do
+			table.insert(textSizeTexts, tostring(size) .. " px")
+		end
+		self.menuOption_TextSize:setTexts(textSizeTexts)
+
+		settingTitle:setText(g_i18n:getText("setting_simpleInspector_TextSize"))
+		toolTip:setText(g_i18n:getText("toolTip_simpleInspector_TextSize"))
+
+
 		self.boxLayout:addElement(title)
 		self.boxLayout:addElement(self.menuOption_DisplayMode)
 		for _, value in ipairs(boolMenuOptions) do
 			local thisOption = "menuOption_" .. value
 			self.boxLayout:addElement(self[thisOption])
 		end
+		self.boxLayout:addElement(self.menuOption_TextSize)
 	end
 
 	self.menuOption_DisplayMode:setState(g_simpleInspector.displayMode)
@@ -1161,6 +1185,20 @@ function SimpleInspector.initGui(self)
 		local thisRealOption = "isEnabled" .. value
 		self[thisMenuOption]:setIsChecked(g_simpleInspector[thisRealOption])
 	end
+
+	local textSizeState = 3 -- backup value for it set odd in the xml.
+	for idx, textSize in ipairs(g_simpleInspector.menuTextSizes) do
+		if g_simpleInspector.setValueTextSize == textSize then
+			textSizeState = idx
+		end
+	end
+	self.menuOption_TextSize:setState(textSizeState)
+end
+
+function SimpleInspector:onMenuOptionChanged_setValueTextSize(state)
+	self.setValueTextSize = g_simpleInspector.menuTextSizes[state]
+	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.setValueTextSize)
+	SimpleInspector:saveSettings()
 end
 
 function SimpleInspector:onMenuOptionChanged_DisplayMode(state)

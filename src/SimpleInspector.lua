@@ -388,13 +388,16 @@ function SimpleInspector:getFuel(vehicle)
 			g_simpleInspector.setStringTextMethane
 		}
 	}
-	for _, fuelType in pairs(fuelTypeList) do
-		local fillUnitIndex = vehicle:getConsumerFillUnitIndex(fuelType[1])
-		if ( fillUnitIndex ~= nil ) then
-			local fuelLevel = vehicle:getFillUnitFillLevel(fillUnitIndex)
-			local capacity  = vehicle:getFillUnitCapacity(fillUnitIndex)
-			local percentage = math.floor((fuelLevel / capacity) * 100)
-			return { fuelType[2], fuelType[3], percentage }
+	if vehicle.getConsumerFillUnitIndex ~= nil then
+		-- This should always pass, unless it's a very odd custom vehicle type.
+		for _, fuelType in pairs(fuelTypeList) do
+			local fillUnitIndex = vehicle:getConsumerFillUnitIndex(fuelType[1])
+			if ( fillUnitIndex ~= nil ) then
+				local fuelLevel = vehicle:getFillUnitFillLevel(fillUnitIndex)
+				local capacity  = vehicle:getFillUnitCapacity(fillUnitIndex)
+				local percentage = math.floor((fuelLevel / capacity) * 100)
+				return { fuelType[2], fuelType[3], percentage }
+			end
 		end
 	end
 	return { false } -- unknown fuel type, should not be possible.
@@ -544,17 +547,19 @@ function SimpleInspector:updateVehicles()
 			local thisVeh = g_currentMission.vehicles[sortEntry[1]]
 			local thisVehFarm = g_farmManager:getFarmById(sortEntry[3])
 			if thisVeh ~= nil and thisVeh.getIsControlled ~= nil then
-				local typeName = Utils.getNoNil(thisVeh.typeName, "unknown")
-				local isTrain = typeName == "locomotive"
-				local isBelt = typeName == "conveyorBelt" or typeName == "pickupConveyorBelt"
-				local isRidable = SpecializationUtil.hasSpecialization(Rideable, thisVeh.specializations)
-				if ( not isTrain and not isRidable and not isBelt) then
+				local typeName         = Utils.getNoNil(thisVeh.typeName, "unknown")
+				local isTrain          = typeName == "locomotive"
+				local isBelt           = typeName == "conveyorBelt" or typeName == "pickupConveyorBelt"
+				local isRidable        = SpecializationUtil.hasSpecialization(Rideable, thisVeh.specializations)
+				local isSteerImplement = thisVeh.spec_attachable ~= nil
+
+				if ( not isTrain and not isRidable and not isBelt and not isSteerImplement ) then
 					local plyrName = nil
 					local isRunning = thisVeh.getIsMotorStarted ~= nil and thisVeh:getIsMotorStarted()
 					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
 					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
 
-					if ( g_simpleInspector.isEnabledShowAll or isConned or isRunning or isOnAI) then
+					if ( g_simpleInspector.isEnabledShowAll or isConned or isRunning or isOnAI ) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
 						local speed     = self:getSpeed(thisVeh)

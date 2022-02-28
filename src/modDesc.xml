@@ -63,6 +63,9 @@ Changelog:
 1.0.1.4
  - Add multiplayer farm awareness - allow filtering to just your farm, or all farms
  - Add option to change text size from settings, fix loading of text size from xml
+
+1.0.1.5
+ - Bugfix: Some custom vehicle types based on attachments but adding the "enterable" specialization could appear in the list incorrectly, and error out the script.
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -123,10 +126,13 @@ Changelog:
 1.0.1.4
  - Multiplayer-Farmbewusstsein hinzufügen - Filterung nur für die eigene Farm oder für alle Farmen erlauben
  - Option zum Ändern der Textgröße in den Einstellungen hinzugefügt, Laden der Textgröße aus xml korrigiert
+
+1.0.1.5
+ - Bugfix: Einige benutzerdefinierte Fahrzeugtypen, die auf Anbaugeräten basieren, aber die Spezialisierung "enterable" hinzufügen, konnten in der Liste falsch erscheinen und das Skript fehlerhaft machen.
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.4</version>
+    <version>1.0.1.5</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

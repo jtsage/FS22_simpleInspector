@@ -23,49 +23,40 @@ Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
 Left Alt + Num Pad 9 : Toggle HUD Visibility
 
 Changelog:
-1.0.0.1:
+v1.0.0.1:
  - Fix for missing fillLevel info on right justified displays.
-
-1.0.0.2:
+v1.0.0.2:
  - Add damage indicator (default if tractor or attached implement is 80% damaged)
-
-1.0.0.3:
+v1.0.0.3:
  - Add CoursePlay and AutoDrive AI detection
  - Hide conveyor belts, they don't have any useful information to share.
-
- 1.0.0.4:
+v1.0.0.4:
  - Add keybindings
  - Add option to zero pad field numbers less than 10
-
-1.0.0.5:
+v1.0.0.5:
  - Make bold text optional
  - Bug fix for invalid fill levels
-
-1.0.0.6:
+v1.0.0.6:
  - Add user name for controlled vehicles.
-
-1.0.1.0:
+v1.0.1.0:
  - Add bulk of options to the general config menu
  - Save settings on a per savegame basis, not globally
  - Initial ModHub version
-
-1.0.1.1:
+v1.0.1.1:
  - Add keybind for visibility toggle
  - Hide on construction screen
-
-1.0.1.2:
+v1.0.1.2:
  - Change default keybinds
-
-1.0.1.3:
+v1.0.1.3:
  - Compute fill percentage with maxMass respected when possible
  - Add optional alphebetic sorting of the list (uses purchase / tab order otherwise)
-
-1.0.1.4
+v1.0.1.4
  - Add multiplayer farm awareness - allow filtering to just your farm, or all farms
  - Add option to change text size from settings, fix loading of text size from xml
-
-1.0.1.5
+v1.0.1.5
  - Bugfix: Some custom vehicle types based on attachments but adding the "enterable" specialization could appear in the list incorrectly, and error out the script.
+v1.0.1.6
+ - Bugfix: text was still visible when HUD was toggled off.
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -86,53 +77,44 @@ Left Ctrl + Left Alt + Num Pad 9 : Konfigurationsdatei von der Festplatte neu la
 Left Alt + Num Pad 9 : HUD-Sichtbarkeit umschalten
 
 Changelog:
-1.0.0.1:
+v1.0.0.1:
  - Fix für fehlende fillLevel-Informationen bei rechtsbündigen Anzeigen.
-
-1.0.0.2:
+v1.0.0.2:
  - Schadensanzeige hinzufügen (Standard, wenn Traktor oder Anbaugerät zu 80% beschädigt ist)
-
-1.0.0.3:
+v1.0.0.3:
  - CoursePlay und AutoDrive AI-Erkennung hinzufügen
  - Verstecken Sie Förderbänder, sie haben keine nützlichen Informationen zu teilen.
-
-1.0.0.4:
+v1.0.0.4:
  - Tastaturbelegungen hinzufügen
  - Option zum Auffüllen von Feldern mit weniger als 10 Punkten hinzufügen
-
-1.0.0.5:
+v1.0.0.5:
  - Fettschrift optional machen 
  - Fehlerbehebung für ungültige Füllstände
-
-1.0.0.6:
+v1.0.0.6:
  - Benutzernamen für kontrollierte Fahrzeuge hinzufügen.
-
-1.0.1.0:
+v1.0.1.0:
  - Hinzufügen einer Vielzahl von Optionen zum allgemeinen Konfigurationsmenü 
  - Speichern der Einstellungen pro Spielstand, nicht global 
  - Erste ModHub-Version
-
- 1.0.1.1:
+v1.0.1.1:
  - Keybind für Sichtbarkeitsumschaltung hinzufügen
  - Auf dem Konstruktionsbildschirm ausblenden
-
-1.0.1.2:
+v1.0.1.2:
  - Standard-Tastaturbelegung ändern
-
-1.0.1.3:
+v1.0.1.3:
  - Berechnung des Füllungsgrads unter Berücksichtigung von maxMass, wenn möglich
  - Fügen Sie eine optionale alphebetische Sortierung der Liste hinzu (sonst wird die Kauf-/Tab-Reihenfolge verwendet)
-
-1.0.1.4
+v1.0.1.4
  - Multiplayer-Farmbewusstsein hinzufügen - Filterung nur für die eigene Farm oder für alle Farmen erlauben
  - Option zum Ändern der Textgröße in den Einstellungen hinzugefügt, Laden der Textgröße aus xml korrigiert
-
-1.0.1.5
+v1.0.1.5
  - Bugfix: Einige benutzerdefinierte Fahrzeugtypen, die auf Anbaugeräten basieren, aber die Spezialisierung "enterable" hinzufügen, konnten in der Liste falsch erscheinen und das Skript fehlerhaft machen.
+v1.0.1.6
+ - Bugfix: Der Text war noch sichtbar, wenn das HUD ausgeschaltet war.
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.5</version>
+    <version>1.0.1.6</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

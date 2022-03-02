@@ -655,7 +655,7 @@ function SimpleInspector:draw()
 		local info_text = self.display_data
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
 
-		if #info_text == 0 or not g_simpleInspector.isEnabledVisible or g_sleepManager:getIsSleeping() then
+		if #info_text == 0 or not g_simpleInspector.isEnabledVisible or g_sleepManager:getIsSleeping() or g_noHudModeEnabled then
 			-- we have no entries, hide the overlay and leave
 			self.inspectBox:setVisible(false)
 			return

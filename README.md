@@ -103,6 +103,27 @@ Fill type levels are color coded from empty (green) to full (red) unless it is a
 * __debugMode__ - show debug output.  Mostly garbage.
 * __setValueMaxDepth__ - max number of implements attached to implements to index. (i.e. trailer trains - it will get the pulling tractor and 5 trailers by default)
 
+### Custom Order
+
+Not totally supported yet, but in the xml settings you will find __displayOrder__ - the options are
+
+* __SPD__ - speed
+* __GAS__ - fuel level
+* __DAM__ - damage indicator (if applicable)
+* __FLD__ - on-field status
+* __AIT__ - AI worker tag
+* __USR__ - User worker tag
+* __VEH__ - Vehicle name
+* __FIL__ - Fill Levels
+* __SEP__ - Forced separator
+
+_You must use a single underscore between terms!!_
+
+Default: `SPD_GAS_DAM_FLD_AIT_USR_VEH_FIL`
+
+I still need to re-work how separators work, as they might appear in odd places or not at all when
+you re-order, hence the addition of __SEP__ to force one.
+
 ## Sample
 
 <p align="center">

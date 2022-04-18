@@ -11,6 +11,8 @@ local SimpleInspector_mt = Class(SimpleInspector)
 
 
 -- default options
+
+SimpleInspector.displayOrder    = "SPD_GAS_DAM_FLD_AIT_USR_VEH_FIL"
 SimpleInspector.displayMode     = 3 -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
 SimpleInspector.displayMode5X   = 0.2
 SimpleInspector.displayMode5Y   = 0.2
@@ -190,6 +192,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	}
 
 	self.settingsNames = {
+		{"displayOrder", "string"},
 		{"displayMode", "int" },
 		{"displayMode5X", "float"},
 		{"displayMode5Y", "float"},
@@ -715,6 +718,8 @@ function SimpleInspector:draw()
 		self.inspectText.posX = dispTextX
 		self.inspectText.posY = dispTextY
 
+		local displayOrderTable = self:utilStrSplit(g_simpleInspector.displayOrder, "_")
+
 		local lastFarmID = -1
 
 		for _, txt in pairs(info_text) do
@@ -738,80 +743,88 @@ function SimpleInspector:draw()
 			local thisTextLine  = {}
 			local fullTextSoFar = ""
 
-			if g_simpleInspector.isEnabledShowSpeed then
-				-- Vehicle speed
-				if g_gameSettings:getValue('useMiles') then
-					table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
-				else
-					table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+			for _, dispElement in pairs(displayOrderTable) do
+				if dispElement == "SEP" then
+					table.insert(thisTextLine, {false, false, false})
 				end
 
-				-- Seperator after speed
-				table.insert(thisTextLine, {false, false, false})
-			end
-
-			if g_simpleInspector.isEnabledShowFuel and txt[5][1] ~= false then
-				-- Vehicle fuel color[1], text[2], percentage[3]
-				table.insert(thisTextLine, { txt[5][1], txt[5][2], false})
-				table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
-
-				-- Seperator after speed
-				table.insert(thisTextLine, {false, false, false})
-			end
-
-			-- Damage marker Tag, if needed
-			if g_simpleInspector.isEnabledShowDamage and txt[8] then
-				table.insert(thisTextLine, {"colorDamaged", g_simpleInspector.setStringTextDamaged, false})
-			end
-
-			-- Field Mark, if needed / wanted
-			if g_simpleInspector.isEnabledShowField and txt[7][1] == true then
-				if txt[7][2] == 0 then
-					table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextFieldNoNum .. " ", false})
-				else
-					if g_simpleInspector.isEnabledPadFieldNum and txt[7][2] < 10 then
-						table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. "0" .. txt[7][2] .. " ", false})
+				if dispElement == "SPD" and g_simpleInspector.isEnabledShowSpeed then
+					-- Vehicle speed
+					if g_gameSettings:getValue('useMiles') then
+						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
 					else
-						table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. txt[7][2] .. " ", false})
+						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+					end
+
+					-- Seperator after speed
+					table.insert(thisTextLine, {false, false, false})
+				end
+
+				if dispElement == "GAS" and g_simpleInspector.isEnabledShowFuel and txt[5][1] ~= false then
+					-- Vehicle fuel color[1], text[2], percentage[3]
+					table.insert(thisTextLine, { txt[5][1], txt[5][2], false})
+					table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
+
+					-- Seperator after speed
+					table.insert(thisTextLine, {false, false, false})
+				end
+
+				-- Damage marker Tag, if needed
+				if dispElement == "DAM" and g_simpleInspector.isEnabledShowDamage and txt[8] then
+					table.insert(thisTextLine, {"colorDamaged", g_simpleInspector.setStringTextDamaged, false})
+				end
+
+				-- Field Mark, if needed / wanted
+				if dispElement == "FLD" and g_simpleInspector.isEnabledShowField and txt[7][1] == true then
+					if txt[7][2] == 0 then
+						table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextFieldNoNum .. " ", false})
+					else
+						if g_simpleInspector.isEnabledPadFieldNum and txt[7][2] < 10 then
+							table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. "0" .. txt[7][2] .. " ", false})
+						else
+							table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. txt[7][2] .. " ", false})
+						end
 					end
 				end
-			end
 
-			-- AI Tag, if needed
-			if txt[2][1] then
-				table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
-			end
+				-- AI Tag, if needed
+				if dispElement == "AIT" and txt[2][1] then
+					table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
+				end
 
-			-- User name
-			if txt[9] ~= nil then
-				table.insert(thisTextLine, {"colorUser", "[" .. txt[9] .. "] ", false})
-			end
+				-- User name
+				if dispElement == "USR" and txt[9] ~= nil then
+					table.insert(thisTextLine, {"colorUser", "[" .. txt[9] .. "] ", false})
+				end
 
-			-- Vehicle name
-			if txt[1] == 0 then
-				table.insert(thisTextLine, {"colorNormal", txt[3], false})
-			elseif txt[1] == 1 then
-				table.insert(thisTextLine, {"colorAI", txt[3], false})
-			elseif txt[1] == 3 then
-				table.insert(thisTextLine, {"colorRunning", txt[3], false})
-			else
-				table.insert(thisTextLine, {"colorUser", txt[3], false})
-			end
+				-- Vehicle name
+				if dispElement == "VEH" then
+					if  txt[1] == 0 then
+						table.insert(thisTextLine, {"colorNormal", txt[3], false})
+					elseif txt[1] == 1 then
+						table.insert(thisTextLine, {"colorAI", txt[3], false})
+					elseif txt[1] == 3 then
+						table.insert(thisTextLine, {"colorRunning", txt[3], false})
+					else
+						table.insert(thisTextLine, {"colorUser", txt[3], false})
+					end
+				end
 
-			if g_simpleInspector.isEnabledShowFills then
-				for idx, thisFill in pairs(txt[6]) do
-					-- Seperator between fill types / vehicle
-					table.insert(thisTextLine, {false, false, false})
+				if dispElement == "FIL" and g_simpleInspector.isEnabledShowFills then
+					for idx, thisFill in pairs(txt[6]) do
+						-- Seperator between fill types / vehicle
+						table.insert(thisTextLine, {false, false, false})
 
-					local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
-					local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
-					local fillColor    = self:makeFillColor(dispPerc, thisFill[3])
+						local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
+						local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
+						local fillColor    = self:makeFillColor(dispPerc, thisFill[3])
 
-					table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
+						table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
 
-					table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
-					if g_simpleInspector.isEnabledShowFillPercent then
-						table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
+						table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
+						if g_simpleInspector.isEnabledShowFillPercent then
+							table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
+						end
 					end
 				end
 			end
@@ -900,6 +913,20 @@ end
 function SimpleInspector:renderSep(x, y, fullTextSoFar)
 	self:renderColor("colorSep")
 	return self:renderText(x, y, fullTextSoFar, g_simpleInspector.setStringTextSep)
+end
+
+function SimpleInspector:utilStrSplit(str, sep)
+	if sep == nil then
+		sep = '%s'
+	end
+
+	local res = {}
+	local func = function(w)
+		table.insert(res, w)
+	end
+
+	_ = string.gsub(str, '[^'..sep..']+', func)
+	return res
 end
 
 function SimpleInspector:onStartMission(mission)

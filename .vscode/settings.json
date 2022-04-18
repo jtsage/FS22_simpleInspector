@@ -74,6 +74,24 @@
 		"getTerrainHeightAtWorldPos",
 		"g_sleepManager",
 		"g_farmManager",
-		"Farm"
+		"Farm",
+		"g_noHudModeEnabled",
+		"g_simpleInspector",
+		"localToWorld",
+		"g_inputBinding",
+		"delete",
+		"getTerrainHeightAtWorldPos",
+		"g_fieldManager",
+		"g_farmManager",
+		"g_farmlandManager",
+		"setXMLFloat",
+		"getXMLFloat",
+		"CheckedOptionElement",
+		"TextElement",
+		"g_modIsLoaded",
+		"Farm",
+		"g_sleepManager",
+		"FSDensityMapUtil",
+		"getCenterOfMass"
 	]
 }

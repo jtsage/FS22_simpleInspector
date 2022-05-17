@@ -110,16 +110,20 @@ Not totally supported yet, but in the xml settings you will find __displayOrder_
 * __SPD__ - speed
 * __GAS__ - fuel level
 * __DAM__ - damage indicator (if applicable)
+* __DAM\*__ - damage indicator (if applicable - with extra separator after *only* if displayed)
 * __FLD__ - on-field status
+* __FLD\*__ - on-field status, with separator when shown
 * __AIT__ - AI worker tag
+* __AIT\*__ - AI worker tag, with separator when shown
 * __USR__ - User worker tag
+* __USR\*__ - User worker tag, with separator when shown
 * __VEH__ - Vehicle name
 * __FIL__ - Fill Levels
-* __SEP__ - Forced separator
+* __SEP__ - Standard separator
 
 _You must use a single underscore between terms!!_
 
-Default: `SPD_GAS_DAM_FLD_AIT_USR_VEH_FIL`
+Default: `SPD_SEP_GAS_SEP_DAM_FLD_AIT_USR_VEH_FIL`
 
 I still need to re-work how separators work, as they might appear in odd places or not at all when
 you re-order, hence the addition of __SEP__ to force one.

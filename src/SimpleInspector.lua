@@ -12,7 +12,7 @@ local SimpleInspector_mt = Class(SimpleInspector)
 
 -- default options
 
-SimpleInspector.displayOrder    = "SPD_GAS_DAM_FLD_AIT_USR_VEH_FIL"
+SimpleInspector.displayOrder    = "SPD_SEP_GAS_SEP_DAM_FLD_AIT_USR_VEH_FIL"
 SimpleInspector.displayMode     = 3 -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
 SimpleInspector.displayMode5X   = 0.2
 SimpleInspector.displayMode5Y   = 0.2
@@ -757,7 +757,7 @@ function SimpleInspector:draw()
 					end
 
 					-- Seperator after speed
-					table.insert(thisTextLine, {false, false, false})
+					--table.insert(thisTextLine, {false, false, false})
 				end
 
 				if dispElement == "GAS" and g_simpleInspector.isEnabledShowFuel and txt[5][1] ~= false then
@@ -766,16 +766,19 @@ function SimpleInspector:draw()
 					table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
 
 					-- Seperator after speed
-					table.insert(thisTextLine, {false, false, false})
+					--table.insert(thisTextLine, {false, false, false})
 				end
 
 				-- Damage marker Tag, if needed
-				if dispElement == "DAM" and g_simpleInspector.isEnabledShowDamage and txt[8] then
+				if (dispElement == "DAM" or dispElement == "DAM*") and g_simpleInspector.isEnabledShowDamage and txt[8] then
 					table.insert(thisTextLine, {"colorDamaged", g_simpleInspector.setStringTextDamaged, false})
+					if dispElement == "DAM*" then
+						table.insert(thisTextLine, {false, false, false})
+					end
 				end
 
 				-- Field Mark, if needed / wanted
-				if dispElement == "FLD" and g_simpleInspector.isEnabledShowField and txt[7][1] == true then
+				if (dispElement == "FLD" or dispElement == "FLD*") and g_simpleInspector.isEnabledShowField and txt[7][1] == true then
 					if txt[7][2] == 0 then
 						table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextFieldNoNum .. " ", false})
 					else
@@ -785,16 +788,25 @@ function SimpleInspector:draw()
 							table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. txt[7][2] .. " ", false})
 						end
 					end
+					if dispElement == "FLD*" then
+						table.insert(thisTextLine, {false, false, false})
+					end
 				end
 
 				-- AI Tag, if needed
-				if dispElement == "AIT" and txt[2][1] then
+				if (dispElement == "AIT" or dispElement == "AIT*") and txt[2][1] then
 					table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
+					if dispElement == "AIT*" then
+						table.insert(thisTextLine, {false, false, false})
+					end
 				end
 
 				-- User name
-				if dispElement == "USR" and txt[9] ~= nil then
+				if (dispElement == "USR" or dispElement == "USR*") and txt[9] ~= nil then
 					table.insert(thisTextLine, {"colorUser", "[" .. txt[9] .. "] ", false})
+					if dispElement == "USR*" then
+						table.insert(thisTextLine, {false, false, false})
+					end
 				end
 
 				-- Vehicle name

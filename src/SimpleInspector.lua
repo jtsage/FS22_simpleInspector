@@ -1027,11 +1027,11 @@ function SimpleInspector:delete()
 end
 
 function SimpleInspector:saveSettings()
-	local savegameFolderPath = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+	local savegameFolderPath = ('%smodSettings/FS22_SimpleInspector/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
 	local savegameFile = savegameFolderPath .. "/simpleInspector.xml"
 
 	if ( not fileExists(savegameFile) ) then
-		createFolder(('%smodSettings/FS22_SimpleExplorer'):format(getUserProfileAppPath()))
+		createFolder(('%smodSettings/FS22_SimpleInspector'):format(getUserProfileAppPath()))
 		createFolder(savegameFolderPath)
 	end
 
@@ -1061,13 +1061,23 @@ function SimpleInspector:saveSettings()
 end
 
 function SimpleInspector:loadSettings()
-	local savegameFolderPath = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
-	local key = "simpleInspector"
+	local savegameFolderPath = ('%smodSettings/FS22_SimpleInspector/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+	local savegameOldPath    = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
+	local key                = "simpleInspector"
+	local fileFound          = false
+	local xmlFile            = nil
 
 	if fileExists(savegameFolderPath .. "/simpleInspector.xml") then
 		print("~~" .. self.myName .." :: loading config file")
-		local xmlFile = loadXMLFile(key, savegameFolderPath .. "/simpleInspector.xml")
+		xmlFile   = loadXMLFile(key, savegameFolderPath .. "/simpleInspector.xml")
+		fileFound = true
+	elseif fileExists(savegameOldPath .. "/simpleInspector.xml") then
+		print("~~" .. self.myName .." :: loading (old) config file")
+		xmlFile   = loadXMLFile(key, savegameFolderPath .. "/simpleInspector.xml")
+		fileFound = true
+	end
 
+	if fileFound then
 		for _, setting in pairs(self.settingsNames) do
 			if ( setting[2] == "bool" ) then
 				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLBool(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])

@@ -5,6 +5,7 @@
   <texts>
 	<text name="input_SimpleInspector_reload_config"     text="Konfiguration neu laden" />
 	<text name="input_SimpleInspector_toggle_visible"    text="Display ein-/ausschalten" />
+	<text name="input_SimpleInspector_toggle_allfarms"   text="Alle Bauernhöfe anzeigen ein/ausschalten" />
 	<text name="title_simpleInspector"                   text="Einfacher Inspektor" />
 	<text name="setting_simpleInspector_Visible"         text="HUD Visible" />
 	<text name="toolTip_simpleInspector_Visible"         text="When enabled, the overlay is visible" />
@@ -44,5 +45,7 @@
 	<text name="setting_simpleInspector_DisplayMode2"    text="Oben rechts, unter der Uhr" />
 	<text name="setting_simpleInspector_DisplayMode3"    text="Unten links, über Karte" />
 	<text name="setting_simpleInspector_DisplayMode4"    text="Unten rechts, über dem Tachometer" />
+	<text name="text_simpleInspector_kph"                text="km/h" />
+	<text name="text_simpleInspector_mph"                text="mph" />
   </texts>
 </l10n>

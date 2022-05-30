@@ -751,9 +751,9 @@ function SimpleInspector:draw()
 				if dispElement == "SPD" and g_simpleInspector.isEnabledShowSpeed then
 					-- Vehicle speed
 					if g_gameSettings:getValue('useMiles') then
-						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " mph", false})
+						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " " .. g_i18n:getText("text_simpleInspector_mph"), false})
 					else
-						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " kph", false})
+						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " " .. g_i18n:getText("text_simpleInspector_kph"), false})
 					end
 
 					-- Seperator after speed

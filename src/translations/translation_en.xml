@@ -45,5 +45,7 @@
 	<text name="setting_simpleInspector_DisplayMode2"    text="Top Right, Under Clock" />
 	<text name="setting_simpleInspector_DisplayMode3"    text="Bottom Left, Above Map" />
 	<text name="setting_simpleInspector_DisplayMode4"    text="Bottom Right, Above Speedometer" />
+	<text name="text_simpleInspector_kph"                text="kph" />
+	<text name="text_simpleInspector_mph"                text="mph" />
   </texts>
 </l10n>

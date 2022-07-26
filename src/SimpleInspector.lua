@@ -135,6 +135,8 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		FillType.FERTILIZER,
 		FillType.LIME,
 		FillType.SILAGE_ADDITIVE,
+		FillType.LIQUIDFERTILIZER,
+		FillType.HERBICIDE
 	}
 	self.fill_color_CB = {
 		{ 1.00, 0.76, 0.04, 1 },
@@ -424,7 +426,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 	if spec_fillUnit ~= nil and spec_fillUnit.fillUnits ~= nil then
 		local vehicleTypeName = Utils.getNoNil(vehicle.typeName, "unknown"):lower()
 		local isInverted      = self.fill_invert_all[vehicleTypeName] ~= nil
-		local checkInvert     = self.fill_invert_some[vehicleTypeName] ~= nil
+		local checkInvert     = not isInverted --self.fill_invert_some[vehicleTypeName] ~= nil
 
 		for i = 1, #spec_fillUnit.fillUnits do
 			local fillUnit = spec_fillUnit.fillUnits[i]
@@ -434,7 +436,9 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					fillType = next(fillUnit.supportedFillTypes)
 				end
 				if fillUnit.fillTypeToDisplay ~= FillType.UNKNOWN then
-					fillType = fillUnit.fillTypeToDisplay
+					isInverted  = self:getIsTypeInverted(fillType)
+					checkInvert = false
+					fillType    = fillUnit.fillTypeToDisplay
 				end
 
 				local fillLevel = fillUnit.fillLevel;
@@ -477,7 +481,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 				end
 
 				if fillLevel > 0 then
-					if checkInvert then isInverted =  self:getIsTypeInverted(fillType) end
+					if checkInvert then isInverted = self:getIsTypeInverted(fillType) end
 
 					if ( theseFills[fillType] ~= nil ) then
 						theseFills[fillType][1] = theseFills[fillType][1] + fillLevel
@@ -565,6 +569,8 @@ function SimpleInspector:updateVehicles()
 					if ( g_simpleInspector.isEnabledShowAll or isConned or isRunning or isOnAI ) then
 						local thisName  = thisVeh:getName()
 						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
+						local thisAFMK  = 0
+						local fullName  = thisBrand.title .. " " .. thisName
 						local speed     = self:getSpeed(thisVeh)
 						local fills     = {}
 						local status    = 0
@@ -572,6 +578,14 @@ function SimpleInspector:updateVehicles()
 						local fuelLevel = self:getFuel(thisVeh)
 						local isOnField = {false, false}
 						local isBroken  = false
+
+						if thisVeh.getHotKeyVehicleState ~= nil then
+							thisAFMK = thisVeh:getHotKeyVehicleState()
+						end
+
+						if thisAFMK > 0 then
+							fullName = "[" .. tostring(thisAFMK) .. "] " .. fullName
+						end
 
 						if self.isMPGame and g_simpleInspector.isEnabledShowPlayer and isConned and thisVeh.getControllerName ~= nil then
 							plyrName = thisVeh:getControllerName()
@@ -631,7 +645,7 @@ function SimpleInspector:updateVehicles()
 						table.insert(new_data_table, {
 							status,
 							isAI,
-							thisBrand.title .. " " .. thisName,
+							fullName,
 							tostring(speed),
 							fuelLevel,
 							fills,

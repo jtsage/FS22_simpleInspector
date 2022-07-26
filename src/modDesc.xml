@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="66">
+<modDesc descVersion="67">
     <title>
         <en>Simple Inspector</en>
         <de>Einfacher Inspektor</de>
@@ -61,6 +61,9 @@ v1.0.1.7
  - Additional Feature: custom order per line
  - Bugfix: settings save path was incorrect
  - l10n: kph vs kp/h
+v1.0.1.8
+ - Bugfix: fill level for seeds, fertilizer, salt, and herbicide should always be "inverted" colors
+ - Add Support for Advanced Farm Manager
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -119,10 +122,13 @@ v1.0.1.7
  - Zusätzliches Merkmal: individuelle Bestellung pro Zeile
  - Bugfix: Speicherpfad der Einstellungen war falsch
  - l10n: kph gegen kp/h
+ v1.0.1.8
+ - Bugfix: Füllstand für Saatgut, Dünger, Salz und Herbizid sollte immer "invertierte" Farben haben
+ - Unterstützung für Advanced Farm Manager hinzufügen
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.7</version>
+    <version>1.0.1.8</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

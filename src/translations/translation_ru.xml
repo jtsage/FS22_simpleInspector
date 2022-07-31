@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <translationContributors>nagor</translationContributors>
+
+  <texts>
+	<text name="input_SimpleInspector_reload_config"     text="Перезагрузить конфигурацию" />
+	<text name="input_SimpleInspector_toggle_visible"    text="Дисплей Вкл/Выкл" />
+	<text name="input_SimpleInspector_toggle_allfarms"   text="Показывать все фермы Вкл/Выкл" />
+	<text name="title_simpleInspector"                   text="Simple Inspector" />
+	<text name="setting_simpleInspector_Visible"         text="Показать HUD" />
+	<text name="toolTip_simpleInspector_Visible"         text="При включении отображается дисплей." />
+	<text name="setting_simpleInspector_TextSize"        text="Размер шрифта" />
+	<text name="toolTip_simpleInspector_TextSize"        text="Размер шрифта для отображения, в относительных пикселях." />
+	<text name="setting_simpleInspector_AlphaSort"       text="Сортировать список в алфавитном порядке" />
+	<text name="toolTip_simpleInspector_AlphaSort"       text="Если включено, список сортируется в алфавитном порядке, в противном случае используется порядок табуляции." />
+	<text name="setting_simpleInspector_ShowAll"         text="Показывать все" />
+	<text name="toolTip_simpleInspector_ShowAll"         text="Если включено, показываются все транспортные средства. При отключении – только управляемые транспортные средства, которые контролируются ИИ или игроком." />
+	<text name="setting_simpleInspector_ShowUnowned"     text="Показывать все фермы" />
+	<text name="toolTip_simpleInspector_ShowUnowned"     text="Если включено, показываются транспортные средства с ферм, участником которых вы не являетесь. Это не имеет никакого эффекта в одиночной игре." />
+	<text name="setting_simpleInspector_ShowPlayer"      text="Показывать имена игроков" />
+	<text name="toolTip_simpleInspector_ShowPlayer"      text="Если включено, показывается имя игрока, управляющего транспортным средством. Активен только в многопользовательских играх." />
+	<text name="setting_simpleInspector_ShowFillPercent" text="Показывать процент уровня заполнения" />
+	<text name="toolTip_simpleInspector_ShowFillPercent" text="Если включено, показываются процентное соотношение и уровень заполнения транспортного средства или прицепа/агрегата." />
+	<text name="setting_simpleInspector_ShowFuel"        text="Показывать уровень топлива" />
+	<text name="toolTip_simpleInspector_ShowFuel"        text="Если включено, показываются уровень и тип топлива в транспортных средствах." />
+	<text name="setting_simpleInspector_ShowSpeed"       text="Показывать скорость" />
+	<text name="toolTip_simpleInspector_ShowSpeed"       text="Если включено, показывается скорость транспортных средств." />
+	<text name="setting_simpleInspector_ShowFills"       text="Показывать уровни заполнения" />
+	<text name="toolTip_simpleInspector_ShowFills"       text="Если включено, показываются уровни заполнения транспортных средств и их прицепов/агрегатов." />
+	<text name="setting_simpleInspector_ShowField"       text="Показывать статус 'На поле'" />
+	<text name="toolTip_simpleInspector_ShowField"       text="Если включено, показывается маркер, если транспортное средство находится на поле." />
+	<text name="setting_simpleInspector_ShowFieldNum"    text="Показывать номер поля" />
+	<text name="toolTip_simpleInspector_ShowFieldNum"    text="Если включено, показывается номер поля, на котором находится транспортное средство, если это известно." />
+	<text name="setting_simpleInspector_PadFieldNum"     text="Номер поля не менее 2 цифр" />
+	<text name="toolTip_simpleInspector_PadFieldNum"     text="Если включено, номер поля будет содержать не менее 2 цифр (1 -> 01)." />
+	<text name="setting_simpleInspector_ShowDamage"      text="Показывать маркер при пороге повреждений" />
+	<text name="toolTip_simpleInspector_ShowDamage"      text="Если включено, отображается маркер, когда транспортное средство достигает порога повреждения (осталось 20%/повреждено 80%)." />
+	<text name="setting_simpleInspector_ShowCPWaypoints" text="Показывать путевые точки CoursePlay" />
+	<text name="toolTip_simpleInspector_ShowCPWaypoints" text="Если включено, показывается текущее и общее количество путевых точек, когда CoursePlay управляет транспортным средством." />
+	<text name="setting_simpleInspector_TextBold"        text="Жирный шрифт" />
+	<text name="toolTip_simpleInspector_TextBold"        text="Если включено, будет использоваться жирный шрифт для всего дисплея." />
+	<text name="setting_simpleInspector_DisplayMode"     text="Размещение дисплея" />
+	<text name="toolTip_simpleInspector_DisplayMode"     text="Место размещения дисплея на экране" />
+	<text name="setting_simpleInspector_DisplayMode1"    text="Вверху слева" />
+	<text name="setting_simpleInspector_DisplayMode2"    text="Вверху справа" />
+	<text name="setting_simpleInspector_DisplayMode3"    text="Внизу слева" />
+	<text name="setting_simpleInspector_DisplayMode4"    text="Внизу справа" />
+	<text name="text_simpleInspector_kph"                text="км/ч" />
+	<text name="text_simpleInspector_mph"                text="миля/ч" />
+  </texts>
+</l10n>

@@ -46,6 +46,6 @@
 	<text name="setting_simpleInspector_DisplayMode3"    text="Внизу слева" />
 	<text name="setting_simpleInspector_DisplayMode4"    text="Внизу справа" />
 	<text name="text_simpleInspector_kph"                text="км/ч" />
-	<text name="text_simpleInspector_mph"                text="миля/ч" />
+	<text name="text_simpleInspector_mph"                text="миль/ч" />
   </texts>
 </l10n>

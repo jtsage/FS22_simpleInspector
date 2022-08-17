@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<l10n>
+  <translationContributors>Ziuta</translationContributors>
+
+  <texts>
+	<text name="input_SimpleInspector_reload_config"     text="Przeładuj konfigurację" />
+	<text name="input_SimpleInspector_toggle_visible"    text="Pokaż/Ukryj nakładkę" />
+	<text name="input_SimpleInspector_toggle_allfarms"   text="Pokaż/Ukryj pojazdy ze wszystkich farm" />
+	<text name="title_simpleInspector"                   text="Simple Inspector" />
+	<text name="setting_simpleInspector_Visible"         text="Widoczność nakładki" />
+	<text name="toolTip_simpleInspector_Visible"         text="Gdy włączone, nakładka jest widoczna." />
+	<text name="setting_simpleInspector_TextSize"        text="Wielkość czcionki" />
+	<text name="toolTip_simpleInspector_TextSize"        text="Rozmiar czcionki na nakładce, w względnych pikselach." />
+	<text name="setting_simpleInspector_AlphaSort"       text="Sortuj alfabetycznie" />
+	<text name="toolTip_simpleInspector_AlphaSort"       text="Gdy włączone, sortuj listę alfabetycznie, w przeciwnym razie użyj kolejności teleportacji." />
+	<text name="setting_simpleInspector_ShowAll"         text="Pokaż wszystkie pojazdy" />
+	<text name="toolTip_simpleInspector_ShowAll"         text="Gdy włączone, wyświetli wszystkie pojazdy. Gdy wyłączone, wyświetli tylko pojazdy uruchomione oraz kierowane przez SI lub gracza." />
+	<text name="setting_simpleInspector_ShowUnowned"     text="Pokaż pojazdy ze wszystkich farm" />
+	<text name="toolTip_simpleInspector_ShowUnowned"     text="Gdy włączone, wyświetli pojazdy z farm do których nie należysz (efekt tylko w MP)." />
+	<text name="setting_simpleInspector_ShowPlayer"      text="Pokaż nicki graczy" />
+	<text name="toolTip_simpleInspector_ShowPlayer"      text="Gdy włączone, wyświetli nicki graczy w pojazdach, którymi jadą (efekt tylko w MP)." />
+	<text name="setting_simpleInspector_ShowFillPercent" text="Pokaż % poziom napełnienia" />
+	<text name="toolTip_simpleInspector_ShowFillPercent" text="Gdy włączone, wyświetli poziom napełnienia pojazdów oraz maszyn w procentach." />
+	<text name="setting_simpleInspector_ShowFuel"        text="Pokaż poziom paliwa" />
+	<text name="toolTip_simpleInspector_ShowFuel"        text="Gdy włączone, wyświetli rodzaj i poziom paliwa w pojazdach." />
+	<text name="setting_simpleInspector_ShowSpeed"       text="Pokaż prędkość" />
+	<text name="toolTip_simpleInspector_ShowSpeed"       text="Gdy włączone, wyświetli prędkość pojazdów." />
+	<text name="setting_simpleInspector_ShowFills"       text="Pokaż poziomy napełnia" />
+	<text name="toolTip_simpleInspector_ShowFills"       text="Gdy włączone, wyświetli poziom napełnienia pojazdów i maszyn." />
+	<text name="setting_simpleInspector_ShowField"       text="Jest na polu" />
+	<text name="toolTip_simpleInspector_ShowField"       text="Gdy włączone, wyświetli znacznik, gdy pojazd znajduje się na polu." />
+	<text name="setting_simpleInspector_ShowFieldNum"    text="Pokaż nr pola" />
+	<text name="toolTip_simpleInspector_ShowFieldNum"    text="Gdy włączone, wyświetli numer pola, na którym znajduje się pojazd (jeśli znany)." />
+	<text name="setting_simpleInspector_PadFieldNum"     text="Numeracja pól" />
+	<text name="toolTip_simpleInspector_PadFieldNum"     text="Gdy włączone, wyświetli numer pola jako co liczbę przynajmniej 2 cyfrową (1 -> 01)." />
+	<text name="setting_simpleInspector_ShowDamage"      text="Pokaż uszkodzenia" />
+	<text name="toolTip_simpleInspector_ShowDamage"      text="Gdy włączone, wyświetli znacznik, gdy pojazd osiągnie próg uszkodzeń (20% pozostało / 80% uszkodzony)." />
+	<text name="setting_simpleInspector_ShowCPWaypoints" text="Pokaż punkty trasy CP" />
+	<text name="toolTip_simpleInspector_ShowCPWaypoints" text="Gdy włączone, wyświetli aktualną i całkowitą liczbę punktów trasy, gdy Courseplay kontroluje pojazd." />
+	<text name="setting_simpleInspector_TextBold"        text="Użyj pogrubionej czcionki" />
+	<text name="toolTip_simpleInspector_TextBold"        text="Gdy włączone, użyje pogrubionej czcionki na nakładce." />
+	<text name="setting_simpleInspector_DisplayMode"     text="Pozycja nakładki" />
+	<text name="toolTip_simpleInspector_DisplayMode"     text="Pozycja nakładki z informacjami." />
+	<text name="setting_simpleInspector_DisplayMode1"    text="Lewy górny róg (pod oknem pomocy)" />
+	<text name="setting_simpleInspector_DisplayMode2"    text="Prawy górny róg (pod zegarem)" />
+	<text name="setting_simpleInspector_DisplayMode3"    text="Lewy dolny róg (nad minimapą)" />
+	<text name="setting_simpleInspector_DisplayMode4"    text="Prawy dolny róg (nad prędkościomierzem)" />
+	<text name="text_simpleInspector_kph"                text="km/h" />
+	<text name="text_simpleInspector_mph"                text="mph" />
+  </texts>
+</l10n>

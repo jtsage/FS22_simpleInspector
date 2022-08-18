@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Gdy włączone, wyświetli poziom napełnienia pojazdów oraz maszyn w procentach." />
 	<text name="setting_simpleInspector_ShowFuel"        text="Pokaż poziom paliwa" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Gdy włączone, wyświetli rodzaj i poziom paliwa w pojazdach." />
+	<text name="setting_simpleInspector_ShowDef"         text="Pokaż poziom DEF" />
+	<text name="toolTip_simpleInspector_ShowDef"         text="Po włączeniu pokazywanie poziomu płynu spalinowego w pojazdach" />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Pokaż prędkość" />
 	<text name="toolTip_simpleInspector_ShowSpeed"       text="Gdy włączone, wyświetli prędkość pojazdów." />
 	<text name="setting_simpleInspector_ShowFills"       text="Pokaż poziomy napełnia" />

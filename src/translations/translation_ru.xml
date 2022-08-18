@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Если включено, показываются процентное соотношение и уровень заполнения транспортного средства или прицепа/агрегата." />
 	<text name="setting_simpleInspector_ShowFuel"        text="Показывать уровень топлива" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Если включено, показываются уровень и тип топлива в транспортных средствах." />
+	<text name="setting_simpleInspector_ShowDef"         text="Показать уровень DEF" />
+	<text name="toolTip_simpleInspector_ShowDef"         text="Если включена, отображает уровень жидкости для отработавших газов в автомобилях" />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Показывать скорость" />
 	<text name="toolTip_simpleInspector_ShowSpeed"       text="Если включено, показывается скорость транспортных средств." />
 	<text name="setting_simpleInspector_ShowFills"       text="Показывать уровни заполнения" />

@@ -26,6 +26,7 @@ SimpleInspector.isEnabledShowAll         = false
 SimpleInspector.isEnabledShowUnowned     = false
 SimpleInspector.isEnabledShowFillPercent = true
 SimpleInspector.isEnabledShowFuel        = true
+SimpleInspector.isEnabledShowDef         = false
 SimpleInspector.isEnabledShowSpeed       = true
 SimpleInspector.isEnabledShowFills       = true
 SimpleInspector.isEnabledShowField       = true
@@ -51,6 +52,7 @@ SimpleInspector.colorAIMark     = {1.000, 0.082, 0.314, 1}
 SimpleInspector.colorSep        = {1.000, 1.000, 1.000, 1}
 SimpleInspector.colorSpeed      = {1.000, 0.400, 0.000, 1}
 SimpleInspector.colorDiesel     = {0.434, 0.314, 0.000, 1}
+SimpleInspector.colorDEF        = {0.162, 0.440, 0.880, 1}
 SimpleInspector.colorMethane    = {1.000, 0.930, 0.000, 1}
 SimpleInspector.colorElectric   = {0.031, 0.578, 0.314, 1}
 SimpleInspector.colorField      = {0.423, 0.956, 0.624, 1}
@@ -60,6 +62,7 @@ SimpleInspector.setStringTextHelper      = "_AI_ "
 SimpleInspector.setStringTextADHelper    = "_AD_ "
 SimpleInspector.setStringTextCPHelper    = "_CP_ "
 SimpleInspector.setStringTextCPWaypoint  = "_CP:"
+SimpleInspector.setStringTextDEF         = "DEF:"
 SimpleInspector.setStringTextDiesel      = "D:"
 SimpleInspector.setStringTextMethane     = "M:"
 SimpleInspector.setStringTextElectric    = "E:"
@@ -206,6 +209,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"isEnabledShowUnowned", "bool"},
 		{"isEnabledShowFillPercent", "bool"},
 		{"isEnabledShowFuel", "bool"},
+		{"isEnabledShowDef", "bool"},
 		{"isEnabledShowSpeed", "bool"},
 		{"isEnabledShowFills", "bool"},
 		{"isEnabledShowField", "bool"},
@@ -229,6 +233,7 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		{"colorSep", "color"},
 		{"colorSpeed", "color"},
 		{"colorDiesel", "color"},
+		{"colorDEF", "color"},
 		{"colorMethane", "color"},
 		{"colorElectric", "color"},
 		{"colorField", "color"},
@@ -393,15 +398,23 @@ function SimpleInspector:getFuel(vehicle)
 			g_simpleInspector.setStringTextMethane
 		}
 	}
+	local defLevel = -1
+
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		-- This should always pass, unless it's a very odd custom vehicle type.
+		local defFillUnitIndex = vehicle:getConsumerFillUnitIndex(FillType.DEF)
+
+		if defFillUnitIndex ~= nil then
+			defLevel = math.floor((vehicle:getFillUnitFillLevel(defFillUnitIndex) / vehicle:getFillUnitCapacity(defFillUnitIndex)) * 100)
+		end
+
 		for _, fuelType in pairs(fuelTypeList) do
 			local fillUnitIndex = vehicle:getConsumerFillUnitIndex(fuelType[1])
 			if ( fillUnitIndex ~= nil ) then
 				local fuelLevel = vehicle:getFillUnitFillLevel(fillUnitIndex)
 				local capacity  = vehicle:getFillUnitCapacity(fillUnitIndex)
 				local percentage = math.floor((fuelLevel / capacity) * 100)
-				return { fuelType[2], fuelType[3], percentage }
+				return { fuelType[2], fuelType[3], percentage, defLevel }
 			end
 		end
 	end
@@ -770,17 +783,19 @@ function SimpleInspector:draw()
 						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " " .. g_i18n:getText("text_simpleInspector_kph"), false})
 					end
 
-					-- Seperator after speed
-					--table.insert(thisTextLine, {false, false, false})
 				end
 
 				if dispElement == "GAS" and g_simpleInspector.isEnabledShowFuel and txt[5][1] ~= false then
-					-- Vehicle fuel color[1], text[2], percentage[3]
+					-- Vehicle fuel color[1], text[2], percentage[3], defPercentage[4]
 					table.insert(thisTextLine, { txt[5][1], txt[5][2], false})
 					table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
 
-					-- Seperator after speed
-					--table.insert(thisTextLine, {false, false, false})
+					if g_simpleInspector.isEnabledShowDef and txt[5][4] > -1 then
+						table.insert(thisTextLine, {false, false, false})
+						table.insert(thisTextLine, { "colorDEF", g_simpleInspector.setStringTextDEF, false})
+						table.insert(thisTextLine, { "colorFillType", tostring(txt[5][4]) .. "%", false})
+					end
+
 				end
 
 				-- Damage marker Tag, if needed
@@ -1170,7 +1185,7 @@ end
 
 function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
-		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowSpeed", "ShowDamage",
+		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "TextBold"
 	}

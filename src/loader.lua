@@ -15,7 +15,7 @@ local function load(mission)
 	local siLoggeer = FS22Log:new(
 		"simpleInspector",
 		debug and FS22Log.DEBUG_MODE.VERBOSE or FS22Log.DEBUG_MODE.WARNINGS
-		--{ "getValue", "setValue" }
+		--,{ "getValue", "setValue", "display_data", "outputTextLines" }
 	)
 
 	modEnvironment = SimpleInspector:new(mission, modDirectory, modName, siLoggeer)

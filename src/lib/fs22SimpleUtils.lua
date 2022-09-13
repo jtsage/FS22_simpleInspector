@@ -116,6 +116,18 @@ function JTSUtil.dispStackAdd(inputTable, text, color, newRow)
 	end
 end
 
+function JTSUtil.dispGetLine(inputTable, index, reverse)
+	if not reverse then
+		return inputTable[index]
+	end
+
+	local rev_table = {}
+	for i=#inputTable[index], 1, -1 do
+		rev_table[#rev_table+1] = inputTable[index][i]
+	end
+	return rev_table
+end
+
 function JTSUtil.stringSplit(str, sep)
 	if sep == nil then
 		sep = '%s'

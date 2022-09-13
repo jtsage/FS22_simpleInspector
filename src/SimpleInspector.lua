@@ -32,7 +32,7 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 		"simpleInspector.xml",
 		true,
 		{
-			displayOrder    = "SPD_SEP_GAS_SEP_DAM*_FLD*_AIT*_USR_VEH_FIL",
+			displayOrder    = "SPD_SEP_GAS_SEP_DAM*_FLD*_AIT*_USR-_VEH_FIL",
 			displayMode     = {3, "int" },
 			displayMode5X   = 0.2,
 			displayMode5Y   = 0.2,
@@ -317,11 +317,10 @@ end
 
 function SimpleInspector:getSpeed(vehicle)
 	-- Get the current speed of the vehicle
-	local speed = Utils.getNoNil(vehicle.lastSpeed, 0) * 3600
-	if g_gameSettings:getValue('useMiles') then
-		speed = speed * 0.621371
-	end
-	return string.format("%1.0f", "".. Utils.getNoNil(speed, 0))
+	local speedMulti = g_gameSettings:getValue('useMiles') and 0.621371 or 1
+	local speed = math.max(Utils.getNoNil(vehicle.lastSpeed, 0) * 3600 * speedMulti, 0)
+
+	return string.format("%1.0f", speed)
 end
 
 function SimpleInspector:getSingleFill(vehicle, theseFills)
@@ -365,7 +364,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					fillType = spec_fillUnit.fillUnits[fillUnit.childUnitOnHud].fillType
 				end
 
-				local maxMatters = not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit
+				local maxMatters = fillUnit.updateMass and not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit
 				local maxReached = maxMatters and vehicle.getMaxComponentMassReached ~= nil and vehicle:getMaxComponentMassReached();
 
 				if maxReached then
@@ -391,8 +390,8 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					if checkInvert then isInverted = self.fill_invert_types[fillType] ~= nil end
 
 					if ( theseFills[fillType] ~= nil ) then
-						theseFills[fillType]["fillLevel"] = theseFills[fillType]["fillLevel"] + fillLevel
-						theseFills[fillType]["capacity"]  = theseFills[fillType]["capacity"] + capacity
+						theseFills[fillType]["level"]    = theseFills[fillType]["level"] + fillLevel
+						theseFills[fillType]["capacity"] = theseFills[fillType]["capacity"] + capacity
 					else
 						theseFills[fillType] = { level = fillLevel, capacity = capacity, reverse = isInverted }
 					end
@@ -421,9 +420,7 @@ end
 
 function SimpleInspector:updateVehicles()
 	local new_data_table = {}
-	local myFarmID = self.mission:getFarmId()
-
-	self.shown_farms_mp = 0
+	local myFarmID       = self.mission:getFarmId()
 
 	if g_currentMission ~= nil and g_currentMission.vehicles ~= nil then
 
@@ -456,8 +453,6 @@ function SimpleInspector:updateVehicles()
 			JTSUtil.sortTableByKey(sortOrder, "farmID")
 		end
 
-		local lastFarmID = 0
-
 		for _, sortEntry in ipairs(sortOrder) do
 			local thisVeh     = g_currentMission.vehicles[sortEntry.idx]
 			local thisVehFarm = g_farmManager:getFarmById(sortEntry.farmID)
@@ -483,7 +478,7 @@ function SimpleInspector:updateVehicles()
 						local status    = self.STATUS.OFF
 						local isAI      = {aiActive = false, aiText = ""}
 						local isOnField = {fieldOn = false, fieldNum = 0}
-						local isBroken  = false
+						local isBroken  = self.settings:getValue("isEnabledShowDamage") and self:getAllDamage(thisVeh)
 
 						if AFMHotKey > 0 then
 							fullName = JTSUtil.qConcat("[", AFMHotKey, "] ", fullName)
@@ -492,11 +487,6 @@ function SimpleInspector:updateVehicles()
 						if self.settings:getValue("isEnabledShowField") then
 							-- This may be compute heavy, only do it when wanted.
 							isOnField = self:getIsOnField(thisVeh)
-						end
-
-						if self.settings:getValue("isEnabledShowDamage") then
-							-- If we don't care to see damage, don't look it up
-							isBroken = self:getAllDamage(thisVeh)
 						end
 
 						if self.settings:getValue("isEnabledShowAll") and isRunning then
@@ -534,12 +524,6 @@ function SimpleInspector:updateVehicles()
 						end
 
 						self:getAllFills(thisVeh, fills, 0)
-
-						if self.isMPGame and sortEntry.farmID ~= lastFarmID then
-							-- this counts how many farms we have active in the display
-							lastFarmID = sortEntry.farmID
-							self.shown_farms_mp = self.shown_farms_mp + 1
-						end
 
 						table.insert(new_data_table, {
 							status    = status,
@@ -585,7 +569,7 @@ function SimpleInspector:draw()
 		else
 			-- we have entries, lets get the overall height of the box and unhide
 			self.inspectBox:setVisible(true)
-			dispTextH = (self.inspectText.size * #info_text) + (self.inspectText.size * self.shown_farms_mp)
+			dispTextH = self.inspectText.size * #info_text
 			overlayH  = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
@@ -814,20 +798,16 @@ function SimpleInspector:draw()
 
 		self.logger:printVariable(outputTextLines, FS22Log.LOG_LEVEL.VERBOSE, "outputTextLines", 3)
 
-		for _, displayLine in ipairs(outputTextLines) do
-			local startVal = (self.settings:getValue("displayMode") % 2 == 0) and #displayLine or 1
-			local endVal   = (self.settings:getValue("displayMode") % 2 == 0) and 1 or #displayLine
-			local stepVal  = (self.settings:getValue("displayMode") % 2 == 0) and -1 or 1
-
+		for dispLineNum=1, #outputTextLines do
 			local thisLinePlainText = ""
 
-			for i = startVal, endVal, stepVal do
-				setTextColor(unpack(displayLine[i].color))
+			for _, dispElement in ipairs(JTSUtil.dispGetLine(outputTextLines, dispLineNum, (self.settings:getValue("displayMode") % 2 == 0) )) do
+				setTextColor(unpack(dispElement.color))
 				thisLinePlainText = self:renderText(
 					dispTextX,
 					dispTextY,
 					thisLinePlainText,
-					displayLine[i].text)
+					dispElement.text)
 			end
 
 			dispTextY = dispTextY - self.inspectText.size
@@ -882,8 +862,6 @@ function SimpleInspector:renderText(x, y, fullTextSoFar, text)
 	return text .. fullTextSoFar
 end
 
-
-
 function SimpleInspector:onStartMission(mission)
 	-- Load the mod, make the box that info lives in.
 
@@ -896,7 +874,6 @@ function SimpleInspector:onStartMission(mission)
 	-- Just call both, load fails gracefully if it doesn't exists.
 	self.settings:loadSettings()
 	self.settings:saveSettings()
-	
 
 	self.logger:print(":onStartMission()", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
 
@@ -925,7 +902,7 @@ function SimpleInspector:findOrigin()
 		tmpY = 0.01622
 		if g_currentMission.inGameMenu.hud.speedMeter.overlay.visible then
 			tmpY = tmpY + self.speedMeterDisplay:getHeight() + 0.032
-			if g_modIsLoaded["FS22_EnhancedVehicle"] then
+			if g_modIsLoaded["FS22_EnhancedVehicle"] or g_modIsLoaded["FS22_guidanceSteering"] then
 				tmpY = tmpY + 0.03
 			end
 		end

@@ -110,23 +110,21 @@ Not totally supported yet, but in the xml settings you will find __displayOrder_
 * __SPD__ - speed
 * __GAS__ - fuel level
 * __DAM__ - damage indicator (if applicable)
-* __DAM\*__ - damage indicator (if applicable - with extra separator after *only* if displayed)
 * __FLD__ - on-field status
-* __FLD\*__ - on-field status, with separator when shown
 * __AIT__ - AI worker tag
-* __AIT\*__ - AI worker tag, with separator when shown
 * __USR__ - User worker tag
-* __USR\*__ - User worker tag, with separator when shown
 * __VEH__ - Vehicle name
 * __FIL__ - Fill Levels
 * __SEP__ - Standard separator
 
+Additionally you can append an asterisk (*) after each element to show a separator after that element when it is printed (either enabled in settings, or in the case of something like damage, when applicable).  You can use a dash (-) instead for a single space. e.g.
+
+`__DAM*__` will output " -!!- | " when the vehicle is damaged, and nothing when not damaged.
+`__AIT-__` will show the AI tag with a space after it when on AI control.
+
 _You must use a single underscore between terms!!_
 
-Default: `SPD_SEP_GAS_SEP_DAM_FLD_AIT_USR_VEH_FIL`
-
-I still need to re-work how separators work, as they might appear in odd places or not at all when
-you re-order, hence the addition of __SEP__ to force one.
+Default: `SPD_SEP_GAS_SEP_DAM*_FLD*_AIT*_USR-_VEH_FIL`
 
 ## Sample
 

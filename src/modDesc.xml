@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="67">
+<modDesc descVersion="69">
     <title>
         <en>Simple Inspector</en>
         <de>Einfacher Inspektor</de>
@@ -67,6 +67,8 @@ v1.0.1.8
 v1.0.1.9
  - Add DEF level (optional, default off)
  - Add Polish translation
+ - Bugfix: fill level was off when trailer limit was ON in some cases
+ - Rework several subsystems, you'll need to re-set your settings.
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -131,10 +133,12 @@ v1.0.1.7
 v1.0.1.9
  - DEF-Stufe hinzufügen (optional, Standardeinstellung aus)
  - Polnische Übersetzung hinzufügen
+ - Bugfix: Füllstand war in manchen Fällen nicht korrekt, wenn das Anhängerlimit eingeschaltet war
+ - Überarbeitung mehrerer Subsysteme, Sie müssen Ihre Einstellungen neu setzen.
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.8</version>
+    <version>1.0.1.9</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

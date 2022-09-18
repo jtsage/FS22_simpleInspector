@@ -24,9 +24,17 @@
 --
 -- yourLogger.printVariable(output, logLevel, filter, depthLimit, prefix, searchTerms)
 -- yourLogger.printVariableIsTable(output, logLevel, filter, depthLimit, prefix, searchTerms)
+-- yourLogger.printVariableOnce(output, logLevel, filter, depthLimit, prefix, searchTerms)
+-- yourLogger.printVariableIfChanged(output, logLevel, filter, depthLimit, prefix, searchTerms)
 -- 
 -- The "IsTable" variant will auto-upgrade the logLevel to WARNING when the variable is not a table,
 -- and ERROR if the variable is undefined or nil
+--
+-- The "Once" variant will print only the first time that variable is encountered, based on the value
+-- of `filter`
+--
+-- The "IfChanged" variant will print only when the variable contents change, based on the value
+-- of `filter` - note that this is only looks at the top level of the table passed.
 --
 --   * output      : Variable to print
 --   * logLevel    : Log level from LOG_LEVEL below, default is .DEVEL
@@ -130,6 +138,8 @@ function FS22Log:new(callerName, debugMode, filterOut, filterExclusive)
 	self.debugMode  = debugMode or FS22Log.DEBUG_MODE.ERRORS
 	self.filteredOut  = {}
 	self.filteredIn   = {}
+	self.trackOnce    = {}
+	self.trackChanges = {}
 
 	if filterOut ~= nil and type(filterOut) == "table" then
 		self.filteredOut = filterOut
@@ -141,6 +151,47 @@ function FS22Log:new(callerName, debugMode, filterOut, filterExclusive)
 	end
 
 	return self
+end
+
+function FS22Log:makeStringRep(inputTable)
+	if type(inputTable) ~= "table" then
+		return tostring(inputTable)
+	end
+
+	local stringRep = ""
+	for key,value in ipairs(inputTable) do
+		stringRep = stringRep .. string.format("%s:%s",tostring(key), tostring(value))
+	end
+	return stringRep
+end
+
+function FS22Log:isNotSameStored(filterName, inputTable)
+	local stringValue = self:makeStringRep(inputTable)
+
+	for seenName, seenValue in pairs(self.trackChanges) do
+		if seenName == filterName then
+			if seenValue == stringValue then
+				print("same")
+				return false
+			else
+				print("re-setting")
+				self.trackChanges[filterName] = stringValue
+				return true
+			end
+		end
+	end
+	print("initial setting")
+	self.trackChanges[filterName] = stringValue
+	return true
+end
+
+function FS22Log:wasSeen(filterName)
+	for _, seenName in ipairs(self.trackOnce) do
+		if seenName == filterName then
+			return true
+		end
+	end
+	table.insert(self.trackOnce, filterName)
 end
 
 function FS22Log:isFiltered(filterOperator)
@@ -264,6 +315,31 @@ function FS22Log:printVariableIsTable(output, logLevel, filter, depthLimit, pref
 	self:printVariable(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
 end
 
+function FS22Log:printVariableOnce(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
+	local prefix       = prefix or filter or "{}"
+	local logLevel     = self:cleanLogLevel(logLevel)
+	local depthLimit   = depthLimit or 2
+	local currentDepth = currentDepth or 0
+
+	if self:isFiltered(filter) then return end
+	if self.debugMode < logLevel then return end
+	if self:wasSeen(filter) then return end
+
+	self:printVariable(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
+end
+
+function FS22Log:printVariableIfChanged(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
+	local prefix       = prefix or filter or "{}"
+	local logLevel     = self:cleanLogLevel(logLevel)
+	local depthLimit   = depthLimit or 2
+	local currentDepth = currentDepth or 0
+
+	if self:isFiltered(filter) then return end
+	if self.debugMode < logLevel then return end
+	if not self:isNotSameStored(filter, output) then return end
+
+	self:printVariable(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
+end
 
 function FS22Log:printVariable(output, logLevel, filter, depthLimit, prefix, searchTerms, currentDepth)
 	local prefix       = prefix or filter or "{}"
@@ -271,6 +347,9 @@ function FS22Log:printVariable(output, logLevel, filter, depthLimit, prefix, sea
 	local depthLimit   = depthLimit or 2
 	local currentDepth = currentDepth or 0
 	local maxLength    = 0
+
+	if self:isFiltered(filter) then return end
+	if self.debugMode < logLevel then return end
 
 	if output == nil or type(output) ~= "table" then
 		self:print(prefix .. " :: " .. tostring(output), logLevel, filter)

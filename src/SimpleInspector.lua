@@ -9,79 +9,15 @@ SimpleInspector= {}
 
 local SimpleInspector_mt = Class(SimpleInspector)
 
-
--- default options
-
-SimpleInspector.displayOrder    = "SPD_SEP_GAS_SEP_DAM_FLD_AIT_USR_VEH_FIL"
-SimpleInspector.displayMode     = 3 -- 1: top left, 2: top right (default), 3: bot left, 4: bot right, 5: custom
-SimpleInspector.displayMode5X   = 0.2
-SimpleInspector.displayMode5Y   = 0.2
-
-SimpleInspector.debugMode       = false
-
-SimpleInspector.isEnabledVisible         = true
-SimpleInspector.isEnabledAlphaSort       = false
-SimpleInspector.isEnabledShowPlayer      = true
-SimpleInspector.isEnabledShowAll         = false
-SimpleInspector.isEnabledShowUnowned     = false
-SimpleInspector.isEnabledShowFillPercent = true
-SimpleInspector.isEnabledShowFuel        = true
-SimpleInspector.isEnabledShowDef         = false
-SimpleInspector.isEnabledShowSpeed       = true
-SimpleInspector.isEnabledShowFills       = true
-SimpleInspector.isEnabledShowField       = true
-SimpleInspector.isEnabledShowFieldNum    = true
-SimpleInspector.isEnabledPadFieldNum     = false
-SimpleInspector.isEnabledShowDamage      = true
-SimpleInspector.setValueDamageThreshold  = 0.2 -- a.k.a. 80% damaged
-SimpleInspector.isEnabledShowCPWaypoints = true
-
-SimpleInspector.setValueMaxDepth        = 5
-SimpleInspector.setValueTimerFrequency  = 15
-SimpleInspector.setValueTextMarginX     = 15
-SimpleInspector.setValueTextMarginY     = 10
-SimpleInspector.setValueTextSize        = 12
-SimpleInspector.isEnabledTextBold       = false
-
-SimpleInspector.colorNormal     = {1.000, 1.000, 1.000, 1}
-SimpleInspector.colorFillType   = {0.700, 0.700, 0.700, 1}
-SimpleInspector.colorUser       = {0.000, 0.777, 1.000, 1}
-SimpleInspector.colorAI         = {0.956, 0.462, 0.644, 1}
-SimpleInspector.colorRunning    = {0.871, 0.956, 0.423, 1}
-SimpleInspector.colorAIMark     = {1.000, 0.082, 0.314, 1}
-SimpleInspector.colorSep        = {1.000, 1.000, 1.000, 1}
-SimpleInspector.colorSpeed      = {1.000, 0.400, 0.000, 1}
-SimpleInspector.colorDiesel     = {0.434, 0.314, 0.000, 1}
-SimpleInspector.colorDEF        = {0.162, 0.440, 0.880, 1}
-SimpleInspector.colorMethane    = {1.000, 0.930, 0.000, 1}
-SimpleInspector.colorElectric   = {0.031, 0.578, 0.314, 1}
-SimpleInspector.colorField      = {0.423, 0.956, 0.624, 1}
-SimpleInspector.colorDamaged    = {0.830, 0.019, 0.033, 1}
-
-SimpleInspector.setStringTextHelper      = "_AI_ "
-SimpleInspector.setStringTextADHelper    = "_AD_ "
-SimpleInspector.setStringTextCPHelper    = "_CP_ "
-SimpleInspector.setStringTextCPWaypoint  = "_CP:"
-SimpleInspector.setStringTextDEF         = "DEF:"
-SimpleInspector.setStringTextDiesel      = "D:"
-SimpleInspector.setStringTextMethane     = "M:"
-SimpleInspector.setStringTextElectric    = "E:"
-SimpleInspector.setStringTextField       = "F-"
-SimpleInspector.setStringTextFieldNoNum  = "-F-"
-SimpleInspector.setStringTextDamaged     = "-!!- "
-SimpleInspector.setStringTextSep         = " | "
-
-SimpleInspector.menuTextSizes = { 8, 10, 12, 14, 16 }
-
-function SimpleInspector:new(mission, i18n, modDirectory, modName)
+function SimpleInspector:new(mission, modDirectory, modName, logger)
 	local self = setmetatable({}, SimpleInspector_mt)
 
 	self.myName            = "SimpleInspector"
+	self.logger            = logger
 	self.isServer          = mission:getIsServer()
 	self.isClient          = mission:getIsClient()
 	self.isMPGame          = g_currentMission.missionDynamicInfo.isMultiplayer
 	self.mission           = mission
-	self.i18n              = i18n
 	self.modDirectory      = modDirectory
 	self.modName           = modName
 	self.gameInfoDisplay   = mission.hud.gameInfoDisplay
@@ -89,10 +25,83 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 	self.speedMeterDisplay = mission.hud.speedMeter
 	self.ingameMap         = mission.hud.ingameMap
 
-	self.debugTimerRuns = 0
-	self.inspectText    = {}
-	self.boxBGColor     = { 544, 20, 200, 44 }
-	self.bgName         = 'dataS/menu/blank.png'
+	source(modDirectory .. 'lib/fs22ModPrefSaver.lua')
+
+	self.settings = FS22PrefSaver:new(
+		"FS22_SimpleInspector",
+		"simpleInspector.xml",
+		true,
+		{
+			displayOrder    = "SPD_SEP_GAS_SEP_DAM*_FLD*_AIT*_USR-_VEH_FIL",
+			displayMode     = {3, "int" },
+			displayMode5X   = 0.2,
+			displayMode5Y   = 0.2,
+
+			isEnabledVisible         = true,
+			isEnabledAlphaSort       = true,
+			isEnabledShowPlayer      = true,
+			isEnabledShowAll         = false,
+			isEnabledShowUnowned     = false,
+			isEnabledShowFillPercent = true,
+			isEnabledShowFuel        = true,
+			isEnabledShowDef         = false,
+			isEnabledShowSpeed       = true,
+			isEnabledShowFills       = true,
+			isEnabledShowField       = true,
+			isEnabledShowFieldNum    = true,
+			isEnabledPadFieldNum     = true,
+			isEnabledShowDamage      = true,
+			setValueDamageThreshold  = 0.8, -- 20% Damaged
+			isEnabledShowCPWaypoints = true,
+
+			setValueMaxDepth        = {5, "int"},
+
+			setValueTextMarginX     = {15, "int"},
+			setValueTextMarginY     = {10, "int"},
+			setValueTextSize        = {12, "int"},
+			isEnabledTextBold       = false,
+
+			colorNormal     = {{1.000, 1.000, 1.000, 1}, "color"},
+			colorFillType   = {{0.700, 0.700, 0.700, 1}, "color"},
+			colorUser       = {{0.000, 0.777, 1.000, 1}, "color"},
+			colorAI         = {{0.956, 0.462, 0.644, 1}, "color"},
+			colorRunning    = {{0.871, 0.956, 0.423, 1}, "color"},
+			colorAIMark     = {{1.000, 0.082, 0.314, 1}, "color"},
+			colorSep        = {{1.000, 1.000, 1.000, 1}, "color"},
+			colorSpeed      = {{1.000, 0.400, 0.000, 1}, "color"},
+			colorDiesel     = {{0.434, 0.314, 0.000, 1}, "color"},
+			colorDEF        = {{0.162, 0.440, 0.880, 1}, "color"},
+			colorMethane    = {{1.000, 0.930, 0.000, 1}, "color"},
+			colorElectric   = {{0.031, 0.578, 0.314, 1}, "color"},
+			colorField      = {{0.423, 0.956, 0.624, 1}, "color"},
+			colorDamaged    = {{0.830, 0.019, 0.033, 1}, "color"},
+
+			setStringTextHelper      = "_AI_",
+			setStringTextADHelper    = "_AD_",
+			setStringTextCPHelper    = "_CP_",
+			setStringTextCPWaypoint  = "_CP:",
+			setStringTextDEF         = "DEF:",
+			setStringTextDiesel      = "D:",
+			setStringTextMethane     = "M:",
+			setStringTextElectric    = "E:",
+			setStringTextField       = "F-",
+			setStringTextFieldNoNum  = "-F-",
+			setStringTextDamaged     = "-!!-",
+			setStringTextSep         = " | ",
+		},
+		function ()
+			self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings:getValue("setValueTextSize"))
+		end,
+		nil,
+		self.logger
+	)
+
+	self.debugTimerRuns         = 0
+	self.setValueTimerFrequency = 15
+	self.inspectText            = {}
+	self.boxBGColor             = { 544, 20, 200, 44 }
+	self.bgName                 = 'dataS/menu/blank.png'
+	self.menuTextSizes          = { 8, 10, 12, 14, 16 }
 
 	local modDesc       = loadXMLFile("modDesc", modDirectory .. "modDesc.xml");
 	self.version        = getXMLString(modDesc, "modDesc.version");
@@ -125,133 +134,36 @@ function SimpleInspector:new(mission, i18n, modDirectory, modName)
 		seedingroller                  = true,
 		selfpropelledsprayer           = true,
 	}
-	self.fill_invert_some = {
-		tippingaugerwagon = true,
-		augerwagon        = true,
-		combinedrivable   = true,
-		foragewagon       = true,
-		baler             = true
-	}
 	self.fill_invert_types = {
-		FillType.SEEDS,
-		FillType.ROADSALT,
-		FillType.FERTILIZER,
-		FillType.LIME,
-		FillType.SILAGE_ADDITIVE,
-		FillType.LIQUIDFERTILIZER,
-		FillType.HERBICIDE
-	}
-	self.fill_color_CB = {
-		{ 1.00, 0.76, 0.04, 1 },
-		{ 0.98, 0.75, 0.15, 1 },
-		{ 0.96, 0.73, 0.20, 1 },
-		{ 0.94, 0.72, 0.25, 1 },
-		{ 0.92, 0.71, 0.29, 1 },
-		{ 0.90, 0.69, 0.33, 1 },
-		{ 0.87, 0.68, 0.37, 1 },
-		{ 0.85, 0.67, 0.40, 1 },
-		{ 0.83, 0.66, 0.43, 1 },
-		{ 0.81, 0.65, 0.46, 1 },
-		{ 0.78, 0.64, 0.49, 1 },
-		{ 0.76, 0.62, 0.52, 1 },
-		{ 0.73, 0.61, 0.55, 1 },
-		{ 0.70, 0.60, 0.57, 1 },
-		{ 0.67, 0.59, 0.60, 1 },
-		{ 0.64, 0.58, 0.63, 1 },
-		{ 0.61, 0.56, 0.65, 1 },
-		{ 0.57, 0.55, 0.68, 1 },
-		{ 0.53, 0.54, 0.71, 1 },
-		{ 0.49, 0.53, 0.73, 1 },
-		{ 0.45, 0.52, 0.76, 1 },
-		{ 0.39, 0.51, 0.78, 1 },
-		{ 0.33, 0.50, 0.81, 1 },
-		{ 0.24, 0.49, 0.84, 1 },
-		{ 0.05, 0.48, 0.86, 1 }
-	}
-	self.fill_color = {
-		{ 1.00, 0.00, 0.00, 1 },
-		{ 1.00, 0.15, 0.00, 1 },
-		{ 1.00, 0.22, 0.00, 1 },
-		{ 0.99, 0.29, 0.00, 1 },
-		{ 0.98, 0.34, 0.00, 1 },
-		{ 0.98, 0.38, 0.00, 1 },
-		{ 0.96, 0.43, 0.00, 1 },
-		{ 0.95, 0.47, 0.00, 1 },
-		{ 0.93, 0.51, 0.00, 1 },
-		{ 0.91, 0.55, 0.00, 1 },
-		{ 0.89, 0.58, 0.00, 1 },
-		{ 0.87, 0.62, 0.00, 1 },
-		{ 0.84, 0.65, 0.00, 1 },
-		{ 0.81, 0.69, 0.00, 1 },
-		{ 0.78, 0.72, 0.00, 1 },
-		{ 0.75, 0.75, 0.00, 1 },
-		{ 0.71, 0.78, 0.00, 1 },
-		{ 0.67, 0.81, 0.00, 1 },
-		{ 0.63, 0.84, 0.00, 1 },
-		{ 0.58, 0.87, 0.00, 1 },
-		{ 0.53, 0.89, 0.00, 1 },
-		{ 0.46, 0.92, 0.00, 1 },
-		{ 0.38, 0.95, 0.00, 1 },
-		{ 0.27, 0.98, 0.00, 1 },
-		{ 0.00, 1.00, 0.00, 1 }
+		[FillType.SEEDS]            = true,
+		[FillType.ROADSALT]         = true,
+		[FillType.FERTILIZER]       = true,
+		[FillType.LIME]             = true,
+		[FillType.SILAGE_ADDITIVE]  = true,
+		[FillType.LIQUIDFERTILIZER] = true,
+		[FillType.HERBICIDE]        = true
 	}
 
-	self.settingsNames = {
-		{"displayOrder", "string"},
-		{"displayMode", "int" },
-		{"displayMode5X", "float"},
-		{"displayMode5Y", "float"},
-		{"debugMode", "bool"},
-		{"isEnabledVisible", "bool"},
-		{"isEnabledAlphaSort", "bool"},
-		{"isEnabledShowPlayer", "bool"},
-		{"isEnabledShowAll", "bool"},
-		{"isEnabledShowUnowned", "bool"},
-		{"isEnabledShowFillPercent", "bool"},
-		{"isEnabledShowFuel", "bool"},
-		{"isEnabledShowDef", "bool"},
-		{"isEnabledShowSpeed", "bool"},
-		{"isEnabledShowFills", "bool"},
-		{"isEnabledShowField", "bool"},
-		{"isEnabledShowFieldNum", "bool"},
-		{"isEnabledPadFieldNum", "bool"},
-		{"isEnabledShowDamage", "bool"},
-		{"setValueDamageThreshold", "float"},
-		{"isEnabledShowCPWaypoints", "bool"},
-		{"setValueMaxDepth", "int" },
-		{"setValueTimerFrequency", "int" },
-		{"setValueTextMarginX", "int" },
-		{"setValueTextMarginY", "int" },
-		{"setValueTextSize", "int" },
-		{"isEnabledTextBold", "bool" },
-		{"colorNormal", "color"},
-		{"colorFillType", "color"},
-		{"colorUser", "color"},
-		{"colorAI", "color"},
-		{"colorRunning", "color"},
-		{"colorAIMark", "color"},
-		{"colorSep", "color"},
-		{"colorSpeed", "color"},
-		{"colorDiesel", "color"},
-		{"colorDEF", "color"},
-		{"colorMethane", "color"},
-		{"colorElectric", "color"},
-		{"colorField", "color"},
-		{"colorDamaged", "color"},
-		{"setStringTextHelper", "string"},
-		{"setStringTextADHelper", "string"},
-		{"setStringTextCPHelper", "string"},
-		{"setStringTextCPWaypoint", "string"},
-		{"setStringTextDiesel", "string"},
-		{"setStringTextMethane", "string"},
-		{"setStringTextElectric", "string"},
-		{"setStringTextField", "string"},
-		{"setStringTextFieldNoNum", "string"},
-		{"setStringTextDamaged", "string"},
-		{"setStringTextSep", "string"}
+	self.STATUS            = {}
+	self.STATUS.RUNNING    = 3
+	self.STATUS.CONTROLLED = 2
+	self.STATUS.AI         = 1
+	self.STATUS.OFF        = 0
+
+	self.STATUS_COLOR = {
+		[self.STATUS.RUNNING]    = "colorRunning",
+		[self.STATUS.CONTROLLED] = "colorUser",
+		[self.STATUS.AI]         = "colorAI",
+		[self.STATUS.OFF]        = "colorNormal"
 	}
+
+	self.logger:print(":new() Initialized", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
 
 	return self
+end
+
+function SimpleInspector:save()
+	self.settings:saveSettings()
 end
 
 function SimpleInspector:openConstructionScreen()
@@ -283,35 +195,7 @@ function SimpleInspector:getDamageBad(vehicle)
 
 	if damageLevel == nil then return false end
 
-	return vehicle.isBroken or damageLevel < SimpleInspector.setValueDamageThreshold
-end
-
-function SimpleInspector:makeFillColor(percentage, flip)
-	local colorIndex = math.floor(percentage/4) + 1
-	local colorTab = nil
-
-	if percentage == 100 then colorIndex = 25 end
-
-	if not flip then colorIndex = 26 - colorIndex end
-
-	if g_gameSettings:getValue('useColorblindMode') then
-		colorTab = self.fill_color_CB[colorIndex]
-	else
-		colorTab = self.fill_color[colorIndex]
-	end
-
-	if colorTab ~= nil then
-		return colorTab
-	else
-		return {1,1,1,1}
-	end
-end
-
-function SimpleInspector:getIsTypeInverted(fillTypeID)
-	for i = 1, #self.fill_invert_types do
-		if self.fill_invert_types[i] == fillTypeID then return true end
-	end
-	return false
+	return vehicle.isBroken or damageLevel < self.settings:getValue("setValueDamageThreshold")
 end
 
 function SimpleInspector:getIsOnField(vehicle)
@@ -340,9 +224,9 @@ function SimpleInspector:getIsOnField(vehicle)
 		return false
 	end
 	if getIsOnField() then
-		if ( not g_simpleInspector.isEnabledShowFieldNum ) then
+		if ( not self.settings:getValue("isEnabledShowFieldNum") ) then
 			-- short cut field number detection if we won't display it anyways.
-			return { isField, 0 }
+			return { fieldOn = isField, fieldNum = 0 }
 		end
 
 		local farmlandId = g_farmlandManager:getFarmlandIdAtWorldPosition(wx, wz)
@@ -379,55 +263,64 @@ function SimpleInspector:getIsOnField(vehicle)
 			end
 		end
 	end
-	return { isField, fieldNumber }
+	return { fieldOn = isField, fieldNum = fieldNumber }
 end
 
 function SimpleInspector:getFuel(vehicle)
+	local defLevel
 	local fuelTypeList = {
 		{
 			FillType.DIESEL,
 			"colorDiesel",
-			g_simpleInspector.setStringTextDiesel
+			self.settings:getValue("setStringTextDiesel")
 		}, {
 			FillType.ELECTRICCHARGE,
 			"colorElectric",
-			g_simpleInspector.setStringTextElectric
+			self.settings:getValue("setStringTextElectric")
 		}, {
 			FillType.METHANE,
 			"colorMethane",
-			g_simpleInspector.setStringTextMethane
+			self.settings:getValue("setStringTextMethane")
 		}
 	}
-	local defLevel = -1
 
 	if vehicle.getConsumerFillUnitIndex ~= nil then
 		-- This should always pass, unless it's a very odd custom vehicle type.
 		local defFillUnitIndex = vehicle:getConsumerFillUnitIndex(FillType.DEF)
 
 		if defFillUnitIndex ~= nil then
-			defLevel = math.floor((vehicle:getFillUnitFillLevel(defFillUnitIndex) / vehicle:getFillUnitCapacity(defFillUnitIndex)) * 100)
+			defLevel = JTSUtil.calcPercent(
+				vehicle:getFillUnitFillLevel(defFillUnitIndex),
+				vehicle:getFillUnitCapacity(defFillUnitIndex),
+				false
+			)
 		end
 
 		for _, fuelType in pairs(fuelTypeList) do
 			local fillUnitIndex = vehicle:getConsumerFillUnitIndex(fuelType[1])
 			if ( fillUnitIndex ~= nil ) then
-				local fuelLevel = vehicle:getFillUnitFillLevel(fillUnitIndex)
-				local capacity  = vehicle:getFillUnitCapacity(fillUnitIndex)
-				local percentage = math.floor((fuelLevel / capacity) * 100)
-				return { fuelType[2], fuelType[3], percentage, defLevel }
+				return {
+					color     = fuelType[2],
+					text      = fuelType[3],
+					fuelLevel = JTSUtil.calcPercent(
+						vehicle:getFillUnitFillLevel(fillUnitIndex),
+						vehicle:getFillUnitCapacity(fillUnitIndex),
+						false
+					),
+					defLevel  = defLevel
+				}
 			end
 		end
 	end
-	return { false } -- unknown fuel type, should not be possible.
+	return nil -- unknown fuel type, should not be possible.
 end
 
 function SimpleInspector:getSpeed(vehicle)
 	-- Get the current speed of the vehicle
-	local speed = Utils.getNoNil(vehicle.lastSpeed, 0) * 3600
-	if g_gameSettings:getValue('useMiles') then
-		speed = speed * 0.621371
-	end
-	return string.format("%1.0f", "".. Utils.getNoNil(speed, 0))
+	local speedMulti = g_gameSettings:getValue('useMiles') and 0.621371 or 1
+	local speed = math.max(Utils.getNoNil(vehicle.lastSpeed, 0) * 3600 * speedMulti, 0)
+
+	return string.format("%1.0f", speed)
 end
 
 function SimpleInspector:getSingleFill(vehicle, theseFills)
@@ -439,7 +332,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 	if spec_fillUnit ~= nil and spec_fillUnit.fillUnits ~= nil then
 		local vehicleTypeName = Utils.getNoNil(vehicle.typeName, "unknown"):lower()
 		local isInverted      = self.fill_invert_all[vehicleTypeName] ~= nil
-		local checkInvert     = not isInverted --self.fill_invert_some[vehicleTypeName] ~= nil
+		local checkInvert     = not isInverted
 
 		for i = 1, #spec_fillUnit.fillUnits do
 			local fillUnit = spec_fillUnit.fillUnits[i]
@@ -449,7 +342,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					fillType = next(fillUnit.supportedFillTypes)
 				end
 				if fillUnit.fillTypeToDisplay ~= FillType.UNKNOWN then
-					isInverted  = self:getIsTypeInverted(fillType)
+					isInverted  = self.fill_invert_types[fillType] ~= nil
 					checkInvert = false
 					fillType    = fillUnit.fillTypeToDisplay
 				end
@@ -471,7 +364,7 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 					fillType = spec_fillUnit.fillUnits[fillUnit.childUnitOnHud].fillType
 				end
 
-				local maxMatters = not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit
+				local maxMatters = fillUnit.updateMass and not fillUnit.ignoreFillLimit and g_currentMission.missionInfo.trailerFillLimit
 				local maxReached = maxMatters and vehicle.getMaxComponentMassReached ~= nil and vehicle:getMaxComponentMassReached();
 
 				if maxReached then
@@ -494,13 +387,13 @@ function SimpleInspector:getSingleFill(vehicle, theseFills)
 				end
 
 				if fillLevel > 0 then
-					if checkInvert then isInverted = self:getIsTypeInverted(fillType) end
+					if checkInvert then isInverted = self.fill_invert_types[fillType] ~= nil end
 
 					if ( theseFills[fillType] ~= nil ) then
-						theseFills[fillType][1] = theseFills[fillType][1] + fillLevel
-						theseFills[fillType][2] = theseFills[fillType][2] + capacity
+						theseFills[fillType]["level"]    = theseFills[fillType]["level"] + fillLevel
+						theseFills[fillType]["capacity"] = theseFills[fillType]["capacity"] + capacity
 					else
-						theseFills[fillType] = { fillLevel, capacity, isInverted }
+						theseFills[fillType] = { level = fillLevel, capacity = capacity, reverse = isInverted }
 					end
 				end
 			end
@@ -514,7 +407,7 @@ function SimpleInspector:getAllFills(vehicle, fillLevels, depth)
 	-- That's 5 levels of attachments, so 5 trailers, #6 gets ignored.
 	self:getSingleFill(vehicle, fillLevels)
 
-	if vehicle.getAttachedImplements ~= nil and depth < g_simpleInspector.setValueMaxDepth then
+	if vehicle.getAttachedImplements ~= nil and depth < self.settings:getValue("setValueMaxDepth") then
 		local attachedImplements = vehicle:getAttachedImplements();
 		for _, implement in pairs(attachedImplements) do
 			if implement.object ~= nil then
@@ -527,9 +420,7 @@ end
 
 function SimpleInspector:updateVehicles()
 	local new_data_table = {}
-	local myFarmID = self.mission:getFarmId()
-
-	self.shown_farms_mp = 0
+	local myFarmID       = self.mission:getFarmId()
 
 	if g_currentMission ~= nil and g_currentMission.vehicles ~= nil then
 
@@ -543,29 +434,29 @@ function SimpleInspector:updateVehicles()
 				thisFarmID = thisVeh.ownerFarmId
 			end
 
-			if ( not self.isMPGame or g_simpleInspector.isEnabledShowUnowned or myFarmID == thisFarmID ) then
-				table.insert(sortOrder, {v, thisVeh:getFullName(), thisFarmID})
+			if ( not self.isMPGame or self.settings:getValue("isEnabledShowUnowned") or myFarmID == thisFarmID ) then
+				table.insert(sortOrder, {
+					idx    = v,
+					name   = thisVeh:getFullName(),
+					farmID = thisFarmID
+				})
 			end
 		end
 
-		if g_simpleInspector.isEnabledAlphaSort then
-			local function sorter(a,b) return a[2] < b[2] end
-			table.sort(sortOrder, sorter)
+		if self.settings:getValue("isEnabledAlphaSort") then
+			-- Alpha sort vehicles (tab order otherwise)
+			JTSUtil.sortTableByKey(sortOrder, "name")
 		end
-
-		local function farmSorter(a,b) return a[3] < b[3] end
 
 		if self.isMPGame then
-			-- We need to sort by farmID last, as this also controls how many headings we
-			-- are going to see later.
-			table.sort(sortOrder, farmSorter)
+			-- We need to sort by farmID last - also controls how many headings we see later.
+			JTSUtil.sortTableByKey(sortOrder, "farmID")
 		end
 
-		local lastFarmID = 0
-
 		for _, sortEntry in ipairs(sortOrder) do
-			local thisVeh = g_currentMission.vehicles[sortEntry[1]]
-			local thisVehFarm = g_farmManager:getFarmById(sortEntry[3])
+			local thisVeh     = g_currentMission.vehicles[sortEntry.idx]
+			local thisVehFarm = g_farmManager:getFarmById(sortEntry.farmID)
+
 			if thisVeh ~= nil and thisVeh.getIsControlled ~= nil then
 				local typeName         = Utils.getNoNil(thisVeh.typeName, "unknown")
 				local isTrain          = typeName == "locomotive"
@@ -574,104 +465,85 @@ function SimpleInspector:updateVehicles()
 				local isSteerImplement = thisVeh.spec_attachable ~= nil
 
 				if ( not isTrain and not isRidable and not isBelt and not isSteerImplement ) then
-					local plyrName = nil
 					local isRunning = thisVeh.getIsMotorStarted ~= nil and thisVeh:getIsMotorStarted()
-					local isOnAI    = thisVeh.getIsAIActive ~= nil and thisVeh:getIsAIActive()
-					local isConned  = thisVeh.getIsControlled ~= nil and thisVeh:getIsControlled()
+					local isOnAI    = thisVeh.getIsAIActive ~= nil     and thisVeh:getIsAIActive()
+					local isConned  = thisVeh.getIsControlled ~= nil   and thisVeh:getIsControlled()
 
-					if ( g_simpleInspector.isEnabledShowAll or isConned or isRunning or isOnAI ) then
-						local thisName  = thisVeh:getName()
-						local thisBrand = g_brandManager:getBrandByIndex(thisVeh:getBrand())
-						local thisAFMK  = 0
-						local fullName  = thisBrand.title .. " " .. thisName
+					if ( self.settings:getValue("isEnabledShowAll") or isConned or isRunning or isOnAI ) then
+						local plyrName  = self.isMPGame and self.settings:getValue("isEnabledShowPlayer") and isConned and thisVeh.getControllerName ~= nil and thisVeh:getControllerName() or nil
+						local AFMHotKey = thisVeh.getHotKeyVehicleState ~= nil and thisVeh:getHotKeyVehicleState() or 0
+						local fullName  = thisVeh:getFullName()
 						local speed     = self:getSpeed(thisVeh)
 						local fills     = {}
-						local status    = 0
-						local isAI      = {false, false}
-						local fuelLevel = self:getFuel(thisVeh)
-						local isOnField = {false, false}
-						local isBroken  = false
+						local status    = self.STATUS.OFF
+						local isAI      = {aiActive = false, aiText = ""}
+						local isOnField = {fieldOn = false, fieldNum = 0}
+						local isBroken  = self.settings:getValue("isEnabledShowDamage") and self:getAllDamage(thisVeh)
 
-						if thisVeh.getHotKeyVehicleState ~= nil then
-							thisAFMK = thisVeh:getHotKeyVehicleState()
+						if AFMHotKey > 0 then
+							fullName = JTSUtil.qConcat("[", AFMHotKey, "] ", fullName)
 						end
 
-						if thisAFMK > 0 then
-							fullName = "[" .. tostring(thisAFMK) .. "] " .. fullName
-						end
-
-						if self.isMPGame and g_simpleInspector.isEnabledShowPlayer and isConned and thisVeh.getControllerName ~= nil then
-							plyrName = thisVeh:getControllerName()
-						end
-
-						if g_simpleInspector.isEnabledShowField then
+						if self.settings:getValue("isEnabledShowField") then
 							-- This may be compute heavy, only do it when wanted.
 							isOnField = self:getIsOnField(thisVeh)
 						end
 
-						if g_simpleInspector.isEnabledShowDamage then
-							-- If we don't care to see damage, don't look it up
-							isBroken = self:getAllDamage(thisVeh)
-						end
-
-						if g_simpleInspector.isEnabledShowAll and isRunning then
+						if self.settings:getValue("isEnabledShowAll") and isRunning then
 							-- If we show all, use "colorRunning", otherwise just the normal one
 							-- AI and user control take precedence, in that order
-							status = 3
+							status = self.STATUS.RUNNING
 						end
 						if isOnAI then
 							-- second highest precendence
-							status = 1
+							status = self.STATUS.AI
 
 							-- default text, override for AD & CP below.
-							isAI = {true, g_simpleInspector.setStringTextHelper}
+							isAI.aiActive = true
+							isAI.aiText   = self.settings:getValue("setStringTextHelper")
 
 							-- is AD driving
 							if thisVeh.ad ~= nil and thisVeh.ad.stateModule ~= nil and thisVeh.ad.stateModule:isActive() then
-								isAI[2] = g_simpleInspector.setStringTextADHelper
+								isAI.aiText = self.settings:getValue("setStringTextADHelper")
 							end
 
 							-- is CP driving, and should we show waypoints?
 							if thisVeh.getCpStatus ~= nil then
 								local cpStatus = thisVeh:getCpStatus()
 								if cpStatus:getIsActive() then
-									isAI[2] = g_simpleInspector.setStringTextCPHelper
-									if ( g_simpleInspector.isEnabledShowCPWaypoints ) then
-										isAI[2] = g_simpleInspector.setStringTextCPWaypoint .. cpStatus:getWaypointText() .. "_ "
+									isAI.aiText = self.settings:getValue("setStringTextCPHelper")
+									if ( self.settings:getValue("isEnabledShowCPWaypoints") ) then
+										isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextCPWaypoint"), cpStatus:getWaypointText() , "_")
 									end
 								end
 							end
 						end
 						if isConned then
 							-- highest precendence
-							status = 2
+							status = self.STATUS.CONTROLLED
 						end
 
 						self:getAllFills(thisVeh, fills, 0)
 
-						if self.isMPGame and sortEntry[3] ~= lastFarmID then
-							-- this counts how many farms we have active in the display
-							lastFarmID = sortEntry[3]
-							self.shown_farms_mp = self.shown_farms_mp + 1
-						end
-
 						table.insert(new_data_table, {
-							status,
-							isAI,
-							fullName,
-							tostring(speed),
-							fuelLevel,
-							fills,
-							isOnField,
-							isBroken,
-							plyrName,
-							{sortEntry[3], thisVehFarm.name, thisVehFarm.color}
+							status    = status,
+							isAI      = isAI,
+							fullName  = fullName,
+							speed     = tostring(speed),
+							fuelLevel = self:getFuel(thisVeh),
+							fills     = fills,
+							isOnField = isOnField,
+							isBroken  = isBroken,
+							plyrName  = plyrName,
+							farmInfo  = { farmID = sortEntry.farmID, farmName = thisVehFarm.name, farmColor = thisVehFarm.color}
 						})
 					end
 				end
 			end
 		end
 	end
+
+	self.logger:printVariable(new_data_table, FS22Log.LOG_LEVEL.VERBOSE, "display_data", 3)
 
 	self.display_data = {unpack(new_data_table)}
 end
@@ -684,23 +556,24 @@ function SimpleInspector:draw()
 	if self.inspectBox ~= nil then
 		local info_text = self.display_data
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
+		local outputTextLines = {}
 
-		if #info_text == 0 or not g_simpleInspector.isEnabledVisible or g_sleepManager:getIsSleeping() or g_noHudModeEnabled or not g_currentMission.hud.isVisible then
+		if #info_text == 0 or not self.settings:getValue("isEnabledVisible") or g_sleepManager:getIsSleeping() or g_noHudModeEnabled or not g_currentMission.hud.isVisible then
 			-- we have no entries, hide the overlay and leave
 			self.inspectBox:setVisible(false)
 			return
-		elseif g_gameSettings:getValue("ingameMapState") == 4 and g_simpleInspector.displayMode % 2 ~= 0 and g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
+		elseif g_gameSettings:getValue("ingameMapState") == 4 and self.settings:getValue("displayMode") % 2 ~= 0 and g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
 			-- Left side display hide on big map with help open
 			self.inspectBox:setVisible(false)
 			return
 		else
 			-- we have entries, lets get the overall height of the box and unhide
 			self.inspectBox:setVisible(true)
-			dispTextH = (self.inspectText.size * #info_text) + (self.inspectText.size * self.shown_farms_mp)
-			overlayH = dispTextH + ( 2 * self.inspectText.marginHeight)
+			dispTextH = self.inspectText.size * #info_text
+			overlayH  = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 
-		setTextBold(g_simpleInspector.isEnabledTextBold)
+		setTextBold(self.settings:getValue("isEnabledTextBold"))
 		setTextVerticalAlignment(RenderText.VERTICAL_ALIGN_TOP)
 
 		-- overlayX/Y is where the box starts
@@ -708,16 +581,16 @@ function SimpleInspector:draw()
 		-- dispTextX/Y is where the text starts (sort of)
 		local dispTextX, dispTextY = self:findOrigin()
 
-		if ( g_simpleInspector.displayMode == 2 ) then
+		if ( self.settings:getValue("displayMode") == 2 ) then
 			-- top right (subtract both margins)
 			dispTextX = dispTextX - self.marginWidth
 			dispTextY = dispTextY - self.marginHeight
 			overlayY  = overlayY - overlayH
-		elseif ( g_simpleInspector.displayMode == 3 ) then
+		elseif ( self.settings:getValue("displayMode") == 3 ) then
 			-- bottom left (add x width, add Y height)
 			dispTextX = dispTextX + self.marginWidth
 			dispTextY = dispTextY - self.marginHeight + overlayH
-		elseif ( g_simpleInspector.displayMode == 4 ) then
+		elseif ( self.settings:getValue("displayMode") == 4 ) then
 			-- bottom right (subtract x width, add Y height)
 			dispTextX = dispTextX - self.marginWidth
 			dispTextY = dispTextY - self.marginHeight + overlayH
@@ -728,13 +601,13 @@ function SimpleInspector:draw()
 			overlayY  = overlayY - overlayH
 		end
 
-		if ( g_simpleInspector.displayMode % 2 == 0 ) then
+		if ( self.settings:getValue("displayMode") % 2 == 0 ) then
 			setTextAlignment(RenderText.ALIGN_RIGHT)
 		else
 			setTextAlignment(RenderText.ALIGN_LEFT)
 		end
 
-		if g_currentMission.hud.sideNotifications ~= nil and g_simpleInspector.displayMode == 2 then
+		if g_currentMission.hud.sideNotifications ~= nil and self.settings:getValue("displayMode") == 2 then
 			if #g_currentMission.hud.sideNotifications.notificationQueue > 0 then
 				local deltaY = g_currentMission.hud.sideNotifications:getHeight()
 				dispTextY = dispTextY - deltaY
@@ -745,166 +618,207 @@ function SimpleInspector:draw()
 		self.inspectText.posX = dispTextX
 		self.inspectText.posY = dispTextY
 
-		local displayOrderTable = self:utilStrSplit(g_simpleInspector.displayOrder, "_")
+		local displayOrderTable = JTSUtil.stringSplit(self.settings:getValue("displayOrder"), "_")
 
 		local lastFarmID = -1
 
-		for _, txt in pairs(info_text) do
+		for _, thisEntry in pairs(info_text) do
 
-			if self.isMPGame and lastFarmID ~= txt[10][1] then
+			if self.isMPGame and lastFarmID ~= thisEntry.farmInfo.farmID then
 				-- Show the farm name, it's different from the last entry
-				lastFarmID = txt[10][1]
-				local farmText = ""
+				lastFarmID = thisEntry.farmInfo.farmID
 
-				setTextColor(unpack(Farm.COLORS[txt[10][3]]))
-
-				farmText = self:renderText(dispTextX, dispTextY, farmText, txt[10][2])
-
-				dispTextY = dispTextY - self.inspectText.size
-
-				local tmpW = getTextWidth(self.inspectText.size, farmText)
-
-				if tmpW > dispTextW then dispTextW = tmpW end
+				JTSUtil.dispStackAdd(outputTextLines, thisEntry.farmInfo.farmName, thisEntry.farmInfo.farmColor, true)
 			end
 
-			local thisTextLine  = {}
-			local fullTextSoFar = ""
+			JTSUtil.stackNewRow(outputTextLines)
 
 			for _, dispElement in pairs(displayOrderTable) do
-				if dispElement == "SEP" then
-					table.insert(thisTextLine, {false, false, false})
-				end
+				local doAddSeperator = false
 
-				if dispElement == "SPD" and g_simpleInspector.isEnabledShowSpeed then
+				if dispElement:sub(1,3) == "SPD" and self.settings:getValue("isEnabledShowSpeed") then
 					-- Vehicle speed
-					if g_gameSettings:getValue('useMiles') then
-						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " " .. g_i18n:getText("text_simpleInspector_mph"), false})
-					else
-						table.insert(thisTextLine, {"colorSpeed", txt[4] .. " " .. g_i18n:getText("text_simpleInspector_kph"), false})
+					doAddSeperator = true
+
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						JTSUtil.qConcatS(
+							thisEntry.speed,
+							g_i18n:getText(g_gameSettings:getValue('useMiles') and "text_simpleInspector_mph" or "text_simpleInspector_kph")
+						),
+						self:getNamedColor("colorSpeed")
+					)
+				end
+
+				if dispElement:sub(1,3) == "GAS" and self.settings:getValue("isEnabledShowFuel") and thisEntry.fuelLevel ~= nil then
+					-- Vehicle fuel { color, text, fuelLevel, defLevel }
+					doAddSeperator = true
+
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						thisEntry.fuelLevel.text,
+						self:getNamedColor(thisEntry.fuelLevel.color)
+					)
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						JTSUtil.qConcat(thisEntry.fuelLevel.fuelLevel, "%"),
+						JTSUtil.colorPercent(thisEntry.fuelLevel.fuelLevel)
+					)
+
+					if self.settings:getValue("isEnabledShowDef") and thisEntry.fuelLevel.defLevel then
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							self.settings:getValue("setStringTextSep"),
+							self:getNamedColor("colorSep")
+						)
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							self.settings:getValue("setStringTextDEF"),
+							self:getNamedColor("colorDEF")
+						)
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							JTSUtil.qConcat(thisEntry.fuelLevel.defLevel, "%"),
+							JTSUtil.colorPercent(thisEntry.fuelLevel.defLevel)
+						)
 					end
 
 				end
 
-				if dispElement == "GAS" and g_simpleInspector.isEnabledShowFuel and txt[5][1] ~= false then
-					-- Vehicle fuel color[1], text[2], percentage[3], defPercentage[4]
-					table.insert(thisTextLine, { txt[5][1], txt[5][2], false})
-					table.insert(thisTextLine, { "colorFillType", tostring(txt[5][3]) .. "%", false})
-
-					if g_simpleInspector.isEnabledShowDef and txt[5][4] > -1 then
-						table.insert(thisTextLine, {false, false, false})
-						table.insert(thisTextLine, { "colorDEF", g_simpleInspector.setStringTextDEF, false})
-						table.insert(thisTextLine, { "colorFillType", tostring(txt[5][4]) .. "%", false})
-					end
-
+				if dispElement:sub(1,3) == "DAM" and self.settings:getValue("isEnabledShowDamage") and thisEntry.isBroken then
+					-- Damage marker tag
+					doAddSeperator = true
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						self.settings:getValue("setStringTextDamaged"),
+						self:getNamedColor("colorDamaged")
+					)
 				end
 
-				-- Damage marker Tag, if needed
-				if (dispElement == "DAM" or dispElement == "DAM*") and g_simpleInspector.isEnabledShowDamage and txt[8] then
-					table.insert(thisTextLine, {"colorDamaged", g_simpleInspector.setStringTextDamaged, false})
-					if dispElement == "DAM*" then
-						table.insert(thisTextLine, {false, false, false})
-					end
+				if dispElement:sub(1,3) == "FLD" and self.settings:getValue("isEnabledShowField") and thisEntry.isOnField.fieldOn then
+					-- Field mark isOnField.{fieldOn = false, fieldNum = 0}
+					doAddSeperator = true
+
+					local fieldNum = self.settings:getValue("isEnabledPadFieldNum") and string.format('%02d', thisEntry.isOnField.fieldNum) or thisEntry.isOnField.fieldNum
+
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						thisEntry.isOnField.fieldNum == 0 and self.settings:getValue("setStringTextFieldNoNum") or JTSUtil.qConcat(self.settings:getValue("setStringTextField"), fieldNum),
+						self:getNamedColor("colorField")
+					)
 				end
 
-				-- Field Mark, if needed / wanted
-				if (dispElement == "FLD" or dispElement == "FLD*") and g_simpleInspector.isEnabledShowField and txt[7][1] == true then
-					if txt[7][2] == 0 then
-						table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextFieldNoNum .. " ", false})
-					else
-						if g_simpleInspector.isEnabledPadFieldNum and txt[7][2] < 10 then
-							table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. "0" .. txt[7][2] .. " ", false})
-						else
-							table.insert(thisTextLine, {"colorField", g_simpleInspector.setStringTextField .. txt[7][2] .. " ", false})
-						end
-					end
-					if dispElement == "FLD*" then
-						table.insert(thisTextLine, {false, false, false})
-					end
+				if dispElement:sub(1,3) == "AIT" and thisEntry.isAI.aiActive then
+					-- AI Tag isAI.{aiActive = false, aiText = ""}
+					doAddSeperator = true
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						thisEntry.isAI.aiText,
+						self:getNamedColor("colorAIMark")
+					)
 				end
 
-				-- AI Tag, if needed
-				if (dispElement == "AIT" or dispElement == "AIT*") and txt[2][1] then
-					table.insert(thisTextLine, {"colorAIMark", txt[2][2], false})
-					if dispElement == "AIT*" then
-						table.insert(thisTextLine, {false, false, false})
-					end
-				end
-
-				-- User name
-				if (dispElement == "USR" or dispElement == "USR*") and txt[9] ~= nil then
-					table.insert(thisTextLine, {"colorUser", "[" .. txt[9] .. "] ", false})
-					if dispElement == "USR*" then
-						table.insert(thisTextLine, {false, false, false})
-					end
+				if dispElement:sub(1,3) == "USR" and thisEntry.plyrName then
+					-- User name
+					doAddSeperator = true
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						JTSUtil.qConcat("[", thisEntry.plyrName, "]"),
+						self:getNamedColor("colorUser")
+					)
 				end
 
 				-- Vehicle name
-				if dispElement == "VEH" then
-					if  txt[1] == 0 then
-						table.insert(thisTextLine, {"colorNormal", txt[3], false})
-					elseif txt[1] == 1 then
-						table.insert(thisTextLine, {"colorAI", txt[3], false})
-					elseif txt[1] == 3 then
-						table.insert(thisTextLine, {"colorRunning", txt[3], false})
-					else
-						table.insert(thisTextLine, {"colorUser", txt[3], false})
-					end
+				if dispElement:sub(1,3) == "VEH" then
+					doAddSeperator = true
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						thisEntry.fullName,
+						self:getNamedColor(self.STATUS_COLOR[thisEntry.status])
+					)
 				end
 
-				if dispElement == "FIL" and g_simpleInspector.isEnabledShowFills then
-					for idx, thisFill in pairs(txt[6]) do
+				if dispElement:sub(1,3) == "FIL" and self.settings:getValue("isEnabledShowFills") then
+					for fillTypeIndex, fillTypeInfo in pairs(thisEntry.fills) do
+						-- fillTypeInfo.{ level = fillLevel, capacity = capacity, reverse = isInverted }
+
+						doAddSeperator = true
+
 						-- Seperator between fill types / vehicle
-						table.insert(thisTextLine, {false, false, false})
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							self.settings:getValue("setStringTextSep"),
+							self:getNamedColor("colorSep")
+						)
 
-						local thisFillType = g_fillTypeManager:getFillTypeByIndex(idx)
-						local dispPerc     = math.ceil((thisFill[1] / thisFill[2]) * 100 )
-						local fillColor    = self:makeFillColor(dispPerc, thisFill[3])
+						local thisFillType = g_fillTypeManager:getFillTypeByIndex(fillTypeIndex)
+						local thisPercent  = JTSUtil.calcPercent(fillTypeInfo.level, fillTypeInfo.capacity)
+						local fillColor    = JTSUtil.colorPercent(thisPercent, not fillTypeInfo.reverse)
 
-						table.insert(thisTextLine, {"colorFillType", thisFillType.title .. ":", false})
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							thisFillType.title .. ":",
+							self:getNamedColor("colorFillType")
+						)
+						JTSUtil.dispStackAdd(
+							outputTextLines,
+							fillTypeInfo.level,
+							fillColor
+						)
 
-						table.insert(thisTextLine, {"rawFillColor", tostring(thisFill[1]), fillColor})
-						if g_simpleInspector.isEnabledShowFillPercent then
-							table.insert(thisTextLine, {"rawFillColor", " (" .. tostring(dispPerc) ..  "%)", fillColor})
+						if self.settings:getValue("isEnabledShowFillPercent") then
+							JTSUtil.dispStackAdd(
+								outputTextLines,
+								JTSUtil.qConcat(" (", thisPercent, "%)"),
+								fillColor
+							)
 						end
 					end
 				end
-			end
 
-			if ( g_simpleInspector.displayMode % 2 ~= 0 ) then
-				for _, thisLine in ipairs(thisTextLine) do
-					if thisLine[1] == false then
-						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
-					elseif thisLine[1] == "rawFillColor" then
-						setTextColor(unpack(thisLine[3]))
-						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisLine[2])
-					else
-						self:renderColor(thisLine[1])
-						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisLine[2])
-					end
+				if dispElement == "SEP" or ( dispElement:sub(-1) == "*" and doAddSeperator ) then
+					-- Seperator (or Element with star)
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						self.settings:getValue("setStringTextSep"),
+						self:getNamedColor("colorSep")
+					)
 				end
-			else
-				for i = #thisTextLine, 1, -1 do
-					if thisTextLine[i][1] == false then
-						fullTextSoFar = self:renderSep(dispTextX, dispTextY, fullTextSoFar)
-					elseif thisTextLine[i][1] == "rawFillColor" then
-						setTextColor(unpack(thisTextLine[i][3]))
-						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])
-					else
-						self:renderColor(thisTextLine[i][1])
-						fullTextSoFar = self:renderText(dispTextX, dispTextY, fullTextSoFar, thisTextLine[i][2])
-					end
+
+				if dispElement:sub(-1) == "-" and doAddSeperator then
+					-- Extra space
+					JTSUtil.dispStackAdd(
+						outputTextLines,
+						" ",
+						{1,1,1,1}
+					)
 				end
+			end
+		end
+
+		self.logger:printVariable(outputTextLines, FS22Log.LOG_LEVEL.VERBOSE, "outputTextLines", 3)
+
+		for dispLineNum=1, #outputTextLines do
+			local thisLinePlainText = ""
+
+			for _, dispElement in ipairs(JTSUtil.dispGetLine(outputTextLines, dispLineNum, (self.settings:getValue("displayMode") % 2 == 0) )) do
+				setTextColor(unpack(dispElement.color))
+				thisLinePlainText = self:renderText(
+					dispTextX,
+					dispTextY,
+					thisLinePlainText,
+					dispElement.text)
 			end
 
 			dispTextY = dispTextY - self.inspectText.size
 
-			local tmpW = getTextWidth(self.inspectText.size, fullTextSoFar)
+			local tmpW = getTextWidth(self.inspectText.size, thisLinePlainText)
 
 			if tmpW > dispTextW then dispTextW = tmpW end
 		end
 
 		-- update overlay background
-		if g_simpleInspector.displayMode % 2 == 0 then
+		if self.settings:getValue("displayMode") % 2 == 0 then
 			self.inspectBox.overlay:setPosition(overlayX - ( dispTextW + ( 2 * self.inspectText.marginWidth ) ), overlayY)
 		else
 			self.inspectBox.overlay:setPosition(overlayX, overlayY)
@@ -925,23 +839,20 @@ function SimpleInspector:update(dt)
 		return
 	end
 
-	if g_updateLoopIndex % g_simpleInspector.setValueTimerFrequency == 0 then
+	if g_updateLoopIndex % self.setValueTimerFrequency == 0 then
 		-- Lets not be rediculous, only update the vehicles "infrequently"
 		self:updateVehicles()
 	end
 end
 
-function SimpleInspector:renderColor(name)
-	-- fall back to white if it's not known
-	local colorString = Utils.getNoNil(g_simpleInspector[name], {1,1,1,1})
-
-	setTextColor(unpack(colorString))
+function SimpleInspector:getNamedColor(name)
+	return Utils.getNoNil(self.settings:getValue(name), {1,1,1,1})
 end
 
 function SimpleInspector:renderText(x, y, fullTextSoFar, text)
 	local newX = x
 
-	if g_simpleInspector.displayMode % 2 == 0 then
+	if self.settings:getValue("displayMode") % 2 == 0 then
 		newX = newX - getTextWidth(self.inspectText.size, fullTextSoFar)
 	else
 		newX = newX + getTextWidth(self.inspectText.size, fullTextSoFar)
@@ -951,39 +862,20 @@ function SimpleInspector:renderText(x, y, fullTextSoFar, text)
 	return text .. fullTextSoFar
 end
 
-function SimpleInspector:renderSep(x, y, fullTextSoFar)
-	self:renderColor("colorSep")
-	return self:renderText(x, y, fullTextSoFar, g_simpleInspector.setStringTextSep)
-end
-
-function SimpleInspector:utilStrSplit(str, sep)
-	if sep == nil then
-		sep = '%s'
-	end
-
-	local res = {}
-	local func = function(w)
-		table.insert(res, w)
-	end
-
-	_ = string.gsub(str, '[^'..sep..']+', func)
-	return res
-end
-
 function SimpleInspector:onStartMission(mission)
 	-- Load the mod, make the box that info lives in.
-	print("~~" .. self.myName .." :: version " .. self.version .. " loaded.")
+
+	self.logger:print(JTSUtil.qConcat("Loaded - version : ", self.version), FS22Log.LOG_LEVEL.INFO, "user_info")
+
 	if not self.isClient then
 		return
 	end
 
 	-- Just call both, load fails gracefully if it doesn't exists.
-	self:loadSettings()
-	self:saveSettings()
+	self.settings:loadSettings()
+	self.settings:saveSettings()
 
-	if ( g_simpleInspector.debugMode ) then
-		print("~~" .. self.myName .." :: onStartMission")
-	end
+	self.logger:print(":onStartMission()", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
 
 	self:createTextBox()
 end
@@ -992,31 +884,31 @@ function SimpleInspector:findOrigin()
 	local tmpX = 0
 	local tmpY = 0
 
-	if ( g_simpleInspector.displayMode == 2 ) then
+	if ( self.settings:getValue("displayMode") == 2 ) then
 		-- top right display
 		tmpX, tmpY = self.gameInfoDisplay:getPosition()
 		tmpX = 1
 		tmpY = tmpY - 0.012
-	elseif ( g_simpleInspector.displayMode == 3 ) then
+	elseif ( self.settings:getValue("displayMode") == 3 ) then
 		-- Bottom left, correct origin.
 		tmpX = 0.01622
 		tmpY = 0 + self.ingameMap:getHeight() + 0.01622
 		if g_gameSettings:getValue("ingameMapState") > 1 then
 			tmpY = tmpY + 0.032
 		end
-	elseif ( g_simpleInspector.displayMode == 4 ) then
+	elseif ( self.settings:getValue("displayMode") == 4 ) then
 		-- bottom right display
 		tmpX = 1
 		tmpY = 0.01622
 		if g_currentMission.inGameMenu.hud.speedMeter.overlay.visible then
 			tmpY = tmpY + self.speedMeterDisplay:getHeight() + 0.032
-			if g_modIsLoaded["FS22_EnhancedVehicle"] then
+			if g_modIsLoaded["FS22_EnhancedVehicle"] or g_modIsLoaded["FS22_guidanceSteering"] then
 				tmpY = tmpY + 0.03
 			end
 		end
-	elseif ( g_simpleInspector.displayMode == 5 ) then
-		tmpX = g_simpleInspector.displayMode5X
-		tmpY = g_simpleInspector.displayMode5Y
+	elseif ( self.settings:getValue("displayMode") == 5 ) then
+		tmpX = self.settings:getValue("displayMode5X")
+		tmpY = self.settings:getValue("displayMode5Y")
 	else
 		-- top left display
 		tmpX = 0.014
@@ -1031,9 +923,7 @@ end
 
 function SimpleInspector:createTextBox()
 	-- make the box we live in.
-	if ( g_simpleInspector.debugMode ) then
-		print("~~" .. self.myName .." :: createTextBox")
-	end
+	self.logger:print(":createTextBox()", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
 
 	local baseX, baseY = self:findOrigin()
 
@@ -1041,7 +931,7 @@ function SimpleInspector:createTextBox()
 
 	self.marginWidth, self.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({ 8, 8 })
 
-	if ( g_simpleInspector.displayMode % 2 == 0 ) then -- top right
+	if ( self.settings:getValue("displayMode") % 2 == 0 ) then -- top right
 		boxOverlay = Overlay.new(self.bgName, baseX, baseY - self.marginHeight, 1, 1)
 	else -- default to 1
 		boxOverlay = Overlay.new(self.bgName, baseX, baseY + self.marginHeight, 1, 1)
@@ -1056,92 +946,14 @@ function SimpleInspector:createTextBox()
 	self.inspectBox:setVisible(false)
 	self.gameInfoDisplay:addChild(boxElement)
 
-	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({g_simpleInspector.setValueTextMarginX, g_simpleInspector.setValueTextMarginY})
-	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(g_simpleInspector.setValueTextSize)
+	self.inspectText.marginWidth, self.inspectText.marginHeight = self.gameInfoDisplay:scalePixelToScreenVector({self.settings:getValue("setValueTextMarginX"), self.settings:getValue("setValueTextMarginY")})
+	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings:getValue("setValueTextSize"))
 end
 
 function SimpleInspector:delete()
 	-- clean up on remove
 	if self.inspectBox ~= nil then
 		self.inspectBox:delete()
-	end
-end
-
-function SimpleInspector:saveSettings()
-	local savegameFolderPath = ('%smodSettings/FS22_SimpleInspector/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
-	local savegameFile = savegameFolderPath .. "/simpleInspector.xml"
-
-	if ( not fileExists(savegameFile) ) then
-		createFolder(('%smodSettings/FS22_SimpleInspector'):format(getUserProfileAppPath()))
-		createFolder(savegameFolderPath)
-	end
-
-	local key = "simpleInspector"
-	local xmlFile = createXMLFile(key, savegameFile, key)
-
-	for _, setting in pairs(g_simpleInspector.settingsNames) do
-		if ( setting[2] == "bool" ) then
-			setXMLBool(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
-		elseif ( setting[2] == "string" ) then
-			setXMLString(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
-		elseif ( setting[2] == "int" ) then
-			setXMLInt(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
-		elseif ( setting[2] == "float" ) then
-			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#value", g_simpleInspector[setting[1]])
-		elseif ( setting[2] == "color" ) then
-			local r, g, b, a = unpack(g_simpleInspector[setting[1]])
-			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#r", r)
-			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#g", g)
-			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#b", b)
-			setXMLFloat(xmlFile, key .. "." .. setting[1] .. "#a", a)
-		end
-	end
-
-	saveXMLFile(xmlFile)
-	print("~~" .. g_simpleInspector.myName .." :: saved config file")
-end
-
-function SimpleInspector:loadSettings()
-	local savegameFolderPath = ('%smodSettings/FS22_SimpleInspector/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
-	local savegameOldPath    = ('%smodSettings/FS22_SimpleExplorer/savegame%d'):format(getUserProfileAppPath(), g_currentMission.missionInfo.savegameIndex)
-	local key                = "simpleInspector"
-	local fileFound          = false
-	local xmlFile            = nil
-
-	if fileExists(savegameFolderPath .. "/simpleInspector.xml") then
-		print("~~" .. self.myName .." :: loading config file")
-		xmlFile   = loadXMLFile(key, savegameFolderPath .. "/simpleInspector.xml")
-		fileFound = true
-	elseif fileExists(savegameOldPath .. "/simpleInspector.xml") then
-		print("~~" .. self.myName .." :: loading (old) config file")
-		xmlFile   = loadXMLFile(key, savegameFolderPath .. "/simpleInspector.xml")
-		fileFound = true
-	end
-
-	if fileFound then
-		for _, setting in pairs(self.settingsNames) do
-			if ( setting[2] == "bool" ) then
-				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLBool(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])
-			elseif ( setting[2] == "string" ) then
-				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLString(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])
-			elseif ( setting[2] == "int" ) then
-				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLInt(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])
-			elseif ( setting[2] == "float" ) then
-				g_simpleInspector[setting[1]] = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#value"), g_simpleInspector[setting[1]])
-			elseif ( setting[2] == "color" ) then
-				local r, g, b, a = unpack(g_simpleInspector[setting[1]])
-				r = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#r"), r)
-				g = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#g"), g)
-				b = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#b"), b)
-				a = Utils.getNoNil(getXMLFloat(xmlFile, key .. "." .. setting[1] .. "#a"), a)
-				g_simpleInspector[setting[1]] = {r, g, b, a}
-			end
-		end
-
-		delete(xmlFile)
-
-		-- Update text size.
-		g_simpleInspector.inspectText.size = g_simpleInspector.gameInfoDisplay:scalePixelToScreenHeight(g_simpleInspector.setValueTextSize)
 	end
 end
 
@@ -1159,119 +971,129 @@ end
 
 function SimpleInspector:actionReloadConfig()
 	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
-	if ( thisModEnviroment.debugMode ) then
-		print("~~" .. thisModEnviroment.myName .." :: reload settings from disk")
-	end
-	thisModEnviroment:loadSettings()
+
+	thisModEnviroment.logger:print("force reload settings", FS22Log.LOG_LEVEL.INFO, "user_info")
+
+	thisModEnviroment.settings:loadSettings()
 end
 
 function SimpleInspector:actionToggleAllFarms()
 	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
-	if ( thisModEnviroment.debugMode ) then
-		print("~~" .. thisModEnviroment.myName .." :: toggle all farms on/off")
-	end
-	thisModEnviroment.isEnabledShowUnowned = (not thisModEnviroment.isEnabledShowUnowned)
-	thisModEnviroment:saveSettings()
+
+	thisModEnviroment.logger:print("toggle all farms", FS22Log.LOG_LEVEL.INFO, "user_info")
+
+	thisModEnviroment.settings:setValue("isEnabledShowUnowned", not thisModEnviroment.settings:getValue("isEnabledShowUnowned"))
+	thisModEnviroment.settings:saveSettings()
 end
 
 function SimpleInspector:actionToggleVisible()
 	local thisModEnviroment = getfenv(0)["g_simpleInspector"]
-	if ( thisModEnviroment.debugMode ) then
-		print("~~" .. thisModEnviroment.myName .." :: toggle display on/off")
-	end
-	thisModEnviroment.isEnabledVisible = (not thisModEnviroment.isEnabledVisible)
-	thisModEnviroment:saveSettings()
+	thisModEnviroment.logger:print("toggle display", FS22Log.LOG_LEVEL.INFO, "user_info")
+
+	thisModEnviroment.settings:setValue("isEnabledVisible", not thisModEnviroment.settings:getValue("isEnabledVisible"))
+	thisModEnviroment.settings:saveSettings()
+end
+
+
+function SimpleInspector.addMenuOption(original, target, id, i18n_title, i18n_tooltip, options, callback)
+	local menuOption = original:clone()
+
+	menuOption.target = target
+	menuOption.id     = id
+
+	menuOption:setCallback("onClickCallback", callback)
+	menuOption:setDisabled(false)
+
+	local settingTitle = menuOption.elements[4]
+	local toolTip      = menuOption.elements[6]
+
+	menuOption:setTexts({unpack(options)})
+	settingTitle:setText(g_i18n:getText(i18n_title))
+	toolTip:setText(g_i18n:getText(i18n_tooltip))
+
+	return menuOption
 end
 
 function SimpleInspector.initGui(self)
+
 	local boolMenuOptions = {
 		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "TextBold"
 	}
 
-	if not g_simpleInspector.createdGUI then -- Skip if we've already done this once
+	if not g_simpleInspector.createdGUI then
+		-- Create controls -- Skip if we've already done this once
 		g_simpleInspector.createdGUI = true
-
-		self.menuOption_DisplayMode = self.checkInvertYLook:clone()
-		self.menuOption_DisplayMode.target = g_simpleInspector
-		self.menuOption_DisplayMode.id = "simpleInspector_DisplayMode"
-		self.menuOption_DisplayMode:setCallback("onClickCallback", "onMenuOptionChanged_DisplayMode")
-		self.menuOption_DisplayMode:setDisabled(false)
-
-		local settingTitle = self.menuOption_DisplayMode.elements[4]
-		local toolTip = self.menuOption_DisplayMode.elements[6]
-
-		self.menuOption_DisplayMode:setTexts({
-			g_i18n:getText("setting_simpleInspector_DisplayMode1"),
-			g_i18n:getText("setting_simpleInspector_DisplayMode2"),
-			g_i18n:getText("setting_simpleInspector_DisplayMode3"),
-			g_i18n:getText("setting_simpleInspector_DisplayMode4")
-		})
-
-		settingTitle:setText(g_i18n:getText("setting_simpleInspector_DisplayMode"))
-		toolTip:setText(g_i18n:getText("toolTip_simpleInspector_DisplayMode"))
-
-		for _, optName in pairs(boolMenuOptions) do
-			local fullName = "menuOption_" .. optName
-
-			self[fullName]           = self.checkInvertYLook:clone()
-			self[fullName]["target"] = g_simpleInspector
-			self[fullName]["id"]     = "simpleInspector_" .. optName
-			self[fullName]:setCallback("onClickCallback", "onMenuOptionChanged_boolOpt")
-			self[fullName]:setDisabled(false)
-
-			local settingTitle = self[fullName]["elements"][4]
-			local toolTip      = self[fullName]["elements"][6]
-
-			self[fullName]:setTexts({g_i18n:getText("ui_no"), g_i18n:getText("ui_yes")})
-
-			settingTitle:setText(g_i18n:getText("setting_simpleInspector_" .. optName))
-			toolTip:setText(g_i18n:getText("toolTip_simpleInspector_" .. optName))
-		end
 
 		local title = TextElement.new()
 		title:applyProfile("settingsMenuSubtitle", true)
 		title:setText(g_i18n:getText("title_simpleInspector"))
+		self.boxLayout:addElement(title)
 
-		self.menuOption_TextSize = self.checkInvertYLook:clone()
-		self.menuOption_TextSize.target = g_simpleInspector
-		self.menuOption_TextSize.id = "simpleInspector_setValueTextSize"
-		self.menuOption_TextSize:setCallback("onClickCallback", "onMenuOptionChanged_setValueTextSize")
-		self.menuOption_TextSize:setDisabled(false)
+		self.menuOption_DisplayMode = SimpleInspector.addMenuOption(
+			self.checkInvertYLook,
+			g_simpleInspector,
+			"simpleInspector_DisplayMode",
+			"setting_simpleInspector_DisplayMode",
+			"toolTip_simpleInspector_DisplayMode",
+			{
+				g_i18n:getText("setting_simpleInspector_DisplayMode1"),
+				g_i18n:getText("setting_simpleInspector_DisplayMode2"),
+				g_i18n:getText("setting_simpleInspector_DisplayMode3"),
+				g_i18n:getText("setting_simpleInspector_DisplayMode4")
+			},
+			"onMenuOptionChanged_DisplayMode"
+		)
+		self.boxLayout:addElement(self.menuOption_DisplayMode)
 
-		settingTitle = self.menuOption_TextSize.elements[4]
-		toolTip = self.menuOption_TextSize.elements[6]
+		for _, thisOptionName in ipairs(boolMenuOptions) do
+			-- Boolean style options
+			local thisFullOptName = "menuOption_" .. thisOptionName
+			self[thisFullOptName] = SimpleInspector.addMenuOption(
+				self.checkInvertYLook,
+				g_simpleInspector,
+				"simpleInspector_" .. thisOptionName,
+				"setting_simpleInspector_" .. thisOptionName,
+				"toolTip_simpleInspector_" .. thisOptionName,
+				{
+					g_i18n:getText("ui_no"),
+					g_i18n:getText("ui_yes")
+				},
+				"onMenuOptionChanged_boolOpt"
+			)
+			self.boxLayout:addElement(self[thisFullOptName])
+		end
 
 		local textSizeTexts = {}
 		for _, size in ipairs(g_simpleInspector.menuTextSizes) do
 			table.insert(textSizeTexts, tostring(size) .. " px")
 		end
-		self.menuOption_TextSize:setTexts(textSizeTexts)
 
-		settingTitle:setText(g_i18n:getText("setting_simpleInspector_TextSize"))
-		toolTip:setText(g_i18n:getText("toolTip_simpleInspector_TextSize"))
-
-
-		self.boxLayout:addElement(title)
-		self.boxLayout:addElement(self.menuOption_DisplayMode)
-		for _, value in ipairs(boolMenuOptions) do
-			local thisOption = "menuOption_" .. value
-			self.boxLayout:addElement(self[thisOption])
-		end
+		self.menuOption_TextSize = SimpleInspector.addMenuOption(
+			self.checkInvertYLook,
+			g_simpleInspector,
+			"simpleInspector_setValueTextSize",
+			"setting_simpleInspector_TextSize",
+			"toolTip_simpleInspector_TextSize",
+			textSizeTexts,
+			"onMenuOptionChanged_setValueTextSize"
+		)
 		self.boxLayout:addElement(self.menuOption_TextSize)
 	end
 
-	self.menuOption_DisplayMode:setState(g_simpleInspector.displayMode)
-	for _, value in ipairs(boolMenuOptions) do
-		local thisMenuOption = "menuOption_" .. value
-		local thisRealOption = "isEnabled" .. value
-		self[thisMenuOption]:setIsChecked(g_simpleInspector[thisRealOption])
+	-- Set Current Values
+	self.menuOption_DisplayMode:setState(g_simpleInspector.settings:getValue("displayMode"))
+
+	for _, thisOption in ipairs(boolMenuOptions) do
+		local thisMenuOption = "menuOption_" .. thisOption
+		local thisRealOption = "isEnabled" .. thisOption
+		self[thisMenuOption]:setIsChecked(g_simpleInspector.settings:getValue(thisRealOption))
 	end
 
 	local textSizeState = 3 -- backup value for it set odd in the xml.
 	for idx, textSize in ipairs(g_simpleInspector.menuTextSizes) do
-		if g_simpleInspector.setValueTextSize == textSize then
+		if g_simpleInspector.settings:getValue("setValueTextSize") == textSize then
 			textSizeState = idx
 		end
 	end
@@ -1279,18 +1101,20 @@ function SimpleInspector.initGui(self)
 end
 
 function SimpleInspector:onMenuOptionChanged_setValueTextSize(state)
-	self.setValueTextSize = g_simpleInspector.menuTextSizes[state]
-	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.setValueTextSize)
-	SimpleInspector:saveSettings()
+	self.settings:setValue("setValueTextSize", g_simpleInspector.menuTextSizes[state])
+	self.inspectText.size = self.gameInfoDisplay:scalePixelToScreenHeight(self.settings:getValue("setValueTextSize"))
+	self.settings:saveSettings()
 end
 
 function SimpleInspector:onMenuOptionChanged_DisplayMode(state)
-	self.displayMode = state
-	SimpleInspector:saveSettings()
+	self.settings:setValue("displayMode", state)
+	self.settings:saveSettings()
 end
 
 function SimpleInspector:onMenuOptionChanged_boolOpt(state, info)
-	local thisOption = "isEnabled" .. string.sub(info.id,17)
-	self[thisOption] = state == CheckedOptionElement.STATE_CHECKED
-	SimpleInspector:saveSettings()
+	self.settings:setValue(
+		"isEnabled" .. string.sub(info.id, (#"simpleInspector_"+1)),
+		state == CheckedOptionElement.STATE_CHECKED
+	)
+	self.settings:saveSettings()
 end

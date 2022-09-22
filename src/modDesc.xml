@@ -138,7 +138,7 @@ v1.0.1.9
  - Bugfix: Füllstand war in manchen Fällen nicht korrekt, wenn das Anhängerlimit eingeschaltet war
  - Überarbeitung mehrerer Subsysteme, Sie müssen Ihre Einstellungen neu setzen.
  v1.0.1.10
- - Bugfix for multi-player farm display
+ - Bugfix für die Anzeige von Mehrspieler-Farmen
 ]]></de>
     </description>
     <author>JTSage</author>

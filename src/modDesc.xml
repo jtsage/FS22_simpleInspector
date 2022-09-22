@@ -69,6 +69,8 @@ v1.0.1.9
  - Add Polish translation
  - Bugfix: fill level was off when trailer limit was ON in some cases
  - Rework several subsystems, you'll need to re-set your settings.
+v1.0.1.10
+ - Bugfix for multi-player farm display
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -135,10 +137,12 @@ v1.0.1.9
  - Polnische Übersetzung hinzufügen
  - Bugfix: Füllstand war in manchen Fällen nicht korrekt, wenn das Anhängerlimit eingeschaltet war
  - Überarbeitung mehrerer Subsysteme, Sie müssen Ihre Einstellungen neu setzen.
+ v1.0.1.10
+ - Bugfix for multi-player farm display
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.9</version>
+    <version>1.0.1.10</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

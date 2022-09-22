@@ -422,6 +422,8 @@ function SimpleInspector:updateVehicles()
 	local new_data_table = {}
 	local myFarmID       = self.mission:getFarmId()
 
+	self.shown_farms_mp  = 0
+
 	if g_currentMission ~= nil and g_currentMission.vehicles ~= nil then
 
 		local sortOrder = {}
@@ -452,6 +454,8 @@ function SimpleInspector:updateVehicles()
 			-- We need to sort by farmID last - also controls how many headings we see later.
 			JTSUtil.sortTableByKey(sortOrder, "farmID")
 		end
+
+		local lastFarmID = -1
 
 		for _, sortEntry in ipairs(sortOrder) do
 			local thisVeh     = g_currentMission.vehicles[sortEntry.idx]
@@ -525,6 +529,12 @@ function SimpleInspector:updateVehicles()
 
 						self:getAllFills(thisVeh, fills, 0)
 
+						if self.isMPGame and sortEntry.farmID ~= lastFarmID then
+							-- this counts how many farms we have active in the display
+							lastFarmID = sortEntry.farmID
+							self.shown_farms_mp = self.shown_farms_mp + 1
+						end
+
 						table.insert(new_data_table, {
 							status    = status,
 							isAI      = isAI,
@@ -535,7 +545,7 @@ function SimpleInspector:updateVehicles()
 							isOnField = isOnField,
 							isBroken  = isBroken,
 							plyrName  = plyrName,
-							farmInfo  = { farmID = sortEntry.farmID, farmName = thisVehFarm.name, farmColor = thisVehFarm.color}
+							farmInfo  = { farmID = sortEntry.farmID, farmName = thisVehFarm.name, farmColor = Farm.COLORS[thisVehFarm.color]}
 						})
 					end
 				end
@@ -569,7 +579,7 @@ function SimpleInspector:draw()
 		else
 			-- we have entries, lets get the overall height of the box and unhide
 			self.inspectBox:setVisible(true)
-			dispTextH = self.inspectText.size * #info_text
+			dispTextH = (self.inspectText.size * #info_text) + (self.inspectText.size * self.shown_farms_mp)
 			overlayH  = dispTextH + ( 2 * self.inspectText.marginHeight)
 		end
 

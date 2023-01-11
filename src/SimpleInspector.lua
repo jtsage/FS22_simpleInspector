@@ -53,6 +53,8 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 			isEnabledShowDamage      = true,
 			setValueDamageThreshold  = 0.8, -- 20% Damaged
 			isEnabledShowCPWaypoints = true,
+			isEnabledShowADTime      = true,
+			isEnabledShowCPTime      = true,
 
 			setValueMaxDepth        = {5, "int"},
 
@@ -78,6 +80,7 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 
 			setStringTextHelper      = "_AI_",
 			setStringTextADHelper    = "_AD_",
+			setStringTextADWaypoint  = "_AD:",
 			setStringTextCPHelper    = "_CP_",
 			setStringTextCPWaypoint  = "_CP:",
 			setStringTextDEF         = "DEF:",
@@ -508,16 +511,33 @@ function SimpleInspector:updateVehicles()
 
 							-- is AD driving
 							if thisVeh.ad ~= nil and thisVeh.ad.stateModule ~= nil and thisVeh.ad.stateModule:isActive() then
-								isAI.aiText = self.settings:getValue("setStringTextADHelper")
+								local adTimeRemain = thisVeh.ad.stateModule:getRemainingDriveTime()
+								if adTimeRemain > 0 and self.settings:getValue("isEnabledShowADTime") then
+									isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextADWaypoint"), adTimeRemain)
+								else
+									isAI.aiText = self.settings:getValue("setStringTextADHelper")
+								end
 							end
 
 							-- is CP driving, and should we show waypoints?
 							if thisVeh.getCpStatus ~= nil then
 								local cpStatus = thisVeh:getCpStatus()
+								local mayUseBoth = false
 								if cpStatus:getIsActive() then
 									isAI.aiText = self.settings:getValue("setStringTextCPHelper")
 									if ( self.settings:getValue("isEnabledShowCPWaypoints") ) then
+										mayUseBoth  = true
 										isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextCPWaypoint"), cpStatus:getWaypointText() , "_")
+									end
+									if self.settings:getValue("isEnabledShowCPTime") then
+										local cpTimeRemain = cpStatus:getTimeRemainingText()
+										if cpTimeRemain ~= "" then
+											if mayUseBoth then
+												isAI.aiText = JTSUtil.qConcat(isAI.aiText, cpTimeRemain, "_")
+											else
+												isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextCPWaypoint"), cpTimeRemain, "_")
+											end
+										end
 									end
 								end
 							end
@@ -1029,7 +1049,7 @@ function SimpleInspector.initGui(self)
 	local boolMenuOptions = {
 		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
-		"ShowCPWaypoints", "TextBold"
+		"ShowCPWaypoints", "ShowADTime", "ShowCPTime","TextBold"
 	}
 
 	if not g_simpleInspector.createdGUI then

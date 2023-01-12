@@ -49,5 +49,9 @@
 	<text name="setting_simpleInspector_DisplayMode4"    text="Prawy dolny róg (nad prędkościomierzem)" />
 	<text name="text_simpleInspector_kph"                text="km/h" />
 	<text name="text_simpleInspector_mph"                text="mph" />
+	<text name="setting_simpleInspector_ShowADTime" text="Pokaż pozostały czas AutoDrive" />
+	<text name="toolTip_simpleInspector_ShowADTime" text="Po włączeniu pokaże czas pozostały do końca aktywnego kursu AutoDrive." />
+	<text name="setting_simpleInspector_ShowCPTime" text="Pokaż pozostały czas gry" />
+	<text name="toolTip_simpleInspector_ShowCPTime" text="Gdy jest włączona, pokazuje czas pozostały do końca aktywnego kursu CoursePlay." />
   </texts>
 </l10n>

@@ -512,8 +512,14 @@ function SimpleInspector:updateVehicles()
 							-- is AD driving
 							if thisVeh.ad ~= nil and thisVeh.ad.stateModule ~= nil and thisVeh.ad.stateModule:isActive() then
 								local adTimeRemain = thisVeh.ad.stateModule:getRemainingDriveTime()
+								local adMin = math.floor(adTimeRemain / 60)
+								local adSec = math.floor(adTimeRemain - ( adMin * 60))
+								local adTimeString = JTSUtil.qConcat(adSec, 's')
+								if ( adMin > 0 ) then
+									adTimeString = JTSUtil.qConcat(adMin, 'm:', adTimeString)
+								end
 								if adTimeRemain > 0 and self.settings:getValue("isEnabledShowADTime") then
-									isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextADWaypoint"), adTimeRemain)
+									isAI.aiText = JTSUtil.qConcat(self.settings:getValue("setStringTextADWaypoint"), adTimeString)
 								else
 									isAI.aiText = self.settings:getValue("setStringTextADHelper")
 								end

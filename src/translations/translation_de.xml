@@ -49,5 +49,9 @@
 	<text name="setting_simpleInspector_DisplayMode4"    text="Unten rechts, über dem Tachometer" />
 	<text name="text_simpleInspector_kph"                text="km/h" />
 	<text name="text_simpleInspector_mph"                text="mph" />
+	<text name="setting_simpleInspector_ShowADTime" text="Verbleibende AutoDrive-Zeit anzeigen" />
+	<text name="toolTip_simpleInspector_ShowADTime" text="Wenn diese Option aktiviert ist, wird die verbleibende Zeit für einen aktiven AutoDrive-Kurs angezeigt." />
+	<text name="setting_simpleInspector_ShowCPTime" text="Verbleibende Spielzeit des Kurses anzeigen" />
+	<text name="toolTip_simpleInspector_ShowCPTime" text="Wenn diese Option aktiviert ist, wird die verbleibende Zeit für einen aktiven CoursePlay-Kurs angezeigt." />
   </texts>
 </l10n>

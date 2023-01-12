@@ -49,5 +49,10 @@
 	<text name="setting_simpleInspector_DisplayMode4"    text="Bottom Right, Above Speedometer" />
 	<text name="text_simpleInspector_kph"                text="kph" />
 	<text name="text_simpleInspector_mph"                text="mph" />
+
+	<text name="setting_simpleInspector_ShowADTime" text="Show AutoDrive Time Remaining" />
+	<text name="toolTip_simpleInspector_ShowADTime" text="When enabled, show the time remaining on an active AutoDrive course." />
+	<text name="setting_simpleInspector_ShowCPTime" text="Show CoursePlay Time Remaining" />
+	<text name="toolTip_simpleInspector_ShowCPTime" text="When enabled, show the time remaining on an active CoursePlay course." />
   </texts>
 </l10n>

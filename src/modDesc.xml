@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="69">
+<modDesc descVersion="72">
     <title>
         <en>Simple Inspector</en>
         <de>Einfacher Inspektor</de>
@@ -13,8 +13,9 @@ Display Options:
  - Speed of vehicles
  - Fuel level of vehicles
  - On Field Status, optionally with Field number
- - Occupation status - Vanilla AI, AutoDrive, CoursePlay, user, or noone
- - CoursePlay course progression, if applicable
+ - Occupation status - Vanilla AI, AutoDrive, CoursePlay, user, or no-one
+ - CoursePlay course progression and time remaining, if applicable
+ - AutoDrive course time remaining, if applicable
  - Fill level of vehicle and attached implements
  - Damage warning if vehicle or attached implement is over threshold
 
@@ -23,54 +24,24 @@ Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
 Left Alt + Num Pad 9 : Toggle HUD Visibility
 
 Changelog:
-v1.0.0.1:
+v1.0.2.0 :
+ - Add CoursePlay and AutoDrive time remaining display
+v1.0.1.10 (since 1.0.0.0) :
  - Fix for missing fillLevel info on right justified displays.
-v1.0.0.2:
  - Add damage indicator (default if tractor or attached implement is 80% damaged)
-v1.0.0.3:
  - Add CoursePlay and AutoDrive AI detection
  - Hide conveyor belts, they don't have any useful information to share.
-v1.0.0.4:
- - Add keybindings
  - Add option to zero pad field numbers less than 10
-v1.0.0.5:
  - Make bold text optional
- - Bug fix for invalid fill levels
-v1.0.0.6:
  - Add user name for controlled vehicles.
-v1.0.1.0:
- - Add bulk of options to the general config menu
- - Save settings on a per savegame basis, not globally
- - Initial ModHub version
-v1.0.1.1:
- - Add keybind for visibility toggle
- - Hide on construction screen
-v1.0.1.2:
- - Change default keybinds
-v1.0.1.3:
  - Compute fill percentage with maxMass respected when possible
  - Add optional alphabetic sorting of the list (uses purchase / tab order otherwise)
-v1.0.1.4
  - Add multiplayer farm awareness - allow filtering to just your farm, or all farms
  - Add option to change text size from settings, fix loading of text size from xml
-v1.0.1.5
- - Bugfix: Some custom vehicle types based on attachments but adding the "enterable" specialization could appear in the list incorrectly, and error out the script.
-v1.0.1.6
- - Bugfix: text was still visible when HUD was toggled off.
-v1.0.1.7
  - Additional Feature: custom order per line
- - Bugfix: settings save path was incorrect
- - l10n: kph vs kp/h
-v1.0.1.8
- - Bugfix: fill level for seeds, fertilizer, salt, and herbicide should always be "inverted" colors
  - Add Support for Advanced Farm Manager
-v1.0.1.9
  - Add DEF level (optional, default off)
- - Add Polish translation
- - Bugfix: fill level was off when trailer limit was ON in some cases
- - Rework several subsystems, you'll need to re-set your settings.
-v1.0.1.10
- - Bugfix for multi-player farm display
+
 ]]></en>
         <de><![CDATA[Einfacher Inspektor zeigt ein HUD-Overlay mit Fahrzeugstatistiken
 
@@ -82,7 +53,8 @@ Anzeigeoptionen:
  - Kraftstoffstand der Fahrzeuge 
  - Status auf dem Feld, optional mit Feldnummer 
  - Besetzungsstatus - Vanilla AI, AutoDrive, CoursePlay, Benutzer oder niemand 
- - CoursePlay-Kursverlauf, falls zutreffend 
+ - CoursePlay Kursverlauf und verbleibende Zeit, falls zutreffend
+ - AutoDrive Kurs verbleibende Zeit, falls zutreffend
  - Füllstand des Fahrzeugs und der angehängten Arbeitsgeräte
  - Schadenswarnung, wenn das Fahrzeug oder das angehängte Gerät den Schwellenwert überschreitet
 
@@ -91,58 +63,27 @@ Left Ctrl + Left Alt + Num Pad 9 : Konfigurationsdatei von der Festplatte neu la
 Left Alt + Num Pad 9 : HUD-Sichtbarkeit umschalten
 
 Changelog:
-v1.0.0.1:
- - Fix für fehlende fillLevel-Informationen bei rechtsbündigen Anzeigen.
-v1.0.0.2:
- - Schadensanzeige hinzufügen (Standard, wenn Traktor oder Anbaugerät zu 80% beschädigt ist)
-v1.0.0.3:
- - CoursePlay und AutoDrive AI-Erkennung hinzufügen
- - Verstecken Sie Förderbänder, sie haben keine nützlichen Informationen zu teilen.
-v1.0.0.4:
- - Tastaturbelegungen hinzufügen
- - Option zum Auffüllen von Feldern mit weniger als 10 Punkten hinzufügen
-v1.0.0.5:
- - Fettschrift optional machen 
- - Fehlerbehebung für ungültige Füllstände
-v1.0.0.6:
+v1.0.2.0 :
+ - CoursePlay und AutoDrive Restzeitanzeige hinzufügen
+v1.0.1.10 (since 1.0.0.0) :
+ - Fix für fehlende Füllstandsinformationen bei rechtsbündigen Anzeigen.
+ - Hinzufügen einer Schadensanzeige (standardmäßig, wenn Traktor oder Anbaugerät zu 80% beschädigt ist)
+ - Hinzufügen von CoursePlay und AutoDrive AI-Erkennung
+ - Förderbänder ausblenden, da sie keine nützlichen Informationen liefern.
+ - Option hinzufügen, um Feldnummern unter 10 mit Nullen zu versehen
+ - Fettgedruckten Text optional machen
  - Benutzernamen für kontrollierte Fahrzeuge hinzufügen.
-v1.0.1.0:
- - Hinzufügen einer Vielzahl von Optionen zum allgemeinen Konfigurationsmenü 
- - Speichern der Einstellungen pro Spielstand, nicht global 
- - Erste ModHub-Version
-v1.0.1.1:
- - Keybind für Sichtbarkeitsumschaltung hinzufügen
- - Auf dem Konstruktionsbildschirm ausblenden
-v1.0.1.2:
- - Standard-Tastaturbelegung ändern
-v1.0.1.3:
- - Berechnung des Füllungsgrads unter Berücksichtigung von maxMass, wenn möglich
- - Fügen Sie eine optionale alphebetische Sortierung der Liste hinzu (sonst wird die Kauf-/Tab-Reihenfolge verwendet)
-v1.0.1.4
- - Multiplayer-Farmbewusstsein hinzufügen - Filterung nur für die eigene Farm oder für alle Farmen erlauben
- - Option zum Ändern der Textgröße in den Einstellungen hinzugefügt, Laden der Textgröße aus xml korrigiert
-v1.0.1.5
- - Bugfix: Einige benutzerdefinierte Fahrzeugtypen, die auf Anbaugeräten basieren, aber die Spezialisierung "enterable" hinzufügen, konnten in der Liste falsch erscheinen und das Skript fehlerhaft machen.
-v1.0.1.6
- - Bugfix: Der Text war noch sichtbar, wenn das HUD ausgeschaltet war.
-v1.0.1.7
- - Zusätzliches Merkmal: individuelle Bestellung pro Zeile
- - Bugfix: Speicherpfad der Einstellungen war falsch
- - l10n: kph gegen kp/h
- v1.0.1.8
- - Bugfix: Füllstand für Saatgut, Dünger, Salz und Herbizid sollte immer "invertierte" Farben haben
+ - Berechnung des Füllungsgrades mit maxMass berücksichtigt, wenn möglich
+ - Optionale alphabetische Sortierung der Liste hinzufügen (ansonsten wird die Kauf-/Tab-Reihenfolge verwendet)
+ - Multiplayer-Farmbewusstsein hinzufügen - Filterung nur auf die eigene Farm oder auf alle Farmen erlauben
+ - Option zum Ändern der Textgröße in den Einstellungen hinzufügen, Laden der Textgröße aus xml korrigieren
+ - Zusätzliche Funktion: benutzerdefinierte Reihenfolge pro Zeile
  - Unterstützung für Advanced Farm Manager hinzufügen
-v1.0.1.9
- - DEF-Stufe hinzufügen (optional, Standardeinstellung aus)
- - Polnische Übersetzung hinzufügen
- - Bugfix: Füllstand war in manchen Fällen nicht korrekt, wenn das Anhängerlimit eingeschaltet war
- - Überarbeitung mehrerer Subsysteme, Sie müssen Ihre Einstellungen neu setzen.
- v1.0.1.10
- - Bugfix für die Anzeige von Mehrspieler-Farmen
+ - DEF-Stufe hinzufügen (optional, standardmäßig ausgeschaltet)
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.1.10</version>
+    <version>1.0.2.0</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

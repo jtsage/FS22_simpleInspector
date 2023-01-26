@@ -24,6 +24,9 @@ Left Ctrl + Left Alt + Num Pad 9 : Reload configuration file from disk
 Left Alt + Num Pad 9 : Toggle HUD Visibility
 
 Changelog:
+v1.0.2.1 :
+ - Fix top-left display to play nice with Precision Farming
+ - Add option to convert units for display
 v1.0.2.0 :
  - Add CoursePlay and AutoDrive time remaining display
 v1.0.1.10 (since 1.0.0.0) :
@@ -63,6 +66,9 @@ Left Ctrl + Left Alt + Num Pad 9 : Konfigurationsdatei von der Festplatte neu la
 Left Alt + Num Pad 9 : HUD-Sichtbarkeit umschalten
 
 Changelog:
+v1.0.2.1 :
+ - Reparieren Sie die Anzeige oben links, damit sie mit Precision Farming kompatibel ist.
+ - Option zum Umrechnen von Einheiten für die Anzeige hinzufügen
 v1.0.2.0 :
  - CoursePlay und AutoDrive Restzeitanzeige hinzufügen
 v1.0.1.10 (since 1.0.0.0) :
@@ -83,7 +89,7 @@ v1.0.1.10 (since 1.0.0.0) :
 ]]></de>
     </description>
     <author>JTSage</author>
-    <version>1.0.2.0</version>
+    <version>1.0.2.1</version>
     <iconFilename>modIcon.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>

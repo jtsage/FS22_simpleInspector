@@ -53,5 +53,9 @@
 	<text name="toolTip_simpleInspector_ShowADTime" text="Po włączeniu pokaże czas pozostały do końca aktywnego kursu AutoDrive." />
 	<text name="setting_simpleInspector_ShowCPTime" text="Pokaż pozostały czas gry" />
 	<text name="toolTip_simpleInspector_ShowCPTime" text="Gdy jest włączona, pokazuje czas pozostały do końca aktywnego kursu CoursePlay." />
+	<text name="setting_simpleInspector_SolidUnit"       text="Jednostka miary: ciała stałe" />.
+	<text name="toolTip_simpleInspector_SolidUnit"       text="Użyj tej jednostki miary do wyświetlania produktów stałych" />.
+	<text name="setting_simpleInspector_LiquidUnit"      text="Jednostka miary: Ciecze" />.
+	<text name="toolTip_simpleInspector_LiquidUnit"      text="Użyj tej jednostki miary do wyświetlania produktów płynnych" />.
   </texts>
 </l10n>

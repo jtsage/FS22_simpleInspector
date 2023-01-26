@@ -53,5 +53,9 @@
 	<text name="toolTip_simpleInspector_ShowADTime" text="Wenn diese Option aktiviert ist, wird die verbleibende Zeit für einen aktiven AutoDrive-Kurs angezeigt." />
 	<text name="setting_simpleInspector_ShowCPTime" text="Verbleibende Spielzeit des Kurses anzeigen" />
 	<text name="toolTip_simpleInspector_ShowCPTime" text="Wenn diese Option aktiviert ist, wird die verbleibende Zeit für einen aktiven CoursePlay-Kurs angezeigt." />
+	<text name="setting_simpleInspector_SolidUnit"       text="Maßeinheit: Feststoffe" />
+	<text name="toolTip_simpleInspector_SolidUnit"       text="Verwenden Sie diese Maßeinheit, um feste Produkte anzuzeigen" />
+	<text name="setting_simpleInspector_LiquidUnit"      text="Maßeinheit: Flüssigkeiten" />
+	<text name="toolTip_simpleInspector_LiquidUnit"      text="Verwenden Sie diese Maßeinheit, um flüssige Produkte anzuzeigen" />
   </texts>
 </l10n>

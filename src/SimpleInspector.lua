@@ -26,6 +26,9 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 	self.ingameMap         = mission.hud.ingameMap
 
 	source(modDirectory .. 'lib/fs22ModPrefSaver.lua')
+	source(modDirectory .. 'lib/fs22FSGUnitConvert.lua')
+
+	self.convert  = FS22FSGUnits:new(self.logger)
 
 	self.settings = FS22PrefSaver:new(
 		"FS22_SimpleInspector",
@@ -38,6 +41,8 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 			displayMode5Y   = 0.2,
 
 			isEnabledVisible         = true,
+			isEnabledSolidUnit       = { 1, "int" },
+			isEnabledLiquidUnit      = { 1, "int" },
 			isEnabledAlphaSort       = true,
 			isEnabledShowPlayer      = true,
 			isEnabledShowAll         = false,
@@ -798,7 +803,12 @@ function SimpleInspector:draw()
 						)
 						JTSUtil.dispStackAdd(
 							outputTextLines,
-							fillTypeInfo.level,
+							self.convert:scaleFillTypeLevel(
+								fillTypeIndex,
+								fillTypeInfo.level,
+								self.settings:getValue("isEnabledSolidUnit"),
+								self.settings:getValue("isEnabledLiquidUnit")
+							),
 							fillColor
 						)
 
@@ -951,6 +961,16 @@ function SimpleInspector:findOrigin()
 		tmpY = 0.945
 		if g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
 			tmpY = tmpY - self.inputHelpDisplay:getHeight() - 0.012
+		else
+			if g_currentMission.controlledVehicle ~= nil and _G['FS22_precisionFarming'] ~= nil then
+				for idx, extension in ipairs(self.mission.hud.inputHelp.vehicleHudExtensions) do
+					if extension.extendedSowingMachine ~= nil then
+						tmpY = tmpY - (Utils.getNoNil(extension.displayHeight , 0) + 0.012)
+					elseif extension.extendedSprayer ~= nil then
+						tmpY = tmpY - (Utils.getNoNil(extension.displayHeight , 0) - 0.012)
+					end
+				end
+			end
 		end
 	end
 
@@ -1057,6 +1077,9 @@ function SimpleInspector.initGui(self)
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "ShowADTime", "ShowCPTime","TextBold"
 	}
+	local unitOptions = {
+		"SolidUnit", "LiquidUnit"
+	}
 
 	if not g_simpleInspector.createdGUI then
 		-- Create controls -- Skip if we've already done this once
@@ -1082,6 +1105,30 @@ function SimpleInspector.initGui(self)
 			"onMenuOptionChanged_DisplayMode"
 		)
 		self.boxLayout:addElement(self.menuOption_DisplayMode)
+
+		for _, thisOptionName in ipairs(unitOptions) do
+			-- Boolean style options
+			local thisFullOptName = "menuOption_" .. thisOptionName
+			local unitType        = g_simpleInspector.convert.unit_types.SOLID
+
+			if thisOptionName == "LiquidUnit" then
+				unitType = g_simpleInspector.convert.unit_types.LIQUID
+			end
+			
+			local theseOptions    = g_simpleInspector.convert:getSettingsTexts(unitType)
+
+			self[thisFullOptName] = SimpleInspector.addMenuOption(
+				self.checkInvertYLook,
+				g_simpleInspector,
+				"simpleInspector_" .. thisOptionName,
+				"setting_simpleInspector_" .. thisOptionName,
+				"toolTip_simpleInspector_" .. thisOptionName,
+				theseOptions,
+				"onMenuOptionChanged_unitOpt"
+			)
+			self.boxLayout:addElement(self[thisFullOptName])
+		end
+
 
 		for _, thisOptionName in ipairs(boolMenuOptions) do
 			-- Boolean style options
@@ -1120,6 +1167,8 @@ function SimpleInspector.initGui(self)
 
 	-- Set Current Values
 	self.menuOption_DisplayMode:setState(g_simpleInspector.settings:getValue("displayMode"))
+	self.menuOption_SolidUnit:setState(g_simpleInspector.settings:getValue("isEnabledSolidUnit"))
+	self.menuOption_LiquidUnit:setState(g_simpleInspector.settings:getValue("isEnabledLiquidUnit"))
 
 	for _, thisOption in ipairs(boolMenuOptions) do
 		local thisMenuOption = "menuOption_" .. thisOption
@@ -1151,6 +1200,14 @@ function SimpleInspector:onMenuOptionChanged_boolOpt(state, info)
 	self.settings:setValue(
 		"isEnabled" .. string.sub(info.id, (#"simpleInspector_"+1)),
 		state == CheckedOptionElement.STATE_CHECKED
+	)
+	self.settings:saveSettings()
+end
+
+function SimpleInspector:onMenuOptionChanged_unitOpt(state, info)
+	self.settings:setValue(
+		"isEnabled" .. string.sub(info.id, (#"simpleInspector_"+1)),
+		state
 	)
 	self.settings:saveSettings()
 end

@@ -53,5 +53,9 @@
 	<text name="toolTip_simpleInspector_ShowADTime" text="Если включена, отображает время, оставшееся до конца активного курса AutoDrive." />
 	<text name="setting_simpleInspector_ShowCPTime" text="Показать оставшееся время игры на курсе" />
 	<text name="toolTip_simpleInspector_ShowCPTime" text="Если включена, отображает оставшееся время активного курса CoursePlay." />
+	<text name="setting_simpleInspector_SolidUnit"       text="Единица измерения: твердые вещества" />
+	<text name="toolTip_simpleInspector_SolidUnit"       text="Используйте эту единицу измерения для отображения твердых продуктов" />
+	<text name="setting_simpleInspector_LiquidUnit"      text="Единица измерения: Жидкости" />
+	<text name="toolTip_simpleInspector_LiquidUnit"      text="Используйте эту единицу измерения для отображения жидких продуктов" />
   </texts>
 </l10n>

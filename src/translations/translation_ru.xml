@@ -23,8 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Если включено, показываются процентное соотношение и уровень заполнения транспортного средства или прицепа/агрегата." />
 	<text name="setting_simpleInspector_ShowFuel"        text="Показывать уровень топлива" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Если включено, показываются уровень и тип топлива в транспортных средствах." />
-	<text name="setting_simpleInspector_ShowDef"         text="Показать уровень DEF" />
-	<text name="toolTip_simpleInspector_ShowDef"         text="Если включена, отображает уровень жидкости для отработавших газов в автомобилях" />
+	<text name="setting_simpleInspector_ShowDef"         text="Показывать уровень DEF" />
+	<text name="toolTip_simpleInspector_ShowDef"         text="Если включено, показывается уровень жидкости для выхлопных газов дизельных двигателей в транспортных средствах." />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Показывать скорость" />
 	<text name="toolTip_simpleInspector_ShowSpeed"       text="Если включено, показывается скорость транспортных средств." />
 	<text name="setting_simpleInspector_ShowFills"       text="Показывать уровни заполнения" />
@@ -49,10 +49,10 @@
 	<text name="setting_simpleInspector_DisplayMode4"    text="Внизу справа" />
 	<text name="text_simpleInspector_kph"                text="км/ч" />
 	<text name="text_simpleInspector_mph"                text="миль/ч" />
-	<text name="setting_simpleInspector_ShowADTime" text="Показать оставшееся время автопривода" />
-	<text name="toolTip_simpleInspector_ShowADTime" text="Если включена, отображает время, оставшееся до конца активного курса AutoDrive." />
-	<text name="setting_simpleInspector_ShowCPTime" text="Показать оставшееся время игры на курсе" />
-	<text name="toolTip_simpleInspector_ShowCPTime" text="Если включена, отображает оставшееся время активного курса CoursePlay." />
+	<text name="setting_simpleInspector_ShowADTime" text="Показывать оставшееся время AutoDrive" />
+	<text name="toolTip_simpleInspector_ShowADTime" text="Если включено, отображается время, оставшееся до конца активного курса AutoDrive." />
+	<text name="setting_simpleInspector_ShowCPTime" text="Показывать оставшееся время CoursePlay" />
+	<text name="toolTip_simpleInspector_ShowCPTime" text="Если включено, отображается время, оставшееся до конца активного курса CoursePlay." />
 	<text name="setting_simpleInspector_SolidUnit"       text="Единица измерения: твердые вещества" />
 	<text name="toolTip_simpleInspector_SolidUnit"       text="Используйте эту единицу измерения для отображения твердых продуктов" />
 	<text name="setting_simpleInspector_LiquidUnit"      text="Единица измерения: Жидкости" />

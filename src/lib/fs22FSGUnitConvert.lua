@@ -59,19 +59,19 @@ function FS22FSGUnits:new(logger)
 	}
 
 	self.units = {
-		[self.unitsToIndex.LITER]   = { precision = 0, isWeight = false, text = "l",     factor = 1 },
-		[self.unitsToIndex.BUSHEL]  = { precision = 2, isWeight = false, text = "bu",    factor = 0.028378 },
-		[self.unitsToIndex.C_METER] = { precision = 3, isWeight = false, text = "m³",    factor = 0.001 },
-		[self.unitsToIndex.C_FOOT]  = { precision = 2, isWeight = false, text = "ft³",   factor = 0.035315 },
-		[self.unitsToIndex.C_YARD]  = { precision = 2, isWeight = false, text = "yd³",   factor = 0.001308},
-		[self.unitsToIndex.KG]      = { precision = 0, isWeight = true,  text = "kg",    factor = 1 },
-		[self.unitsToIndex.OZ]      = { precision = 0, isWeight = true,  text = "oz",    factor = 35.27396 },
-		[self.unitsToIndex.LBS]     = { precision = 0, isWeight = true,  text = "lbs",   factor = 2.204623 },
-		[self.unitsToIndex.CWT]     = { precision = 2, isWeight = true,  text = "cwt",   factor = 0.022046 },
-		[self.unitsToIndex.MT]      = { precision = 3, isWeight = true,  text = "mt",    factor = 0.001 },
-		[self.unitsToIndex.T]       = { precision = 3, isWeight = true,  text = "t",     factor = 0.0011023 },
-		[self.unitsToIndex.F_OZ]    = { precision = 0, isWeight = false, text = "fl.oz", factor = 33.814023 },
-		[self.unitsToIndex.GAL]     = { precision = 2, isWeight = false, text = "gal",   factor = 0.264172},
+		[self.unitsToIndex.LITER]   = { precision = 0, isWeight = false, text = "unit_literShort",     factor = 1 },
+		[self.unitsToIndex.BUSHEL]  = { precision = 2, isWeight = false, text = "unit_bushelsShort",   factor = 0.028378 },
+		[self.unitsToIndex.C_METER] = { precision = 3, isWeight = false, text = "unit_cubicShort",    factor = 0.001 },
+		[self.unitsToIndex.C_FOOT]  = { precision = 2, isWeight = false, text = "unit_fsgUnitConvert_cubicFoot",   factor = 0.035315 },
+		[self.unitsToIndex.C_YARD]  = { precision = 2, isWeight = false, text = "unit_fsgUnitConvert_cubicYard",   factor = 0.001308},
+		[self.unitsToIndex.KG]      = { precision = 0, isWeight = true,  text = "unit_kg",    factor = 1 },
+		[self.unitsToIndex.OZ]      = { precision = 0, isWeight = true,  text = "unit_fsgUnitConvert_ounce",    factor = 35.27396 },
+		[self.unitsToIndex.LBS]     = { precision = 0, isWeight = true,  text = "unit_fsgUnitConvert_poundWeight",   factor = 2.204623 },
+		[self.unitsToIndex.CWT]     = { precision = 2, isWeight = true,  text = "unit_fsgUnitConvert_hundredWeight",   factor = 0.022046 },
+		[self.unitsToIndex.MT]      = { precision = 3, isWeight = true,  text = "unit_tonsShort",    factor = 0.001 },
+		[self.unitsToIndex.T]       = { precision = 3, isWeight = true,  text = "unit_fsgUnitConvert_imperialTon",     factor = 0.0011023 },
+		[self.unitsToIndex.F_OZ]    = { precision = 0, isWeight = false, text = "unit_fsgUnitConvert_fluidOunce", factor = 33.814023 },
+		[self.unitsToIndex.GAL]     = { precision = 2, isWeight = false, text = "unit_fsgUnitConvert_fluidGallon",   factor = 0.264172},
 	}
 
 	self.unit_select = {
@@ -116,7 +116,14 @@ function FS22FSGUnits:getSettingsTexts(unitType)
 	end
 
 	for _, typeIdx in ipairs(self.unit_select[unitType]) do
-		table.insert(settingsTable, self.units[typeIdx].text)
+		local thisUnitMeasure = g_i18n:getText('unit_fsgUnitConvert_Volume')
+
+		if self.units[typeIdx].isWeight then
+			thisUnitMeasure = g_i18n:getText('unit_fsgUnitConvert_Weight')
+		end
+
+		local thisUnit = thisUnitMeasure .. " | " .. g_i18n:getText(self.units[typeIdx].text)
+		table.insert(settingsTable, thisUnit)
 	end
 
 	return settingsTable
@@ -174,7 +181,7 @@ function FS22FSGUnits:scaleFillTypeLevel(fillTypeIdx, fillLevel, unitIdxSolid, u
 	local convertedFillLevel = MathUtil.round(returnFillLevel * unitData.factor, unitData.precision)
 
 	if showTheUnit then
-		return tostring(convertedFillLevel) .. " " .. unitData.text
+		return tostring(convertedFillLevel) .. " " .. g_i18n:getText(unitData.text)
 	else
 		return tostring(convertedFillLevel)
 	end

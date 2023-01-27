@@ -57,5 +57,15 @@
 	<text name="toolTip_simpleInspector_SolidUnit"       text="Verwenden Sie diese Maßeinheit, um feste Produkte anzuzeigen" />
 	<text name="setting_simpleInspector_LiquidUnit"      text="Maßeinheit: Flüssigkeiten" />
 	<text name="toolTip_simpleInspector_LiquidUnit"      text="Verwenden Sie diese Maßeinheit, um flüssige Produkte anzuzeigen" />
+	<text name="unit_fsgUnitConvert_Volume"             text="Volumen Einheit" />
+	<text name="unit_fsgUnitConvert_Weight"             text="Gewicht Einheit" />
+	<text name="unit_fsgUnitConvert_cubicFoot"          text="ft³" />
+	<text name="unit_fsgUnitConvert_cubicYard"          text="yd³" />
+	<text name="unit_fsgUnitConvert_ounce"              text="oz" />
+	<text name="unit_fsgUnitConvert_poundWeight"        text="lbs" />
+	<text name="unit_fsgUnitConvert_hundredWeight"      text="cwt" />
+	<text name="unit_fsgUnitConvert_imperialTon"        text="tn" />
+	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
+	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
   </texts>
 </l10n>

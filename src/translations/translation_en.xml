@@ -53,6 +53,16 @@
 	<text name="toolTip_simpleInspector_SolidUnit"       text="Use this unit of measure to display solid products" />
 	<text name="setting_simpleInspector_LiquidUnit"      text="Unit of measure: Liquids" />
 	<text name="toolTip_simpleInspector_LiquidUnit"      text="Use this unit of measure to display liquid products" />
+	<text name="unit_fsgUnitConvert_Volume"             text="Volume Unit" />
+	<text name="unit_fsgUnitConvert_Weight"             text="Weight Unit" />
+	<text name="unit_fsgUnitConvert_cubicFoot"          text="ft³" />
+	<text name="unit_fsgUnitConvert_cubicYard"          text="yd³" />
+	<text name="unit_fsgUnitConvert_ounce"              text="oz" />
+	<text name="unit_fsgUnitConvert_poundWeight"        text="lbs" />
+	<text name="unit_fsgUnitConvert_hundredWeight"      text="cwt" />
+	<text name="unit_fsgUnitConvert_imperialTon"        text="tn" />
+	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
+	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
 
 
 	<text name="setting_simpleInspector_ShowADTime" text="Show AutoDrive Time Remaining" />

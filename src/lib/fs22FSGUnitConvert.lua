@@ -147,13 +147,15 @@ function FS22FSGUnits:getUnitType(fillTypeIdx)
 	return self.unit_types.SOLID
 end
 
-function FS22FSGUnits:scaleFillTypeLevel(fillTypeIdx, fillLevel, unitIdxSolid, unitIdxLiquid, showUnit)
+function FS22FSGUnits:scaleFillTypeLevel(fillTypeIdx, fillLevel, unitIdxSolid, unitIdxLiquid, showUnit, showFormat)
 	-- Args :
 	--  - fillTypeIdx :  fillType index.  Same as to g_fillTypeManager:getFillTypeByIndex()
 	--  - fillLevel : Numeric fill level
 	--  - unitIdxSolid : Unit to use for solids, from FS22FSGUnits.unit_select[<unit type>]
 	--  - unitIdxLiquid : Unit to use for liquids, from FS22FSGUnits.unit_select[<unit type>]
 	--  - showUnit : append unit to returned value, default true
+	--  - showFormat: format the number (l10n)
+	local numberFormat = Utils.getNoNil(showFormat, true)
 	local showTheUnit  = Utils.getNoNil(showUnit, true)
 	local fillType     = g_fillTypeManager:getFillTypeByIndex(fillTypeIdx)
 	local massPerLiter = Utils.getNoNil(fillType.massPerLiter, 1)
@@ -179,6 +181,14 @@ function FS22FSGUnits:scaleFillTypeLevel(fillTypeIdx, fillLevel, unitIdxSolid, u
 	end
 
 	local convertedFillLevel = MathUtil.round(returnFillLevel * unitData.factor, unitData.precision)
+
+	if numberFormat then
+		if showTheUnit then
+			return g_i18n:formatVolume(convertedFillLevel, unitData.precision, g_i18n:getText(unitData.text))
+		else
+			return g_i18n:formatVolume(convertedFillLevel, unitData.precision, '')
+		end
+	end
 
 	if showTheUnit then
 		return tostring(convertedFillLevel) .. " " .. g_i18n:getText(unitData.text)

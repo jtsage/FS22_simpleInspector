@@ -848,7 +848,10 @@ function SimpleInspector:draw()
 			local thisLinePlainText = ""
 
 			for _, dispElement in ipairs(JTSUtil.dispGetLine(outputTextLines, dispLineNum, (self.settings:getValue("displayMode") % 2 == 0) )) do
-				setTextColor(unpack(dispElement.color))
+				if ( type(dispElement.color) == "table" ) then
+					setTextColor(unpack(dispElement.color))
+				end
+				
 				thisLinePlainText = self:renderText(
 					dispTextX,
 					dispTextY,

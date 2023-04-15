@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="When enabled, show a percentage along with the fill level of a vehicle or implement" />
 	<text name="setting_simpleInspector_ShowFuel"        text="Show Fuel Level" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="When enabled, show the fuel level and type of fuel in vehicles" />
+	<text name="setting_simpleInspector_ShowBeacon"      text="Show Beacon Status" />
+	<text name="toolTip_simpleInspector_ShowBeacon"      text="When enabled, highlight vehicles with beacons turned on" />
 	<text name="setting_simpleInspector_ShowDef"         text="Show DEF Level" />
 	<text name="toolTip_simpleInspector_ShowDef"         text="When enabled, show the diesel exhaust fluid level in vehicles" />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Show Speed" />

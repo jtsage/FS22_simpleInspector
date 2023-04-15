@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Gdy włączone, wyświetli poziom napełnienia pojazdów oraz maszyn w procentach." />
 	<text name="setting_simpleInspector_ShowFuel"        text="Pokaż poziom paliwa" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Gdy włączone, wyświetli rodzaj i poziom paliwa w pojazdach." />
+	<text name="setting_simpleInspector_ShowBeacon"      text="Pokaż stan sygnalizatora" />
+	<text name="toolTip_simpleInspector_ShowBeacon"      text="Po włączeniu podświetlają się pojazdy z włączonymi radiolatarniami." />
 	<text name="setting_simpleInspector_ShowDef"         text="Pokaż poziom DEF" />
 	<text name="toolTip_simpleInspector_ShowDef"         text="Po włączeniu pokazywanie poziomu płynu spalinowego w pojazdach" />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Pokaż prędkość" />

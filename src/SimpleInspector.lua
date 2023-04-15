@@ -49,6 +49,7 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 			isEnabledShowUnowned     = false,
 			isEnabledShowFillPercent = true,
 			isEnabledShowFuel        = true,
+			isEnabledShowBeacon      = true,
 			isEnabledShowDef         = false,
 			isEnabledShowSpeed       = true,
 			isEnabledShowFills       = true,
@@ -163,6 +164,19 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 		[self.STATUS.CONTROLLED] = "colorUser",
 		[self.STATUS.AI]         = "colorAI",
 		[self.STATUS.OFF]        = "colorNormal"
+	}
+
+	self.BEACON_PERC = {
+		[0] = 100,
+		[1] = 98,
+		[2] = 96,
+		[3] = 94,
+		[4] = 92,
+		[5] = 92,
+		[6] = 94,
+		[7] = 96,
+		[8] = 98,
+		[9] = 100
 	}
 
 	self.logger:print(":new() Initialized", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
@@ -444,7 +458,7 @@ function SimpleInspector:updateVehicles()
 				thisFarmID = thisVeh.ownerFarmId
 			end
 
-			if ( not self.isMPGame or self.settings:getValue("isEnabledShowUnowned") or myFarmID == thisFarmID ) then
+			if ( not self.isMPGame or myFarmID == thisFarmID or (self.settings:getValue("isEnabledShowUnowned") and thisFarmID ~= 0 ) ) then
 				table.insert(sortOrder, {
 					idx    = v,
 					name   = thisVeh:getFullName(),
@@ -491,6 +505,12 @@ function SimpleInspector:updateVehicles()
 						local isAI      = {aiActive = false, aiText = ""}
 						local isOnField = {fieldOn = false, fieldNum = 0}
 						local isBroken  = self.settings:getValue("isEnabledShowDamage") and self:getAllDamage(thisVeh)
+						local vehLights = thisVeh.spec_lights
+						local vehBeacon = false
+
+						if self.settings:getValue("isEnabledShowBeacon") and vehLights ~= nil then
+							vehBeacon = vehLights.beaconLightsActive
+						end
 
 						if AFMHotKey > 0 then
 							fullName = JTSUtil.qConcat("[", AFMHotKey, "] ", fullName)
@@ -567,6 +587,7 @@ function SimpleInspector:updateVehicles()
 						end
 
 						table.insert(new_data_table, {
+							beacon    = vehBeacon,
 							status    = status,
 							isAI      = isAI,
 							fullName  = fullName,
@@ -662,6 +683,8 @@ function SimpleInspector:draw()
 		local displayOrderTable = JTSUtil.stringSplit(self.settings:getValue("displayOrder"), "_")
 
 		local lastFarmID = -1
+		local beaconFrame = g_updateLoopIndex % 10
+		local beaconColor = JTSUtil.colorPercent(self.BEACON_PERC[beaconFrame], true)
 
 		for _, thisEntry in pairs(info_text) do
 
@@ -673,6 +696,14 @@ function SimpleInspector:draw()
 			end
 
 			JTSUtil.stackNewRow(outputTextLines)
+
+			if self.settings:getValue("isEnabledShowBeacon") and thisEntry.beacon then
+				JTSUtil.dispStackAdd(
+					outputTextLines,
+					"@ ",
+					beaconColor
+				)
+			end
 
 			for _, dispElement in pairs(displayOrderTable) do
 				local doAddSeperator = false
@@ -848,7 +879,12 @@ function SimpleInspector:draw()
 			local thisLinePlainText = ""
 
 			for _, dispElement in ipairs(JTSUtil.dispGetLine(outputTextLines, dispLineNum, (self.settings:getValue("displayMode") % 2 == 0) )) do
-				setTextColor(unpack(dispElement.color))
+				if ( type(dispElement.color) == "table" ) then
+					setTextColor(unpack(dispElement.color))
+				else
+					setTextColor(0.8,0.8,0.8,1)
+				end
+
 				thisLinePlainText = self:renderText(
 					dispTextX,
 					dispTextY,
@@ -1073,7 +1109,7 @@ end
 function SimpleInspector.initGui(self)
 
 	local boolMenuOptions = {
-		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
+		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowBeacon", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "ShowADTime", "ShowCPTime","TextBold"
 	}

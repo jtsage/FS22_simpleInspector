@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Если включено, показываются процентное соотношение и уровень заполнения транспортного средства или прицепа/агрегата." />
 	<text name="setting_simpleInspector_ShowFuel"        text="Показывать уровень топлива" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Если включено, показываются уровень и тип топлива в транспортных средствах." />
+	<text name="setting_simpleInspector_ShowBeacon"      text="Показать состояние маяка" />
+	<text name="toolTip_simpleInspector_ShowBeacon"      text="Если включено, выделяются автомобили с включенными маячками" />
 	<text name="setting_simpleInspector_ShowDef"         text="Показывать уровень DEF" />
 	<text name="toolTip_simpleInspector_ShowDef"         text="Если включено, показывается уровень жидкости для выхлопных газов дизельных двигателей в транспортных средствах." />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Показывать скорость" />

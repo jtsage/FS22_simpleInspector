@@ -23,6 +23,8 @@
 	<text name="toolTip_simpleInspector_ShowFillPercent" text="Wenn aktiviert, wird ein Prozentsatz zusammen mit dem Füllstand eines Fahrzeugs oder Geräts angezeigt" />
 	<text name="setting_simpleInspector_ShowFuel"        text="Kraftstoffstand anzeigen" />
 	<text name="toolTip_simpleInspector_ShowFuel"        text="Wenn diese Funktion aktiviert ist, werden der Kraftstoffstand und die Art des Kraftstoffs in den Fahrzeugen angezeigt." />
+	<text name="setting_simpleInspector_ShowBeacon"      text="Bakenstatus anzeigen" />
+	<text name="toolTip_simpleInspector_ShowBeacon"      text="Wenn aktiviert, werden Fahrzeuge mit eingeschalteten Baken hervorgehoben" />
 	<text name="setting_simpleInspector_ShowDef"         text="DEF-Level anzeigen" />
 	<text name="toolTip_simpleInspector_ShowDef"         text="Wenn diese Funktion aktiviert ist, wird der Füllstand der Dieselabgasflüssigkeit in Fahrzeugen angezeigt." />
 	<text name="setting_simpleInspector_ShowSpeed"       text="Geschwindigkeit anzeigen" />

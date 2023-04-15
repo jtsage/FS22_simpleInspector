@@ -29,6 +29,7 @@ v1.0.2.3 :
  - Fix top-left display to play nice with Precision Farming
  - Add option to convert units for display
  - Add Beacon Light indicator option
+ - Hide Inspector when positioned above map and chat is shown (MP)
 v1.0.2.0 :
  - Add CoursePlay and AutoDrive time remaining display
 v1.0.1.10 (since 1.0.0.0) :
@@ -73,6 +74,7 @@ v1.0.2.3 :
  - Reparieren Sie die Anzeige oben links, damit sie mit Precision Farming kompatibel ist.
  - Option zum Umrechnen von Einheiten für die Anzeige hinzufügen
  - Hinzufügen der Option Beacon Light Anzeige
+ - Inspektor ausblenden, wenn über der Karte positioniert und der Chat angezeigt wird (MP)
 v1.0.2.0 :
  - CoursePlay und AutoDrive Restzeitanzeige hinzufügen
 v1.0.1.10 (since 1.0.0.0) :

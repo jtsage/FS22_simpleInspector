@@ -628,6 +628,10 @@ function SimpleInspector:draw()
 			-- Left side display hide on big map with help open
 			self.inspectBox:setVisible(false)
 			return
+		elseif self.settings:getValue("displayMode") == 3 and g_currentMission.hud.chatWindow.overlay.visible then
+			-- Over map display and chat is visible, so hide.
+			self.inspectBox:setVisible(false)
+			return
 		else
 			-- we have entries, lets get the overall height of the box and unhide
 			self.inspectBox:setVisible(true)

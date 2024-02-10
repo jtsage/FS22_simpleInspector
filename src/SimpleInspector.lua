@@ -111,7 +111,7 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 	self.inspectText            = {}
 	self.boxBGColor             = { 544, 20, 200, 44 }
 	self.bgName                 = 'dataS/menu/blank.png'
-	self.menuTextSizes          = { 8, 10, 12, 14, 16 }
+	self.menuTextSizes          = { 8, 10, 12, 14, 16, 18, 20 }
 
 	local modDesc       = loadXMLFile("modDesc", modDirectory .. "modDesc.xml");
 	self.version        = getXMLString(modDesc, "modDesc.version");

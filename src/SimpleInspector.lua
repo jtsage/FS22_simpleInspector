@@ -41,6 +41,7 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 			displayMode5Y   = 0.2,
 
 			isEnabledVisible         = true,
+			isEnabledWhenHUDHidden   = false,
 			isEnabledSolidUnit       = { 1, "int" },
 			isEnabledLiquidUnit      = { 1, "int" },
 			isEnabledAlphaSort       = true,
@@ -177,6 +178,17 @@ function SimpleInspector:new(mission, modDirectory, modName, logger)
 		[7] = 96,
 		[8] = 98,
 		[9] = 100
+	}
+	self.COMPASS = {
+		[0] = g_i18n:getText('unit_fsgDirection_N'),
+		[1] = g_i18n:getText('unit_fsgDirection_NE'),
+		[2] = g_i18n:getText('unit_fsgDirection_E'),
+		[3] = g_i18n:getText('unit_fsgDirection_SE'),
+		[4] = g_i18n:getText('unit_fsgDirection_S'),
+		[5] = g_i18n:getText('unit_fsgDirection_SW'),
+		[6] = g_i18n:getText('unit_fsgDirection_W'),
+		[7] = g_i18n:getText('unit_fsgDirection_NW'),
+		[8] = g_i18n:getText('unit_fsgDirection_N'),
 	}
 
 	self.logger:print(":new() Initialized", FS22Log.LOG_LEVEL.VERBOSE, "method_track")
@@ -345,6 +357,26 @@ function SimpleInspector:getSpeed(vehicle)
 	return string.format("%1.0f", speed)
 end
 
+function SimpleInspector:getDirection(vehicle)
+	-- local posX, posY, posZ = getTranslation(vehicle.rootNode)
+	local dx, _, dz = localDirectionToWorld(vehicle.rootNode, 0, 0, 1)
+	local yRot = nil
+
+	if vehicle.spec_drivable ~= nil and vehicle.spec_drivable.reverserDirection == -1 then
+		yRot = MathUtil.getYRotationFromDirection(dx, dz)
+	else
+		yRot = MathUtil.getYRotationFromDirection(dx, dz) + math.pi
+	end
+
+	local realRotation     = math.deg(-yRot % (2 * math.pi))
+	local realRotationIdx  = MathUtil.round(realRotation / 45)
+	local realRotationText = self.COMPASS[realRotationIdx]
+	local realDirection    = vehicle:getDrivingDirection()
+	local driveDirection   = realDirection == -1 and "↓" or realDirection == 1 and "↑" or "" -- forawrd = 1, reverse = -1, not moving = 0
+
+	return realRotationText .. driveDirection
+end
+
 function SimpleInspector:getSingleFill(vehicle, theseFills)
 	-- This is the single run at the fill type, for the current vehicle only.
 	-- Borrowed heavily from older versions of similar plugins, ignores unknown fill types
@@ -500,6 +532,7 @@ function SimpleInspector:updateVehicles()
 						local AFMHotKey = thisVeh.getHotKeyVehicleState ~= nil and thisVeh:getHotKeyVehicleState() or 0
 						local fullName  = thisVeh:getFullName()
 						local speed     = self:getSpeed(thisVeh)
+						local direction = self:getDirection(thisVeh)
 						local fills     = {}
 						local status    = self.STATUS.OFF
 						local isAI      = {aiActive = false, aiText = ""}
@@ -592,6 +625,7 @@ function SimpleInspector:updateVehicles()
 							isAI      = isAI,
 							fullName  = fullName,
 							speed     = tostring(speed),
+							direction = direction,
 							fuelLevel = self:getFuel(thisVeh),
 							fills     = fills,
 							isOnField = isOnField,
@@ -620,8 +654,12 @@ function SimpleInspector:draw()
 		local overlayH, dispTextH, dispTextW = 0, 0, 0
 		local outputTextLines = {}
 
-		if #info_text == 0 or not self.settings:getValue("isEnabledVisible") or g_sleepManager:getIsSleeping() or g_noHudModeEnabled or not g_currentMission.hud.isVisible then
+		if #info_text == 0 or not self.settings:getValue("isEnabledVisible") or g_sleepManager:getIsSleeping() then
 			-- we have no entries, hide the overlay and leave
+			self.inspectBox:setVisible(false)
+			return
+		elseif not self.settings:getValue("isEnabledWhenHUDHidden") and ( g_noHudModeEnabled or not g_currentMission.hud.isVisible ) then
+			-- HUD is hidden, and we respect that
 			self.inspectBox:setVisible(false)
 			return
 		elseif g_gameSettings:getValue("ingameMapState") == 4 and self.settings:getValue("displayMode") % 2 ~= 0 and g_currentMission.inGameMenu.hud.inputHelp.overlay.visible then
@@ -720,7 +758,8 @@ function SimpleInspector:draw()
 						outputTextLines,
 						JTSUtil.qConcatS(
 							thisEntry.speed,
-							g_i18n:getText(g_gameSettings:getValue('useMiles') and "text_simpleInspector_mph" or "text_simpleInspector_kph")
+							g_i18n:getText(g_gameSettings:getValue('useMiles') and "text_simpleInspector_mph" or "text_simpleInspector_kph"),
+							thisEntry.direction
 						),
 						self:getNamedColor("colorSpeed")
 					)
@@ -1113,7 +1152,7 @@ end
 function SimpleInspector.initGui(self)
 
 	local boolMenuOptions = {
-		"Visible", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowBeacon", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
+		"Visible", "WhenHUDHidden", "AlphaSort", "ShowAll", "ShowUnowned", "ShowPlayer", "ShowBeacon", "ShowFuel", "ShowDef", "ShowSpeed", "ShowDamage",
 		"ShowFills", "ShowFillPercent", "ShowField", "ShowFieldNum", "PadFieldNum",
 		"ShowCPWaypoints", "ShowADTime", "ShowCPTime","TextBold"
 	}

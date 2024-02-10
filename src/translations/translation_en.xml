@@ -66,10 +66,22 @@
 	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
 	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
 
+	<text name="unit_fsgDirection_N" text="N" />
+	<text name="unit_fsgDirection_NE" text="NE" />
+	<text name="unit_fsgDirection_E" text="E" />
+	<text name="unit_fsgDirection_SE" text="SE" />
+	<text name="unit_fsgDirection_S" text="S" />
+	<text name="unit_fsgDirection_SW" text="SW" />
+	<text name="unit_fsgDirection_W" text="W" />
+	<text name="unit_fsgDirection_NW" text="NW" />
+	<text name="unit_fsgDirection_N" text="N" />
+
 
 	<text name="setting_simpleInspector_ShowADTime" text="Show AutoDrive Time Remaining" />
 	<text name="toolTip_simpleInspector_ShowADTime" text="When enabled, show the time remaining on an active AutoDrive course." />
 	<text name="setting_simpleInspector_ShowCPTime" text="Show CoursePlay Time Remaining" />
 	<text name="toolTip_simpleInspector_ShowCPTime" text="When enabled, show the time remaining on an active CoursePlay course." />
+	<text name="setting_simpleInspector_WhenHUDHidden" text="Show When HUD is Hidden" />
+	<text name="toolTip_simpleInspector_WhenHUDHidden" text="When enabled, show the overlay even if the HUD is hidden" />
   </texts>
 </l10n>

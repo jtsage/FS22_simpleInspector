@@ -51,34 +51,33 @@
 	<text name="setting_simpleInspector_DisplayMode4"    text="Prawy dolny róg (nad prędkościomierzem)" />
 	<text name="text_simpleInspector_kph"                text="km/h" />
 	<text name="text_simpleInspector_mph"                text="mph" />
-	<text name="setting_simpleInspector_ShowADTime" text="Pokaż pozostały czas AutoDrive" />
-	<text name="toolTip_simpleInspector_ShowADTime" text="Po włączeniu pokaże czas pozostały do końca aktywnego kursu AutoDrive." />
-	<text name="setting_simpleInspector_ShowCPTime" text="Pokaż pozostały czas gry" />
-	<text name="toolTip_simpleInspector_ShowCPTime" text="Gdy jest włączona, pokazuje czas pozostały do końca aktywnego kursu CoursePlay." />
+	<text name="setting_simpleInspector_ShowADTime"      text="Pokaż pozostały czas AutoDrive" />
+	<text name="toolTip_simpleInspector_ShowADTime"      text="Po włączeniu pokaże czas pozostały do końca aktywnego kursu AutoDrive." />
+	<text name="setting_simpleInspector_ShowCPTime"      text="Pokaż pozostały czas gry" />
+	<text name="toolTip_simpleInspector_ShowCPTime"      text="Gdy jest włączona, pokazuje czas pozostały do końca aktywnego kursu CoursePlay." />
 	<text name="setting_simpleInspector_SolidUnit"       text="Jednostka miary: ciała stałe" />.
 	<text name="toolTip_simpleInspector_SolidUnit"       text="Użyj tej jednostki miary do wyświetlania produktów stałych" />.
 	<text name="setting_simpleInspector_LiquidUnit"      text="Jednostka miary: Ciecze" />.
 	<text name="toolTip_simpleInspector_LiquidUnit"      text="Użyj tej jednostki miary do wyświetlania produktów płynnych" />.
-	<text name="unit_fsgUnitConvert_Volume"             text="Jednostka objętości" />
-	<text name="unit_fsgUnitConvert_Weight"             text="Jednostka wagowa" />
-	<text name="unit_fsgUnitConvert_cubicFoot"          text="ft³" />
-	<text name="unit_fsgUnitConvert_cubicYard"          text="yd³" />
-	<text name="unit_fsgUnitConvert_ounce"              text="oz" />
-	<text name="unit_fsgUnitConvert_poundWeight"        text="lbs" />
-	<text name="unit_fsgUnitConvert_hundredWeight"      text="cwt" />
-	<text name="unit_fsgUnitConvert_imperialTon"        text="tn" />
-	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
-	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
+	<text name="unit_fsgUnitConvert_Volume"              text="Jednostka objętości" />
+	<text name="unit_fsgUnitConvert_Weight"              text="Jednostka wagowa" />
+	<text name="unit_fsgUnitConvert_cubicFoot"           text="ft³" />
+	<text name="unit_fsgUnitConvert_cubicYard"           text="yd³" />
+	<text name="unit_fsgUnitConvert_ounce"               text="oz" />
+	<text name="unit_fsgUnitConvert_poundWeight"         text="lbs" />
+	<text name="unit_fsgUnitConvert_hundredWeight"       text="cwt" />
+	<text name="unit_fsgUnitConvert_imperialTon"         text="t" />
+	<text name="unit_fsgUnitConvert_fluidOunce"          text="fl.oz" />
+	<text name="unit_fsgUnitConvert_fluidGallon"         text="gal" />
 
-	<text name="unit_fsgDirection_N" text="PL" />
-	<text name="unit_fsgDirection_NE" text="PLZ" />
+	<text name="unit_fsgDirection_N" text="PN" />
+	<text name="unit_fsgDirection_NE" text="PNZ" />
 	<text name="unit_fsgDirection_E" text="Z" />
 	<text name="unit_fsgDirection_SE" text="PDZ" />
 	<text name="unit_fsgDirection_S" text="PD" />
 	<text name="unit_fsgDirection_SW" text="PDW" />
 	<text name="unit_fsgDirection_W" text="W" />
-	<text name="unit_fsgDirection_NW" text="PLW" />
-	<text name="unit_fsgDirection_N" text="N" />
+	<text name="unit_fsgDirection_NW" text="PNW" />
 	<text name="setting_simpleInspector_WhenHUDHidden" text="Pokaż, gdy HUD jest ukryty" />
 	<text name="toolTip_simpleInspector_WhenHUDHidden" text="Włączenie tej opcji powoduje wyświetlanie nakładki, nawet jeśli HUD jest ukryty." />
   </texts>

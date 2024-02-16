@@ -73,12 +73,11 @@
 	<text name="unit_fsgDirection_N" text="N" />
 	<text name="unit_fsgDirection_NE" text="NO" />
 	<text name="unit_fsgDirection_E" text="O" />
-	<text name="unit_fsgDirection_SE" text="S0" />
+	<text name="unit_fsgDirection_SE" text="SO" />
 	<text name="unit_fsgDirection_S" text="S" />
 	<text name="unit_fsgDirection_SW" text="SW" />
 	<text name="unit_fsgDirection_W" text="W" />
 	<text name="unit_fsgDirection_NW" text="NW" />
-	<text name="unit_fsgDirection_N" text="N" />
 	<text name="setting_simpleInspector_WhenHUDHidden" text="Anzeigen, wenn das HUD ausgeblendet ist" />
 	<text name="toolTip_simpleInspector_WhenHUDHidden" text="Wenn aktiviert, wird das Overlay angezeigt, auch wenn das HUD ausgeblendet ist." />
   </texts>

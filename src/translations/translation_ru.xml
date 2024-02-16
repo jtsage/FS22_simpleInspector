@@ -70,7 +70,6 @@
 	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
 	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
 
-	<text name="unit_fsgDirection_N" text="N" />
 	<text name="unit_fsgDirection_NE" text="св" />
 	<text name="unit_fsgDirection_E" text="в" />
 	<text name="unit_fsgDirection_SE" text="юв" />

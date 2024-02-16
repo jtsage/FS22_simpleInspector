@@ -74,7 +74,6 @@
 	<text name="unit_fsgDirection_SW" text="SW" />
 	<text name="unit_fsgDirection_W" text="W" />
 	<text name="unit_fsgDirection_NW" text="NW" />
-	<text name="unit_fsgDirection_N" text="N" />
 
 
 	<text name="setting_simpleInspector_ShowADTime" text="Show AutoDrive Time Remaining" />

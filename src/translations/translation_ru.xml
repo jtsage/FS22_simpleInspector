@@ -70,14 +70,14 @@
 	<text name="unit_fsgUnitConvert_fluidOunce"         text="fl.oz" />
 	<text name="unit_fsgUnitConvert_fluidGallon"        text="gal" />
 
-	<text name="unit_fsgDirection_NE" text="св" />
-	<text name="unit_fsgDirection_E" text="в" />
-	<text name="unit_fsgDirection_SE" text="юв" />
-	<text name="unit_fsgDirection_S" text="ю" />
-	<text name="unit_fsgDirection_SW" text="юз" />
-	<text name="unit_fsgDirection_W" text="з" />
-	<text name="unit_fsgDirection_NW" text="сз" />
-	<text name="unit_fsgDirection_N" text="с" />
+	<text name="unit_fsgDirection_NE" text="СВ" />
+	<text name="unit_fsgDirection_E" text="В" />
+	<text name="unit_fsgDirection_SE" text="ЮВ" />
+	<text name="unit_fsgDirection_S" text="Ю" />
+	<text name="unit_fsgDirection_SW" text="ЮЗ" />
+	<text name="unit_fsgDirection_W" text="З" />
+	<text name="unit_fsgDirection_NW" text="СЗ" />
+	<text name="unit_fsgDirection_N" text="С" />
 	<text name="setting_simpleInspector_WhenHUDHidden" text="Показывать, когда HUD скрыт" />
 	<text name="toolTip_simpleInspector_WhenHUDHidden" text="Если включено, то оверлей отображается, даже если HUD скрыт." />
   </texts>

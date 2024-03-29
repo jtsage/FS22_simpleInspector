@@ -371,7 +371,7 @@ function SimpleInspector:getDirection(vehicle)
 	local realRotation     = math.deg(-yRot % (2 * math.pi))
 	local realRotationIdx  = MathUtil.round(realRotation / 45)
 	local realRotationText = self.COMPASS[realRotationIdx]
-	local realDirection    = vehicle:getDrivingDirection()
+	local realDirection    = vehicle.getDrivngDirection ~= nil and vehicle:getDrivingDirection() or 0
 	local driveDirection   = realDirection == -1 and "↓" or realDirection == 1 and "↑" or "" -- forawrd = 1, reverse = -1, not moving = 0
 
 	return realRotationText .. driveDirection
